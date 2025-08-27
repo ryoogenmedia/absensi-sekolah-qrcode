@@ -100,7 +100,7 @@
                             <tr>
                                 <td><b>Jumlah {{ ucwords($status) }}</b></td>
                                 <td class="text-center">:</td>
-                                <td>{{ $classAttendance->student_attendances->where('status', $status)->count() ?? 0 }}
+                                <td>{{ $classAttendance->student_attendances->where('status_attendance', $status)->count() ?? 0 }}
                                 </td>
                             </tr>
                         @endforeach
