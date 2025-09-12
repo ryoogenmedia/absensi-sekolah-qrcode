@@ -52,8 +52,8 @@
                                         <span @class([
                                             'badge',
                                             'bg-green-lt' => $login->role == 'admin',
-                                            'bg-blue-lt' => $login->role == 'teacher',
-                                            'bg-yellow-lt' => $login->role == 'student',
+                                            'bg-blue-lt' => $login->role == 'guru',
+                                            'bg-yellow-lt' => $login->role == 'siswa',
                                         ])>{{ $login->role }}</span>
                                     </div>
                                 </div>
