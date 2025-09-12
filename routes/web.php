@@ -24,6 +24,12 @@ Route::middleware('auth','verified','force.logout')->prefix('cetak-pdf')->name('
 });
 
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
+    /**
+     *  persence student / presensi siswa
+     */
+    Route::prefix('presensi-siswa')->name('presence-student.')->middleware('roles:siswa')->group(function(){
+        Route::get('/', PersenceClassRoom\Index::class)->name('index');
+    });
 
     /**
      * master / data master

@@ -10,6 +10,17 @@ return [
         'roles' => ['admin', 'operator','guru','siswa'],
     ],
 
+    // SISWA
+
+    [
+        'title' => 'Kehadiran Anda',
+        'icon' => 'calendar-check',
+        'route-name' => 'presence-student.index',
+        'is-active' => 'presence-student.index',
+        'description' => 'Untuk melihat kehadiran anda.',
+        'roles' => ['siswa'],
+    ],
+
     // GURU
 
     [
