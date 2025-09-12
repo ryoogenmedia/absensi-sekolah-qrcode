@@ -2,10 +2,117 @@
 
 namespace App\Livewire\Home;
 
+use App\Models\ClassSchedule;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class StudentHome extends Component
 {
+    public $totalHadir = 0;
+    public $totalAlpa = 0;
+    public $totalIzin = 0;
+    public $totalSakit = 0;
+    public $totalPercentance = 0;
+
+    public $percentHadir;
+    public $percentAlpa;
+    public $percentIzin;
+    public $percentSakit;
+
+    public $studentId;
+    public $classScheduleId;
+
+    // custom method
+    public function getStudentAttendance(){
+        $user = auth()->user();
+        $student = $user->student;
+
+        return $student->student_attendances()
+            ->when($this->classScheduleId, function($query){
+                $query->whereHas('class_attendance.class_schedule', function($q){
+                    $q->where('id', $this->classScheduleId);
+                });
+            });
+    }
+
+    public function getDataChart()
+    {
+        $statuses = ['hadir', 'alpa', 'izin', 'sakit'];
+
+        $total = $this->totalPercentance;
+
+        foreach ($statuses as $status) {
+            $property = 'percent' . ucfirst($status);
+            $totalProperty = 'total' . ucfirst($status);
+
+            if ($total > 0) {
+                $this->$property = round(($this->$totalProperty / $total) * 100, 2);
+            } else {
+                $this->$property = 0;
+            }
+        }
+    }
+
+    public function getDataCount(){
+        $studentAttendance = $this->getStudentAttendance();
+
+        $this->totalPercentance = $studentAttendance
+            ->where('student_id', $this->studentId)->count();
+
+        $statusAttendance = config('const.attendance_status');
+
+        foreach ($statusAttendance as $status) {
+            $count = (clone $studentAttendance) // clone for query reuse if loop
+                ->where('student_id', $this->studentId)
+                ->where('status_attendance', $status)
+                ->count();
+
+            switch ($status) {
+                case 'hadir':
+                    $this->totalHadir = $count;
+                    break;
+                case 'alpa':
+                    $this->totalAlpa = $count;
+                    break;
+                case 'izin':
+                    $this->totalIzin = $count;
+                    break;
+                case 'sakit':
+                    $this->totalSakit = $count;
+                    break;
+            }
+        }
+    }
+
+    // lifecycle hooks
+    public function updatedClassScheduleId(){
+        $this->getDataCount();
+        $this->getDataChart();
+
+        $this->dispatch('updateChartStudentPercent', [
+            'hadir' => $this->percentHadir,
+            'alpa' => $this->percentAlpa,
+            'izin' => $this->percentIzin,
+            'sakit' => $this->percentSakit,
+            'total' => $this->totalPercentance,
+        ]);
+    }
+
+    public function mount(){
+        $user = auth()->user();
+        $this->studentId = $user->student->id;
+        $this->getDataCount();
+        $this->getDataChart();
+    }
+
+    // computed properties
+    #[Computed()]
+    public function class_schedules(){
+        return ClassSchedule::whereHas('class_room.students', function($query){
+            $query->where('id', $this->studentId);
+        })->get();
+    }
+
     public function render()
     {
         return view('livewire.home.student-home');
