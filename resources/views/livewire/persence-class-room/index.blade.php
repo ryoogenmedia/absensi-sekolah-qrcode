@@ -141,8 +141,6 @@
                 </tbody>
             </table>
         </div>
-
-        {{ $this->class_attendances->links() }}
     </div>
 </div>
 

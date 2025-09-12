@@ -78,16 +78,6 @@ class Index extends Component
     }
 
     #[Computed()]
-    public function class_attendances(){
-        $query = ClassAttendance::query()
-            ->when($this->classRoomId, function ($query, $classRoomId) {
-                $query->where('class_room_id', 'LIKE', "%$classRoomId%");
-            })->where('class_schedule_id', $this->classScheduleId);
-
-        return $this->applyPagination($query);
-    }
-
-    #[Computed()]
     public function students(){
         return Student::where('id', $this->studentId)->get();
     }
