@@ -32,15 +32,20 @@
             </div>
         </div>
 
-
         <div class="col-md-6 col-xl-8">
-            <div class="card">
-                <div class="card-body py-5 text-center">
-                    <i class="las la-praying-hands" style="font-size: 40px"></i>
-                    <h2 class="m-0 mb-1 pt-3 font-weight-bold">Maaf</h2>
-                    <div class="text-muted pb-3">Sunting profil tidak tersedia untuk akun Anda.</div>
+            @if (auth()->user()->role == 'guru' && auth()->user()->teacher)
+                <livewire:setting.profile.teacher-profile />
+            @elseif (auth()->user()->role == 'siswa' && auth()->user()->student)
+                <livewire:setting.profile.student-profile />
+            @else
+                <div class="card">
+                    <div class="card-body py-5 text-center">
+                        <i class="las la-praying-hands" style="font-size: 40px"></i>
+                        <h2 class="m-0 mb-1 pt-3 font-weight-bold">Maaf</h2>
+                        <div class="text-muted pb-3">Sunting profil tidak tersedia untuk akun Anda.</div>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>

@@ -61,6 +61,10 @@ class User extends Authenticatable
         return $this->hasOne(Teacher::class, 'user_id', 'id')->withDefault();
     }
 
+    public function student(){
+        return $this->hasOne(Student::class, 'user_id', 'id')->withDefault();
+    }
+
     public function setUsernameAttribute($value)
     {
         $this->attributes['username'] = ucwords(strtolower($value));

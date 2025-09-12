@@ -52,6 +52,7 @@
 
     <script src="{{ asset('js/today.js') }}"></script>
     <script src="{{ asset('js/password-toggle.js') }}"></script>
+    <script src="{{ asset('js/helper/scoll-top.js') }}"></script>
 
     @stack('scripts')
 </body>
