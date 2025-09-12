@@ -3,6 +3,7 @@
 namespace App\Livewire\Home;
 
 use App\Models\ClassSchedule;
+use App\Models\Student;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -22,7 +23,21 @@ class StudentHome extends Component
     public $studentId;
     public $classScheduleId;
 
+    public $studentPhoto;
+    public $studentClassRoom;
+    public $studentNis;
+    public $studentName;
+
     // custom method
+    public function studentInformation(){
+        $student = Student::findOrFail($this->studentId);
+
+        $this->studentPhoto = $student->photoUrl();
+        $this->studentNis = $student->nis;
+        $this->studentClassRoom = $student->class_room->name_class;
+        $this->studentName = $student->full_name;
+    }
+
     public function getStudentAttendance(){
         $user = auth()->user();
         $student = $user->student;
@@ -103,6 +118,7 @@ class StudentHome extends Component
         $this->studentId = $user->student->id;
         $this->getDataCount();
         $this->getDataChart();
+        $this->studentInformation();
     }
 
     // computed properties

@@ -15,9 +15,9 @@
         <div class="col-12 col-md-8 col-lg-9">
             <div class="card">
                 <div class="card-body">
-                    <h3>Filter <span class="las la-filter fs-2 ms-2"></span></h3>
+                    <h3>FILTER <span class="las la-filter fs-2 ms-2"></span></h3>
                     <div class="row">
-                        <div class="col-lg-6 col-12">
+                        <div class="col-12">
                             <x-form.select wire:model.lazy="classScheduleId" name="classScheduleId" form-group-class>
                                 <option value="">SEMUA MAPEL</option>
                                 @foreach ($this->class_schedules as $schedule)
@@ -31,6 +31,32 @@
             </div>
 
             <div class="row">
+                <div class="col-lg-6 col-12">
+                    <div class="card card-count-data mb-3 flex border border-green-lt mt-3">
+                        <div class="card-body">
+                            <div class="d-flex gap-3">
+                                <div class="d-flex flex-column">
+                                    <p class="mb-0 text-green mb-3">Informasi Anda</p>
+                                    <div class="mt-2">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-2">
+                                                <img src="{{ $studentPhoto }}" alt="Foto Siswa"
+                                                    class="rounded-3 object-cover" width="58" height="68">
+                                            </div>
+                                            <div class="ms-3">
+                                                {{ $studentName }}
+                                                <span class="fw-bold d-block"></span>
+                                                <span class="d-block">Kelas: {{ $studentClassRoom }} </span>
+                                                <span class="d-block">Semester: Genap </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
                 <div class="col-lg-6 col-12">
                     <div class="card mt-3">
                         <div class="card-body py-1">
@@ -78,16 +104,13 @@
                     colors: ["#4ade80", "#f87171", "#facc15", "#06b6d4"],
                     legend: {
                         show: true,
-                        position: 'left',
+                        position: 'bottom',
                         labels: {
                             colors: '#fff' // kalau mau legend juga putih
                         }
                     },
                     dataLabels: {
                         enabled: true,
-                        style: {
-                            colors: ['#fff'] // fallback global
-                        },
                         formatter: function(val, opts) {
                             return opts.w.config.series[opts.seriesIndex] + '%';
                         }
