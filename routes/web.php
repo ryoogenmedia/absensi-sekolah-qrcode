@@ -32,6 +32,13 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     });
 
     /**
+     * student schedule / jadwal siswa
+     */
+    Route::prefix('jadwal-siswa')->name('schedule-student.')->middleware('roles:siswa')->group(function(){
+        Route::get('/', StudentSchedule\Index::class)->name('index');
+    });
+
+    /**
      * master / data master
      */
     Route::prefix('master')->name('master.')->middleware('roles:admin')->namespace('Master')->group(function(){

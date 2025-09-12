@@ -21,6 +21,15 @@ return [
         'roles' => ['siswa'],
     ],
 
+    [
+        'title' => 'Jadwal Mapel',
+        'icon' => 'calendar-alt',
+        'route-name' => 'schedule-student.index',
+        'is-active' => 'schedule-student.index',
+        'description' => 'Untuk melihat jadwal mapel anda.',
+        'roles' => ['siswa'],
+    ],
+
     // GURU
 
     [
