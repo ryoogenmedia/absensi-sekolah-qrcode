@@ -89,6 +89,49 @@ if(!function_exists('base_whatsapp')){
     }
 }
 
+/**
+ *  copy example fake photo to storage/student-photos
+ * @param string sex for determine example photo
+ * @return string new path photo
+ */
+if (!function_exists('example_photo')) {
+    function example_photo($sex, $loopIndex = null) {
+        // Path ke file example
+        $exampleLatarMerahCewek = public_path('static/ryoogen/example/latar-merah-cewek.jpg');
+        $exampleLatarMerahCowok = public_path('static/ryoogen/example/latar-merah-cowok.jpeg');
+
+        // Pastikan direktori storage/student-photos ada
+        $storagePath = storage_path('app/public/student-photos');
+        if (!file_exists($storagePath)) {
+            mkdir($storagePath, 0777, true);
+        }
+
+        // Tentukan file foto berdasarkan jenis kelamin
+        if ($sex === 'laki-laki') {
+            $sourcePhoto = $exampleLatarMerahCowok;
+            $extension = '.jpeg';
+        } else {
+            $sourcePhoto = $exampleLatarMerahCewek;
+            $extension = '.jpg';
+        }
+
+        // Penamaan file yang benar
+        $indexPart = $loopIndex !== null ? $loopIndex . '_' : '';
+        $photoFileName = 'student_' . $indexPart . time() . $extension;
+        $destinationRelativePath = 'student-photos/' . $photoFileName;
+        $destinationFullPath = $storagePath . '/' . $photoFileName;
+
+        // Copy file ke storage/student-photos jika sumber ada
+        if (file_exists($sourcePhoto)) {
+            copy($sourcePhoto, $destinationFullPath);
+            // Return path relatif ke storage/app/public agar bisa diakses via storage link
+            return 'student-photos/' . $photoFileName;
+        }
+
+        return null;
+    }
+}
+
 
 /**
  * Mengubah nomor ponsel menjadi awalan 62
