@@ -6,7 +6,7 @@
                     <li class="list-inline-item">
                         <a href="https://github.com/ryoogenmedia" target="_blank" class="link-secondary" rel="noopener">
                             @include('partials.svg.love')
-                            Powered By Muhammad Bintang
+                            Developed By Ryoogen Media
                         </a>
                     </li>
                 </ul>
@@ -15,8 +15,8 @@
                 <ul class="list-inline list-inline-dots mb-0">
                     <li class="list-inline-item">
                         Copyright &copy; 2024
-                        <a href="https://github.com/ryoogenmedia" class="link-secondary">Sistem Presensi Sekolah Dengan
-                            QR Code & Notifikasi Whatsapp</a>.
+                        <a href="https://github.com/ryoogenmedia" class="link-secondary">System Presensi Siswa Dengan
+                            Nofikasi Whatsapp</a>.
                         All rights reserved.
                     </li>
                     <li class="list-inline-item">
