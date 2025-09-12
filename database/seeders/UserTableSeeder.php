@@ -21,17 +21,10 @@ class UserTableSeeder extends Seeder
                 'role' => 'admin',
             ],
             [
-                'username' => 'Supriadi',
-                'email' => 'supriadi@gmail.com',
+                'username' => 'Fery Admin',
+                'email' => 'feryfadulrahman@gmail.com',
                 'email_verified_at' => now(),
-                'password' => bcrypt('supriadi123'),
-                'role' => 'admin',
-            ],
-            [
-                'username' => 'Ardiansyah',
-                'email' => 'ardiansyah@gmail.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt('ardiansyah123'),
+                'password' => bcrypt('fery123'),
                 'role' => 'admin',
             ],
         ];
