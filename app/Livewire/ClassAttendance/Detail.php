@@ -32,6 +32,27 @@ class Detail extends Component
 
     public $pictureEvidence;
 
+    public function deleteSelected()
+    {
+        $classAttendances = ClassAttendance::whereIn('id', $this->selected)->get();
+        $deleteCount = $classAttendances->count();
+
+        foreach ($classAttendances as $data) {
+            if ($data->picture_evidence) {
+                File::delete(public_path('storage/' . $data->picture_evidence));
+            }
+            $data->delete();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => "Berhasil menghapus $deleteCount data presensi kelas.",
+        ]);
+
+        return redirect()->back();
+    }
+
     public function openModal($id){
         $classAttendance = ClassAttendance::findOrFail($id);
         $this->pictureEvidence = $classAttendance->pictureEvidenceUrl();
@@ -46,29 +67,6 @@ class Detail extends Component
     public function getTotalPresence(){
         $this->totalPresence = ClassAttendance::where('class_schedule_id', $this->classScheduleId)
             ->count();
-    }
-
-    public function deleteSelected()
-    {
-        $classAttendances = ClassAttendance::whereIn('id', $this->selected)->get();
-        $deleteCount = $classAttendances->count();
-
-        foreach ($classAttendances as $data) {
-            if ($data->picture_evidence) {
-                File::delete(public_path('storage/' . $data->picture_evidence));
-            }
-            $data->delete();
-        }
-
-        $this->reset();
-
-        session()->flash('alert', [
-            'type' => 'success',
-            'message' => 'Berhasil!',
-            'detail' => "Berhasil menghapus $deleteCount data presensi kelas.",
-        ]);
-
-        return redirect()->back();
     }
 
     #[Computed()]

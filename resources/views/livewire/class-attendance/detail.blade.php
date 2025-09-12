@@ -78,8 +78,8 @@
         <div class="col-lg-6 col-12 ms-auto d-flex mt-lg-0 mt-3">
             <x-datatable.bulk.dropdown>
                 <div class="dropdown-menu dropdown-menu-end datatable-dropdown">
-                    <button data-bs-toggle="modal" data-bs-target="#delete-confirmation" class="dropdown-item"
-                        type="button">
+                    <button wire:click="$dispatch('openDeleteModal')" data-bs-toggle="modal"
+                        data-bs-target="#delete-confirmation" class="dropdown-item" type="button">
                         <i class="las la-trash me-3"></i>
 
                         <span>Hapus</span>
@@ -290,3 +290,12 @@
         {{ $this->class_attendances->links() }}
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        Livewire.on('openDeleteModal', () => {
+            const modal = new bootstrap.Modal(document.getElementById('delete-confirmation'));
+            modal.show();
+        });
+    </script>
+@endpush
