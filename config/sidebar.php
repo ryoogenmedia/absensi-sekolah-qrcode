@@ -7,7 +7,7 @@ return [
         'route-name' => 'home',
         'is-active' => 'home',
         'description' => 'Untuk melihat ringkasan aplikasi.',
-        'roles' => ['admin', 'operator','guru','siswa'],
+        'roles' => ['admin', 'operator', 'guru', 'siswa'],
     ],
 
     // SISWA
@@ -135,18 +135,18 @@ return [
         'route-name' => 'scan-qr.index',
         'is-active' => 'scan-qr*',
         'description' => 'Untuk Scan Qr Code',
-        'roles' => ['admin','operator'],
+        'roles' => ['admin', 'operator'],
     ],
 
-    [
-        'title' => 'Whatsapp Broadcast',
-        'icon' => 'whatsapp',
-        'brand_icon' => true,
-        'route-name' => 'whatsapp-broadcast.index',
-        'is-active' => 'whatsapp-broadcast*',
-        'description' => 'Pengaturan whatsapp broadcast.',
-        'roles' => ['admin'],
-    ],
+    // [
+    //     'title' => 'Whatsapp Broadcast',
+    //     'icon' => 'whatsapp',
+    //     'brand_icon' => true,
+    //     'route-name' => 'whatsapp-broadcast.index',
+    //     'is-active' => 'whatsapp-broadcast*',
+    //     'description' => 'Pengaturan whatsapp broadcast.',
+    //     'roles' => ['admin'],
+    // ],
 
     [
         'title' => 'Presensi',
@@ -191,7 +191,7 @@ return [
         'icon' => 'cog',
         'route-name' => 'setting.profile.index',
         'is-active' => 'setting*',
-        'roles' => ['admin', 'guru','operator','siswa'],
+        'roles' => ['admin', 'guru', 'operator', 'siswa'],
         'sub-menus' => [
             [
                 'title' => 'Profil',

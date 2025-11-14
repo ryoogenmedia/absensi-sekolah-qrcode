@@ -21,7 +21,7 @@
     <div style="z-index: 9999; position: fixed; bottom: 20px; right: 20px;"
         class="d-flex flex-column align-items-end gap-2">
 
-        <div class="btn btn-orange" id="loading-indicator" wire:loading.delay>
+        <div class="btn btn-blue" id="loading-indicator" wire:loading.delay>
             <i class="las la-sync-alt spin-animation"></i>
         </div>
 

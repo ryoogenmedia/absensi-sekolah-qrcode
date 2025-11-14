@@ -6,7 +6,7 @@
                     <li class="list-inline-item">
                         <a href="https://github.com/ryoogenmedia" target="_blank" class="link-secondary" rel="noopener">
                             @include('partials.svg.love')
-                            Developed By Ryoogen Media
+                            SMAN 19 Makassar
                         </a>
                     </li>
                 </ul>
@@ -16,7 +16,7 @@
                     <li class="list-inline-item">
                         Copyright &copy; 2024
                         <a href="https://github.com/ryoogenmedia" class="link-secondary">System Presensi Siswa Dengan
-                            Nofikasi Whatsapp</a>.
+                            Nofikasi</a>.
                         All rights reserved.
                     </li>
                     <li class="list-inline-item">
