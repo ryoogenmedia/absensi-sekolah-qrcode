@@ -20,13 +20,13 @@ class TeacherTableSeeder extends Seeder
 
         $dataTeachers = [
             [
-                'username'          => 'Bintang Teacher',
-                'email'             => 'bintangteacher@gmail.com',
+                'username'          => 'Nurhalizah Teacher',
+                'email'             => 'nurhalizahteacher@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => bcrypt('teacher123'),
                 'role'              => 'guru',
 
-                'name'              => 'Bintang Teacher',
+                'name'              => 'Nurhalizah Teacher',
                 'sex'               => 'laki-laki',
                 'nip'               => $faker->unique()->numerify('19###########'),
                 'nuptk'             => $faker->unique()->numerify('##########'),
@@ -40,7 +40,7 @@ class TeacherTableSeeder extends Seeder
             ]
         ];
 
-        foreach($dataTeachers as $teacher){
+        foreach ($dataTeachers as $teacher) {
             $user = User::create([
                 'username'          => $teacher['username'],
                 'email'             => $teacher['email'],
@@ -112,12 +112,12 @@ class TeacherTableSeeder extends Seeder
             ->values();
 
         $j = 0;
-        while(true){
+        while (true) {
             $teachers[$j]['user_id'] = $userIds[$j];
 
             $j++;
 
-            if($j >= count($teachers)) {
+            if ($j >= count($teachers)) {
                 break;
             }
         }

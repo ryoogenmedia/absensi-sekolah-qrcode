@@ -57,6 +57,8 @@ class Index extends Component
                     ->orWhere('email', 'LIKE', "%$search%");
             })->where('role', 'admin')->latest();
 
+        secret_user($query);
+
         return $this->applyPagination($query);
     }
 

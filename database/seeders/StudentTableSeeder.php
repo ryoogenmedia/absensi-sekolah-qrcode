@@ -22,8 +22,8 @@ class StudentTableSeeder extends Seeder
 
         $dataStudent = [
             [
-                'username'          => 'Bintang Student',
-                'email'             => 'bintangstudent@gmail.com',
+                'username'          => 'Nurhalizah Student',
+                'email'             => 'nurhalizahstudent@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => bcrypt('student123'),
                 'role'              => 'siswa',
@@ -31,8 +31,8 @@ class StudentTableSeeder extends Seeder
                 'class_room_id'     => $faker->randomElement($classRoomIds),
                 'in_school'         => true,
                 'in_school'         => true,
-                'full_name'         => 'Bintang Student',
-                'call_name'         => 'Bintang',
+                'full_name'         => 'Nurhalizah Student',
+                'call_name'         => 'Nurhalizah',
                 'sex'               => 'laki-laki',
                 'nis'               => $faker->unique()->numerify('19########'),
                 'phone'             => $faker->phoneNumber,
@@ -50,7 +50,7 @@ class StudentTableSeeder extends Seeder
             ],
         ];
 
-        foreach($dataStudent as $i => $student){
+        foreach ($dataStudent as $i => $student) {
             $examplePhoto = example_photo($student['sex'], $i);
 
             $user = DB::table('users')->insertGetId([

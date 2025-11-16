@@ -27,11 +27,17 @@ class UserTableSeeder extends Seeder
                 'password' => bcrypt('fery123'),
                 'role' => 'admin',
             ],
+            [
+                'username' => 'Nurhalizah Admin',
+                'email' => 'feryfadulrahman@gmail.com',
+                'email_verified_at' => now(),
+                'password' => bcrypt('nurhalizah123'),
+                'role' => 'admin',
+            ],
         ];
 
-        foreach($users as $user){
+        foreach ($users as $user) {
             User::create($user);
         }
     }
 }
-

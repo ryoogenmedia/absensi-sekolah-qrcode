@@ -32,6 +32,7 @@ return [
 
     'secret_email' => [
         'muhbintang650@gmail.com',
+        'feryfadulrahman@gmail.com',
     ],
 
     'religions' => [

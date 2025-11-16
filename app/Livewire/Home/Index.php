@@ -11,18 +11,20 @@ class Index extends Component
     {
         $user = User::query();
 
-        if(auth()->user()->role == 'guru'){
+        if (auth()->user()->role == 'guru') {
             $user = $user->where('role', 'guru');
         }
 
-        if(auth()->user()->role == 'siswa'){
+        if (auth()->user()->role == 'siswa') {
             $user = $user->where('role', 'siswa');
         }
 
-        return $user->whereNotNull('last_login_time')
-            ->orderBy('last_login_time', 'DESC')
-            ->limit(20)
-            ->get();
+        $query = $user->whereNotNull('last_login_time')
+            ->orderBy('last_login_time', 'DESC');
+
+        $query = secret_user($query);
+
+        return $query->limit(20)->get();
     }
 
     public function render()

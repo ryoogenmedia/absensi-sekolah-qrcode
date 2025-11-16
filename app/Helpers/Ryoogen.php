@@ -1,11 +1,11 @@
 <?php
+
 /**
  *  Ryoogen Helper
  *  This file contains helper functions for the Ryoogen application.
  *  It includes functions for generating URLs, handling errors, and formatting data.
  *  *  @package Ryoogen
  *  *  @version 1.0
- *  *  @author Muhammad Bintang Powered By Ryoogen Media
  */
 
 use App\Models\WhatsappConfig;
@@ -77,8 +77,9 @@ if (!function_exists('is_online')) {
  *
  * @return array (url, port, phone_number)
  */
-if(!function_exists('base_whatsapp')){
-    function base_whatsapp(){
+if (!function_exists('base_whatsapp')) {
+    function base_whatsapp()
+    {
         $whatsappConfig = WhatsappConfig::select('url', 'port', 'phone_number')->first();
 
         return [
@@ -95,7 +96,8 @@ if(!function_exists('base_whatsapp')){
  * @return string new path photo
  */
 if (!function_exists('example_photo')) {
-    function example_photo($sex, $loopIndex = null) {
+    function example_photo($sex, $loopIndex = null)
+    {
         // Path ke file example
         $exampleLatarMerahCewek = public_path('static/ryoogen/example/latar-merah-cewek.jpg');
         $exampleLatarMerahCowok = public_path('static/ryoogen/example/latar-merah-cowok.jpeg');
@@ -169,7 +171,7 @@ if (!function_exists('format_number_indonesia')) {
 if (!function_exists('secret_user')) {
     function secret_user($query)
     {
-        if(in_array(auth()->user()->email, config('const.secret_email'))){
+        if (in_array(auth()->user()->email, config('const.secret_email'))) {
             $query = $query->whereNotIn('email', config('const.secret_email'));
         }
 
