@@ -22,8 +22,8 @@ class StudentTableSeeder extends Seeder
 
         $dataStudent = [
             [
-                'username'          => 'Nurhalizah Student',
-                'email'             => 'nurhalizahstudent@gmail.com',
+                'username'          => 'Nurhaliza Student',
+                'email'             => 'nurhalizastudent@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => bcrypt('student123'),
                 'role'              => 'siswa',
@@ -31,8 +31,8 @@ class StudentTableSeeder extends Seeder
                 'class_room_id'     => $faker->randomElement($classRoomIds),
                 'in_school'         => true,
                 'in_school'         => true,
-                'full_name'         => 'Nurhalizah Student',
-                'call_name'         => 'Nurhalizah',
+                'full_name'         => 'Nurhaliza Student',
+                'call_name'         => 'Nurhaliza',
                 'sex'               => 'laki-laki',
                 'nis'               => $faker->unique()->numerify('19########'),
                 'phone'             => $faker->phoneNumber,
@@ -91,7 +91,7 @@ class StudentTableSeeder extends Seeder
 
         $i = 1;
         foreach ($classRoomIds as $classRoomId) {
-            for ($j = 0; $j < 30; $j++) {
+            for ($j = 0; $j < 10; $j++) {
                 $sex = $faker->randomElement(config('const.sex'));
                 $name = $faker->name($sex == 'laki-laki' ? 'male' : 'female');
                 $callName = strtolower(explode(' ', trim($name))[0]);

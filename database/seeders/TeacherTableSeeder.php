@@ -20,13 +20,13 @@ class TeacherTableSeeder extends Seeder
 
         $dataTeachers = [
             [
-                'username'          => 'Nurhalizah Teacher',
-                'email'             => 'nurhalizahteacher@gmail.com',
+                'username'          => 'Nurhaliza Teacher',
+                'email'             => 'nurhalizateacher@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => bcrypt('teacher123'),
                 'role'              => 'guru',
 
-                'name'              => 'Nurhalizah Teacher',
+                'name'              => 'Nurhaliza Teacher',
                 'sex'               => 'laki-laki',
                 'nip'               => $faker->unique()->numerify('19###########'),
                 'nuptk'             => $faker->unique()->numerify('##########'),

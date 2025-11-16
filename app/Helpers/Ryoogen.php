@@ -171,8 +171,12 @@ if (!function_exists('format_number_indonesia')) {
 if (!function_exists('secret_user')) {
     function secret_user($query)
     {
-        if (in_array(auth()->user()->email, config('const.secret_email'))) {
-            $query = $query->whereNotIn('email', config('const.secret_email'));
+        if (auth()->user()->role != 'developer') {
+            if (in_array(auth()->user()->email, config('const.secret_email'))) {
+                $query = $query->whereNotIn('email', config('const.secret_email'));
+            }
+        } else {
+            return $query;
         }
 
         return $query;

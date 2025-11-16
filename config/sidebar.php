@@ -7,7 +7,7 @@ return [
         'route-name' => 'home',
         'is-active' => 'home',
         'description' => 'Untuk melihat ringkasan aplikasi.',
-        'roles' => ['admin', 'operator', 'guru', 'siswa'],
+        'roles' => ['admin', 'developer', 'operator', 'guru', 'siswa'],
     ],
 
     // SISWA
@@ -58,7 +58,7 @@ return [
         'icon' => 'database',
         'route-name' => 'master.admin.index',
         'is-active' => 'master*',
-        'roles' => ['admin'],
+        'roles' => ['admin', 'developer'],
         'sub-menus' => [
             [
                 'title' => 'Admin',
@@ -99,7 +99,7 @@ return [
         'route-name' => 'teacher.index',
         'is-active' => 'teacher*',
         'description' => 'Melihat daftar guru.',
-        'roles' => ['admin'],
+        'roles' => ['admin', 'developer'],
     ],
 
     [
@@ -108,7 +108,7 @@ return [
         'route-name' => 'subject-teacher.index',
         'is-active' => 'subject-teacher*',
         'description' => 'Melihat mata pelajaran guru.',
-        'roles' => ['admin'],
+        'roles' => ['admin', 'developer'],
     ],
 
     [
@@ -117,7 +117,7 @@ return [
         'route-name' => 'student.index',
         'is-active' => 'student*',
         'description' => 'Melihat daftar siswa.',
-        'roles' => ['admin'],
+        'roles' => ['admin', 'developer'],
     ],
 
     [
@@ -126,7 +126,7 @@ return [
         'route-name' => 'qrcode.index',
         'is-active' => 'qrcode*',
         'description' => 'Melihat daftar qr code.',
-        'roles' => ['admin'],
+        'roles' => ['admin', 'developer'],
     ],
 
     [
@@ -135,7 +135,7 @@ return [
         'route-name' => 'scan-qr.index',
         'is-active' => 'scan-qr*',
         'description' => 'Untuk Scan Qr Code',
-        'roles' => ['admin', 'operator'],
+        'roles' => ['admin', 'developer', 'operator'],
     ],
 
     // [
@@ -154,7 +154,7 @@ return [
         'icon' => 'calendar-check',
         'route-name' => 'attendance.class.index',
         'is-active' => 'attendance*',
-        'roles' => ['admin'],
+        'roles' => ['admin', 'developer'],
         'sub-menus' => [
             [
                 'title' => 'Presensi Kelas',
@@ -191,7 +191,7 @@ return [
         'icon' => 'cog',
         'route-name' => 'setting.profile.index',
         'is-active' => 'setting*',
-        'roles' => ['admin', 'guru', 'operator', 'siswa'],
+        'roles' => ['admin', 'developer', 'guru', 'operator', 'siswa'],
         'sub-menus' => [
             [
                 'title' => 'Profil',
