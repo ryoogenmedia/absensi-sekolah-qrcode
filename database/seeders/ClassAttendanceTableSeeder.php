@@ -28,7 +28,7 @@ class ClassAttendanceTableSeeder extends Seeder
                 $classRoomId = $schedule->class_room_id;
 
                 // Buat 20 record class_attendance untuk setiap jadwal
-                for ($i = 0; $i < 20; $i++) {
+                for ($i = 0; $i < 5; $i++) {
                     $classAttendance = ClassAttendance::create([
                         'class_room_id' => $classRoomId,
                         'class_schedule_id' => $schedule->id,
