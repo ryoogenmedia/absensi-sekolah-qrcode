@@ -7,7 +7,7 @@
 
     <x-alert />
 
-    @if (auth()->user()->role == 'admin')
+    @if (in_array(auth()->user()->role, ['admin', 'developer']))
         <livewire:home.admin-home />
     @endif
 

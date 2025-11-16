@@ -20,7 +20,7 @@ Route::redirect('/', '/login');
  * cetak pdf
  */
 Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name('print-pdf.')->group(function () {
-    Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:admin')->name('card');
+    Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:admin,developer')->name('card');
 });
 
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
@@ -151,7 +151,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
      * beranda / home
      */
     Route::get('beranda', Home\Index::class)->name('home')
-        ->middleware('roles:admin,siswa,guru');
+        ->middleware('roles:admin,siswa,guru,developer');
 
     /**
      * class attendance / presensi kelas
