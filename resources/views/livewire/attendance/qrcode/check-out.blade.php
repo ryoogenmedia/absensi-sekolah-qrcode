@@ -46,6 +46,8 @@
 
                         <th>NIS</th>
 
+                        <th>Kelas</th>
+
                         <th>Waktu Keluar</th>
 
                         <th>Tanggal Presensi</th>
@@ -86,6 +88,8 @@
                             <td>{{ $row->student->full_name ?? '-' }}</td>
 
                             <td>{{ $row->student->nis ?? '-' }}</td>
+
+                            <td>{{ $row->student->class_room->name_class ?? '-' }}</td>
 
                             <td>{{ $row->check_in_time ?? '-' }}</td>
 
