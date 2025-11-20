@@ -7,14 +7,22 @@
                 <x-datatable.search placeholder="Cari nama / nis siswa..." />
             </div>
         </div>
-        <div class="col-auto ms-auto d-flex mt-lg-0 mt-3">
+
+        <div class="col-auto d-flex mt-lg-0 mt-3">
             <x-datatable.items-per-page />
 
-            <button wire:click="muatUlang" class="btn py-1 ms-2"><span class="las la-redo-alt fs-1"></span></button>
+            <button wire:click="muatUlang" class="btn reload-button py-1 ms-2">
+                <span class="las la-redo-alt fs-1"></span>
+            </button>
         </div>
     </div>
 
-    <div class="open-filter mb-3 card px-2">
+    <div class="presensi-header-base presensi-header-in mb-3">
+        <i class="las la-door-open"></i>
+        <h2 class="mb-0">Presensi Masuk</h2>
+    </div>
+
+    <div class="open-filter mb-3 card px-2 filter-card">
         <div class="card-body">
             <div class="row">
                 <div class="col-12 col-lg-6">
@@ -23,13 +31,15 @@
                 </div>
 
                 <div class="col-12 col-lg-6">
-                    <x-form.input wire:model.live="filters.end_date" name="filters.end_date" label="Tanggal Mulai"
+                    <x-form.input wire:model.live="filters.end_date" name="filters.end_date" label="Tanggal Selesai"
                         type="date" />
                 </div>
             </div>
 
-            <div class="text-end">
-                <button wire:click="resetFilters" class="btn btn-sm" type="button">Reset Filter</button>
+            <div class="text-end mt-2">
+                <button wire:click="resetFilters" class="btn btn-sm px-3" type="button">
+                    <i class="las la-broom me-1"></i> Reset Filter
+                </button>
             </div>
         </div>
     </div>
@@ -40,11 +50,9 @@
                 <thead>
                     <tr>
                         <th>Nama</th>
-
                         <th>NIS</th>
-
+                        <th>Kelas</th>
                         <th>Tanggal Presensi</th>
-
                         <th>Waktu Masuk</th>
                     </tr>
                 </thead>
@@ -62,9 +70,8 @@
                             </td>
 
                             <td>{{ $row->student->nis ?? '-' }}</td>
-
+                            <td>{{ $row->student->class_room->name_class ?? '-' }}</td>
                             <td>{{ $row->attendance_date ?? '-' }}</td>
-
                             <td>{{ $row->check_in_time ?? '-' }}</td>
                         </tr>
                     @empty
