@@ -21,26 +21,32 @@ class Index extends Component
 
     public $filters = [
         'search' => '',
+        'nip' => '',
+        'mataPelajaran' => '',
+        'jenisKelamin' => '',
     ];
 
     public $showModal = false;
     public $teacherId;
     public $mataPelajaran;
 
-    public function openModal($id){
+    public function openModal($id)
+    {
         $this->showModal = true;
         $teacher = Teacher::findOrFail($id);
         $this->teacherId = $teacher->id;
         $this->mataPelajaran = $teacher->subject_study_id ?? null;
     }
 
-    public function closeModal(){
+    public function closeModal()
+    {
         $this->showModal = false;
         $this->teacherId = null;
         $this->mataPelajaran = null;
     }
 
-    public function changeSubjectStudyTeacher(){
+    public function changeSubjectStudyTeacher()
+    {
         $teacher = Teacher::findOrFail($this->teacherId);
 
         $this->validate([
@@ -60,8 +66,9 @@ class Index extends Component
     }
 
     #[Computed()]
-    public function subject_studies(){
-        return SubjectStudy::all(['id','name_subject']);
+    public function subject_studies()
+    {
+        return SubjectStudy::where('status_active', true)->get(['id', 'name_subject']);
     }
 
     #[On('muat-ulang')]
@@ -70,6 +77,15 @@ class Index extends Component
     {
         $query = Teacher::query()
             ->when(!$this->sorts, fn($query) => $query->first())
+            ->when($this->filters['jenisKelamin'], function ($query, $jenisKelamin) {
+                $query->where('sex', $jenisKelamin);
+            })
+            ->when($this->filters['mataPelajaran'], function ($query, $mapel) {
+                $query->where('subject_study_id', $mapel);
+            })
+            ->when($this->filters['nip'], function ($query, $nip) {
+                $query->where('nip', $nip);
+            })
             ->when($this->filters['search'], function ($query, $search) {
                 $query->where('name', 'LIKE', "%$search%");
             })->latest();

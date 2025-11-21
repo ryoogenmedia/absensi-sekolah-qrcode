@@ -41,9 +41,12 @@
     </x-modal>
 
     <div class="row mb-3 align-items-center justify-content-between">
-        <div class="col-12 col-lg-8 d-flex align-self-center">
-            <div>
+        <div class="col-12 col-lg-5 d-flex">
+            <div class="w-100">
                 <x-datatable.search placeholder="Cari nama guru..." />
+            </div>
+            <div class="w-50 ms-2">
+                <x-datatable.filter.button target="subject-teacher-filter" />
             </div>
         </div>
         <div class="col-auto ms-auto d-flex mt-lg-0 mt-3">
@@ -52,6 +55,36 @@
             <button wire:click="muatUlang" class="btn py-1 ms-2"><span class="las la-redo-alt fs-1"></span></button>
         </div>
     </div>
+
+    <x-datatable.filter.card id="subject-teacher-filter">
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <x-form.input wire:model.live="filters.nip" name="filters.nip" placeholder="Masukkan NIP Guru"
+                    label="NIP" type="text" />
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <x-form.select wire:model.live="filters.mataPelajaran" name="filters.mataPelajaran"
+                    label="Mata Pelajaran">
+                    <option value="">Semua Mata Pelajaran</option>
+                    @foreach ($this->subject_studies as $subject_study)
+                        <option wire:key="{{ $subject_study->id }}" value="{{ $subject_study->id }}">
+                            {{ ucwords($subject_study->name_subject) }}</option>
+                    @endforeach
+                </x-form.select>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <x-form.select wire:model.live="filters.jenisKelamin" name="filters.jenisKelamin" label="Jenis Kelamin">
+                    <option value="">Semua Jenis Kelamin</option>
+                    @foreach (config('const.sex') as $sex)
+                        <option wire:key="{{ $sex }}" value="{{ $sex }}">
+                            {{ ucwords($sex) }}</option>
+                    @endforeach
+                </x-form.select>
+            </div>
+        </div>
+    </x-datatable.filter.card>
 
     <div class="card" wire:loading.class.delay="card-loading" wire:offline.class="card-loading">
         <div class="table-responsive mb-0">
