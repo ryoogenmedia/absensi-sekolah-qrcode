@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Master\ClassRoom;
 
+use App\Exports\ClassRoomExport;
+use App\Imports\ClassRoomImport;
 use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
@@ -36,8 +39,102 @@ class Index extends Component
     // IDENTITY
     public $classRoomId;
 
+    public $showModalExcel = false;
+    public $fileExcel;
+
+    public function closeModalExcel()
+    {
+        $this->showModalExcel = false;
+    }
+
+    public function openModalExcel()
+    {
+        $this->showModalExcel = true;
+    }
+
+    public function exportExcel()
+    {
+        try {
+            return Excel::download(new ClassRoomExport, 'data-kelas.xlsx');
+        } catch (Exception $e) {
+
+            logger()->error(
+                '[export excel student] ' .
+                    auth()->user()->username .
+                    ' gagal export data kelas',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal!',
+                'detail' => 'Export data kelas gagal dilakukan.',
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => 'Export data kelas berhasil dilakukan.',
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+
+    public function importExcel()
+    {
+        try {
+            DB::beginTransaction();
+
+            Excel::queueImport(new ClassRoomImport, $this->fileExcel);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::beginTransaction();
+
+            logger()->error(
+                '[import excel class room] ' .
+                    auth()->user()->username .
+                    ' gagal import data kelas',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal.',
+                'detail' => "import data kelas gagal dilakukan.",
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil.',
+            'detail' => "import data kelas berhasil dilakukan.",
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+    public function resetForm()
+    {
+        $this->reset([
+            'showModalExcel',
+            'fileExcel',
+        ]);
+    }
+
     // TOGGLE STATUS ACTIVE
-    public function changeStatusActive($id){
+    public function changeStatusActive($id)
+    {
         $classRoom = ClassRoom::findOrFail($id);
         $classRoom->status_active = !$classRoom->status_active;
         $classRoom->save();
@@ -52,16 +149,19 @@ class Index extends Component
     }
 
     // MODAL HANDLERS
-    public function closeModal(){
+    public function closeModal()
+    {
         $this->resetModal();
     }
 
-    public function openModalCreate(){
+    public function openModalCreate()
+    {
         $this->resetModal();
         $this->modalCreate = true;
     }
 
-    public function openModalEdit($id){
+    public function openModalEdit($id)
+    {
         $this->resetModal();
         $classRoom = ClassRoom::findOrFail($id);
         $this->classRoomId = $classRoom->id;
@@ -71,7 +171,8 @@ class Index extends Component
         $this->modalEdit = true;
     }
 
-    public function resetModal(){
+    public function resetModal()
+    {
         $this->reset([
             'modalCreate',
             'modalEdit',
@@ -117,17 +218,18 @@ class Index extends Component
     }
 
     // SAVE DATA
-    public function save(){
+    public function save()
+    {
         $this->validate([
-            'namaKelas' => ['required', 'string','min:2', 'max:255'],
+            'namaKelas' => ['required', 'string', 'min:2', 'max:255'],
             'deskripsi' => ['nullable', 'string', 'min:2'],
             'statusAktif' => ['boolean'],
         ]);
 
-        try{
+        try {
             DB::beginTransaction();
 
-            if($this->classRoomId){
+            if ($this->classRoomId) {
                 $classRoom = ClassRoom::findOrFail($this->classRoomId);
 
                 $classRoom->update([
@@ -135,7 +237,7 @@ class Index extends Component
                     'description' => $this->deskripsi,
                     'status_active' => $this->statusAktif,
                 ]);
-            }else{
+            } else {
                 ClassRoom::create([
                     'name_class' => $this->namaKelas,
                     'description' => $this->deskripsi,
@@ -144,7 +246,7 @@ class Index extends Component
             }
 
             DB::commit();
-        }catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
             logger()->error(
@@ -155,9 +257,9 @@ class Index extends Component
             );
 
 
-            if($this->classRoomId){
+            if ($this->classRoomId) {
                 $message = "Gagal menyunting data ruang kelas.";
-            }else{
+            } else {
                 $message = "Gagal menambahkan data ruang kelas.";
             }
 
@@ -170,9 +272,9 @@ class Index extends Component
             return redirect()->back();
         }
 
-        if($this->classRoomId){
+        if ($this->classRoomId) {
             $message = "Berhasil menyunting data ruang kelas.";
-        }else{
+        } else {
             $message = "Berhasil menambahkan data ruang kelas.";
         }
 

@@ -45,6 +45,32 @@
 
     <x-modal.delete-confirmation />
 
+    <x-modal :show="$showModalExcel" size="md">
+        <form wire:submit.prevent="importExcel" autocomplete="off">
+            <div class="modal-header">
+                <h5 class="modal-title">Import File Excel Ruang Kelas</h5>
+                <button wire:click='closeModalExcel' type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <x-form.input wire:model.live.debounce.250ms="fileExcel" name="fileExcel" label="File Excel"
+                    type="file" placeholder="Masukkan file excel"
+                    accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
+
+                <p>unduh template import excel ruang kelas <a href="/template/kelas-template-excel.xlsx">disini</a></p>
+            </div>
+
+            <div class="modal-footer">
+                <div class="btn-list justify-content-end">
+                    <button wire:click="resetForm" type="reset" class="btn">Reset</button>
+
+                    <x-datatable.button.save target="importExcel" name="Import Excel" class="btn btn-green" />
+                </div>
+            </div>
+        </form>
+    </x-modal>
+
     <div class="row">
         @if ($modalCreate || $modalEdit)
             <div class="col-lg-4 col-12 mb-lg-0 mb-3">
@@ -98,6 +124,18 @@
                                 <i class="las la-trash me-3"></i>
 
                                 <span>Hapus</span>
+                            </button>
+
+                            <button class="dropdown-item" type="button" wire:click="openModalExcel">
+                                <i class="las la-file-excel me-3"></i>
+
+                                <span>Import Excel</span>
+                            </button>
+
+                            <button class="dropdown-item" type="button" wire:click="exportExcel">
+                                <i class="las la-file-excel me-3"></i>
+
+                                <span>Export Excel</span>
                             </button>
                         </div>
                     </x-datatable.bulk.dropdown>
