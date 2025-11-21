@@ -7,6 +7,8 @@ use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
 use App\Livewire\Traits\DataTable\WithSorting;
 use App\Models\ClassAttendance;
+use App\Models\ClassRoom;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -21,6 +23,9 @@ class Index extends Component
 
     public $filters = [
         'search' => '',
+        'kelas' => '',
+        'startDate' => '',
+        'endDate' => '',
     ];
 
     public function deleteSelected()
@@ -33,7 +38,7 @@ class Index extends Component
                 File::delete(public_path('storage/' . $data->picture_evidence));
             }
 
-            foreach($data->student_attendances as $student_attendance){
+            foreach ($data->student_attendances as $student_attendance) {
                 $student_attendance->delete();
             }
 
@@ -51,13 +56,37 @@ class Index extends Component
         return redirect()->back();
     }
 
+    #[Computed()]
+    public function class_rooms()
+    {
+        return ClassRoom::where('status_active', true)->get(['id', 'name_class']);
+    }
+
     #[On('muat-ulang')]
     #[Computed()]
     public function rows()
     {
         $query = ClassAttendance::query()
+            ->when($this->filters['startDate'] && $this->filters['endDate'], function ($query) {
+                $start = Carbon::parse($this->filters['startDate'])->startOfDay();
+                $end   = Carbon::parse($this->filters['endDate'])->endOfDay();
+
+                $query->whereBetween('created_at', [$start, $end]);
+            })
+            ->when($this->filters['startDate'] && !$this->filters['endDate'], function ($query) {
+                $start = Carbon::parse($this->filters['startDate'])->startOfDay();
+                $query->where('created_at', '>=', $start);
+            })
+            ->when(!$this->filters['startDate'] && $this->filters['endDate'], function ($query) {
+                $end = Carbon::parse($this->filters['endDate'])->endOfDay();
+                $query->where('created_at', '<=', $end);
+            })
+
+            ->when($this->filters['kelas'], function ($query, $kelas) {
+                $query->where('class_room_id', $kelas);
+            })
             ->when($this->filters['search'], function ($query, $search) {
-                $query->whereHas('class_room', function($query) use ($search){
+                $query->whereHas('class_room', function ($query) use ($search) {
                     $query->where('name_class', 'LIKE', "%$search%");
                 });
             })->latest();
