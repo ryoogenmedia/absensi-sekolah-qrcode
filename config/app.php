@@ -170,6 +170,9 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\FortifyUIServiceProvider::class,
+
+        // CUSTOM
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -185,5 +188,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+
+        // CUSTOM
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 ];
