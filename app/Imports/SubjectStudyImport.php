@@ -10,17 +10,17 @@ class SubjectStudyImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        if (!isset($row['name_subject'])) {
+        if (!isset($row['nama_mapel'])) {
             return null;
         }
 
         return SubjectStudy::updateOrCreate(
             [
-                'name_subject' => $row['name_subject'],
+                'name_subject' => $row['nama_mapel'],
             ],
             [
-                'description'   => $row['description'] ?? null,
-                'status_active' => $this->convertStatus($row['status_active'] ?? true),
+                'description'   => $row['deskripsi'] ?? null,
+                'status_active' => $this->convertStatus($row['status_aktif'] ?? true),
             ]
         );
     }
