@@ -5,7 +5,6 @@ return [
         'admin',
         'siswa',
         'guru',
-        'operator',
     ],
 
     'attendance_status' => [
