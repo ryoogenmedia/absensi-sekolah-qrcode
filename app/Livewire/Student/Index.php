@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
@@ -24,6 +25,7 @@ class Index extends Component
     use WithPerPagePagination;
     use WithCachedRows;
     use WithSorting;
+    use WithFileUploads;
 
     public $filters = [
         'search' => '',
