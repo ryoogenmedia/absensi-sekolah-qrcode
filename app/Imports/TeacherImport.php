@@ -5,13 +5,14 @@ namespace App\Imports;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Models\SubjectStudy;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class TeacherImport implements ToModel, WithHeadingRow, WithChunkReading
+class TeacherImport implements ToModel, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     /**
      * Mapping baris Excel ke model Teacher

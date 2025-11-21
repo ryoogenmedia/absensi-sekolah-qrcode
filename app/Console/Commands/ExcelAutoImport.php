@@ -74,27 +74,14 @@ class ExcelAutoImport extends Command
             return;
         }
 
-        // Loading progress bar
-        $progressBar = new ProgressBar($this->output, 100);
-        $progressBar->start();
-
-        // Visual loading (simulasi)
-        for ($i = 0; $i < 100; $i++) {
-            usleep(15000);
-            $progressBar->advance();
-        }
-
-        // Jalankan import
         try {
-            Excel::import($importer, $filePath);
+            Excel::queueImport($importer, $filePath);
+            $this->info("   ✔ Job import {$label} berhasil dimasukkan ke Queue");
+            $this->info("     → Tunggu queue worker memproses...");
         } catch (\Exception $e) {
-            $progressBar->finish();
-            $this->error("\n   ✖ Gagal import: " . $e->getMessage());
-            return;
+            $this->error("   ✖ Gagal import: " . $e->getMessage());
         }
 
-        $progressBar->finish();
-        $this->line("\n   ✔ Berhasil import {$label}");
         $this->line("");
     }
 }

@@ -5,13 +5,14 @@ namespace App\Imports;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\ClassRoom;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class StudentImport implements ToModel, WithHeadingRow, WithChunkReading
+class StudentImport implements ToModel, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     public function model(array $row)
     {

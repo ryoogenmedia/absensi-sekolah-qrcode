@@ -3,10 +3,16 @@
 namespace App\Imports;
 
 use App\Models\SubjectStudy;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class SubjectStudyImport implements ToModel, WithHeadingRow
+class SubjectStudyImport implements
+    ToModel,
+    WithHeadingRow,
+    WithChunkReading,
+    ShouldQueue
 {
     public function model(array $row)
     {
@@ -25,9 +31,6 @@ class SubjectStudyImport implements ToModel, WithHeadingRow
         );
     }
 
-    /**
-     * Mengubah teks atau angka menjadi boolean status
-     */
     private function convertStatus($value)
     {
         if (is_null($value)) return true;
@@ -35,5 +38,10 @@ class SubjectStudyImport implements ToModel, WithHeadingRow
         $value = strtolower(trim($value));
 
         return in_array($value, ['1', 'true', 'aktif', 'yes', 'ya'], true);
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 }
