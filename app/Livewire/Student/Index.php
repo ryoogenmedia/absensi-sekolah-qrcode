@@ -2,16 +2,21 @@
 
 namespace App\Livewire\Student;
 
+use App\Exports\StudentExport;
+use App\Imports\StudentImport;
 use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
 use App\Livewire\Traits\DataTable\WithSorting;
 use App\Models\ClassRoom;
 use App\Models\Student;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
@@ -27,6 +32,99 @@ class Index extends Component
         'agama' => '',
         'jenisKelamin' => '',
     ];
+
+    public $showModalExcel = false;
+    public $fileExcel;
+
+    public function closeModalExcel()
+    {
+        $this->showModalExcel = false;
+    }
+
+    public function openModalExcel()
+    {
+        $this->showModalExcel = true;
+    }
+
+    public function exportExcel()
+    {
+        try {
+            return Excel::download(new StudentExport, 'data-siswa.xlsx');
+        } catch (Exception $e) {
+
+            logger()->error(
+                '[export excel student] ' .
+                    auth()->user()->username .
+                    ' gagal export data siswa',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal!',
+                'detail' => 'Export data siswa gagal dilakukan.',
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => 'Export data siswa berhasil dilakukan.',
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+
+    public function importExcel()
+    {
+        try {
+            DB::beginTransaction();
+
+            Excel::queueImport(new StudentImport, $this->fileExcel);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::beginTransaction();
+
+            logger()->error(
+                '[import excel product] ' .
+                    auth()->user()->username .
+                    ' gagal import data siswa',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal.',
+                'detail' => "import data siswa gagal dilakukan.",
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil.',
+            'detail' => "import data siswa berhasil dilakukan.",
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+    public function resetForm()
+    {
+        $this->reset([
+            'showModalExcel',
+            'fileExcel',
+        ]);
+    }
 
     public function deleteSelected()
     {
