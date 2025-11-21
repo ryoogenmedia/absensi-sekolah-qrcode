@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('subject_study_id')->nullable();
             $table->string('name');
-            $table->string('sex');
-            $table->string('nip')->unique();
+            $table->string('sex')->nullable();
+            $table->string('nip')->unique()->nullable();
             $table->string('nuptk')->nullable();
             $table->string('phone')->nullable();
             $table->string('religion')->nullable();
