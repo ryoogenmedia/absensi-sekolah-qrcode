@@ -48,7 +48,7 @@
     <x-modal :show="$showModalExcel" size="md">
         <form wire:submit.prevent="importExcel" autocomplete="off">
             <div class="modal-header">
-                <h5 class="modal-title">Import File Excel Guru</h5>
+                <h5 class="modal-title">Import File Excel Mata Pelajaran</h5>
                 <button wire:click='closeModalExcel' type="button" class="btn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -58,7 +58,8 @@
                     type="file" placeholder="Masukkan file excel"
                     accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
 
-                <p>unduh template import excel guru <a href="/template/guru-template-excel.xlsx">disini</a></p>
+                <p>unduh template import excel mata pelajaran <a href="/template/mapel-template-excel.xlsx">disini</a>
+                </p>
             </div>
 
             <div class="modal-footer">
@@ -128,6 +129,18 @@
                                 <i class="las la-trash me-3"></i>
 
                                 <span>Hapus</span>
+                            </button>
+
+                            <button class="dropdown-item" type="button" wire:click="openModalExcel">
+                                <i class="las la-file-excel me-3"></i>
+
+                                <span>Import Excel</span>
+                            </button>
+
+                            <button class="dropdown-item" type="button" wire:click="exportExcel">
+                                <i class="las la-file-excel me-3"></i>
+
+                                <span>Export Excel</span>
                             </button>
                         </div>
                     </x-datatable.bulk.dropdown>

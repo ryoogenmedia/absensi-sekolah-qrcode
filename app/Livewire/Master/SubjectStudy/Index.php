@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Master\SubjectStudy;
 
+use App\Exports\SubjectStudyExport;
+use App\Imports\SubjectStudyImport;
 use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
@@ -12,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
@@ -35,8 +38,102 @@ class Index extends Component
     // IDENTITY
     public $subjectStudyId;
 
+    public $showModalExcel = false;
+    public $fileExcel;
+
+    public function closeModalExcel()
+    {
+        $this->showModalExcel = false;
+    }
+
+    public function openModalExcel()
+    {
+        $this->showModalExcel = true;
+    }
+
+    public function exportExcel()
+    {
+        try {
+            return Excel::download(new SubjectStudyExport, 'data-mapel.xlsx');
+        } catch (Exception $e) {
+
+            logger()->error(
+                '[export excel subject study] ' .
+                    auth()->user()->username .
+                    ' gagal export data mapel',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal!',
+                'detail' => 'Export data mapel gagal dilakukan.',
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => 'Export data mapel berhasil dilakukan.',
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+
+    public function importExcel()
+    {
+        try {
+            DB::beginTransaction();
+
+            Excel::queueImport(new SubjectStudyImport, $this->fileExcel);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::beginTransaction();
+
+            logger()->error(
+                '[import excel subject study] ' .
+                    auth()->user()->username .
+                    ' gagal import data guru',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal.',
+                'detail' => "import data guru gagal dilakukan.",
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil.',
+            'detail' => "import data guru berhasil dilakukan.",
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+    public function resetForm()
+    {
+        $this->reset([
+            'showModalExcel',
+            'fileExcel',
+        ]);
+    }
+
     // TOGGLE STATUS ACTIVE
-    public function changeStatusActive($id){
+    public function changeStatusActive($id)
+    {
         $subjectStudy = SubjectStudy::findOrFail($id);
         $subjectStudy->status_active = !$subjectStudy->status_active;
         $subjectStudy->save();
@@ -51,16 +148,19 @@ class Index extends Component
     }
 
     // MODAL HANDLERS
-    public function closeModal(){
+    public function closeModal()
+    {
         $this->resetModal();
     }
 
-    public function openModalCreate(){
+    public function openModalCreate()
+    {
         $this->resetModal();
         $this->modalCreate = true;
     }
 
-    public function openModalEdit($id){
+    public function openModalEdit($id)
+    {
         $this->resetModal();
         $subjectStudy = SubjectStudy::findOrFail($id);
         $this->subjectStudyId = $subjectStudy->id;
@@ -70,7 +170,8 @@ class Index extends Component
         $this->modalEdit = true;
     }
 
-    public function resetModal(){
+    public function resetModal()
+    {
         $this->reset([
             'modalCreate',
             'modalEdit',
@@ -116,17 +217,18 @@ class Index extends Component
     }
 
     // SAVE DATA
-    public function save(){
+    public function save()
+    {
         $this->validate([
-            'namaMataPelajaran' => ['required', 'string','min:2', 'max:255'],
+            'namaMataPelajaran' => ['required', 'string', 'min:2', 'max:255'],
             'deskripsi' => ['nullable', 'string', 'min:2'],
             'statusAktif' => ['boolean'],
         ]);
 
-        try{
+        try {
             DB::beginTransaction();
 
-            if($this->subjectStudyId){
+            if ($this->subjectStudyId) {
                 $subjectStudy = SubjectStudy::findOrFail($this->subjectStudyId);
 
                 $subjectStudy->update([
@@ -134,7 +236,7 @@ class Index extends Component
                     'description' => $this->deskripsi,
                     'status_active' => $this->statusAktif,
                 ]);
-            }else{
+            } else {
                 SubjectStudy::create([
                     'name_subject' => $this->namaMataPelajaran,
                     'description' => $this->deskripsi,
@@ -143,7 +245,7 @@ class Index extends Component
             }
 
             DB::commit();
-        }catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
             logger()->error(
@@ -154,9 +256,9 @@ class Index extends Component
             );
 
 
-            if($this->subjectStudyId){
+            if ($this->subjectStudyId) {
                 $message = "Gagal menyunting data mata pelajaran.";
-            }else{
+            } else {
                 $message = "Gagal menambahkan data mata pelajaran.";
             }
 
@@ -169,9 +271,9 @@ class Index extends Component
             return redirect()->back();
         }
 
-        if($this->subjectStudyId){
+        if ($this->subjectStudyId) {
             $message = "Berhasil menyunting data mata pelajaran.";
-        }else{
+        } else {
             $message = "Berhasil menambahkan data mata pelajaran.";
         }
 
