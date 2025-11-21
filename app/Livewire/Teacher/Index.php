@@ -2,15 +2,20 @@
 
 namespace App\Livewire\Teacher;
 
+use App\Exports\TeacherExport;
+use App\Imports\TeacherImport;
 use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
 use App\Livewire\Traits\DataTable\WithSorting;
 use App\Models\Teacher;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
@@ -26,6 +31,99 @@ class Index extends Component
         'email' => '',
         'agama' => '',
     ];
+
+    public $showModalExcel = false;
+    public $fileExcel;
+
+    public function closeModalExcel()
+    {
+        $this->showModalExcel = false;
+    }
+
+    public function openModalExcel()
+    {
+        $this->showModalExcel = true;
+    }
+
+    public function exportExcel()
+    {
+        try {
+            return Excel::download(new TeacherExport, 'data-guru.xlsx');
+        } catch (Exception $e) {
+
+            logger()->error(
+                '[export excel teacher] ' .
+                    auth()->user()->username .
+                    ' gagal export data guru',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal!',
+                'detail' => 'Export data guru gagal dilakukan.',
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => 'Export data guru berhasil dilakukan.',
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+
+    public function importExcel()
+    {
+        try {
+            DB::beginTransaction();
+
+            Excel::queueImport(new TeacherImport, $this->fileExcel);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::beginTransaction();
+
+            logger()->error(
+                '[import excel teacher] ' .
+                    auth()->user()->username .
+                    ' gagal import data guru',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal.',
+                'detail' => "import data guru gagal dilakukan.",
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil.',
+            'detail' => "import data guru berhasil dilakukan.",
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
+
+    public function resetForm()
+    {
+        $this->reset([
+            'showModalExcel',
+            'fileExcel',
+        ]);
+    }
 
     public function deleteSelected()
     {

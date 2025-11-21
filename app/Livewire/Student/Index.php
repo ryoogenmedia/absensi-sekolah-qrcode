@@ -92,7 +92,7 @@ class Index extends Component
             DB::beginTransaction();
 
             logger()->error(
-                '[import excel product] ' .
+                '[import excel student] ' .
                     auth()->user()->username .
                     ' gagal import data siswa',
                 [$e->getMessage()]
