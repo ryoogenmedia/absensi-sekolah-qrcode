@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 
 class CetakPdfController extends Controller
 {
-    public function card(Request $request){
+    public function card(Request $request)
+    {
         $student = null;
         $cardId = $request->card_id ?? null;
 
-        if($cardId){
+        if ($cardId) {
             $student = Student::where('nis', $cardId)->first();
-        }else{
+        } else {
             $student = Student::all();
         }
 
@@ -22,9 +23,9 @@ class CetakPdfController extends Controller
             'card_id' => $cardId,
         ])->setPaper('a4', 'portrait');
 
-        if($cardId){
+        if ($cardId) {
             $fileName = "cetak-kartu-siswa-{$student->full_name}-{$student->nis}";
-        }else{
+        } else {
             $fileName = "cetak-semua-kartu-siswa";
         }
 
