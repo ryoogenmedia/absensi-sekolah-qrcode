@@ -74,7 +74,7 @@
 
                 <div class="col-12 col-lg-6">
                     <x-form.input wire:model="nomorPonsel" name="nomorPonsel" label="Nomor Ponsel"
-                        placeholder="masukkan nomor ponsel" type="text" required />
+                        placeholder="masukkan nomor ponsel" type="text" />
 
                     <x-form.input wire:model="email" name="email" label="Masukkan Email" placeholder="masukkan email"
                         type="text" required />
@@ -103,12 +103,12 @@
                     <div class="row">
                         <div class="col-lg-6 col-12">
                             <x-form.input wire:model="asalSekolah" name="asalSekolah" label="Asal Sekolah"
-                                placeholder="masukkan asal sekolah" type="text" required />
+                                placeholder="masukkan asal sekolah" type="text" />
                         </div>
 
                         <div class="col-lg-6 col-12">
                             <x-form.input wire:model="tahunMasuk" name="tahunMasuk" label="Tahun Masuk"
-                                placeholder="masukkan tahun masuk" type="text" required />
+                                placeholder="masukkan tahun masuk" type="text" />
                         </div>
                     </div>
                 </div>

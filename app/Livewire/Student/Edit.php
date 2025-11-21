@@ -46,35 +46,37 @@ class Edit extends Component
     public $userId;
     public $studentId;
 
-    public function rules(){
+    public function rules()
+    {
         return [
-            'namaPanggilan' => ['required','string','min:3','max:255'],
-            'namaLengkap' => ['required','string','min:3','max:255'],
-            'nis' => ['required','string','min:2','max:255','unique:students,nis,' . $this->studentId],
+            'namaPanggilan' => ['required', 'string', 'min:3', 'max:255'],
+            'namaLengkap' => ['required', 'string', 'min:3', 'max:255'],
+            'nis' => ['required', 'string', 'min:2', 'max:255', 'unique:students,nis,' . $this->studentId],
             'kelas' => ['required'],
-            'jenisKelamin' => ['required','min:2','max:255', Rule::in(config('const.sex'))],
-            'kodePos' => ['nullable','string','min:1','max:10'],
-            'alamat' => ['nullable','string','min:2'],
-            'nomorPonsel' => ['nullable','string','min:2','max:16'],
-            'email' => ['required','string','min:2','max:255','email','unique:users,email,' . $this->userId],
-            'tempatLahir' => ['nullable','string','min:2','max:255'],
-            'tanggalLahir' => ['nullable','string','min:2','max:255'],
-            'agama' => ['nullable','string','min:2','max:255',Rule::in(config('const.religions'))],
-            'asalSekolah' => ['required','string','min:2','max:255'],
-            'tahunMasuk' => ['required','string','min:2','max:4'],
-            'namaAyah' => ['required','string','min:2','max:255'],
-            'namaIbu' => ['required','string','min:2','max:255'],
-            'pekerjaanAyah' => ['required','string','min:2','max:255'],
-            'pekerjaanIbu' => ['required','string','min:2','max:255'],
-            'kataSandi' => ['nullable','string','min:8','max:255','same:konfirmasiKataSandi',Password::default()],
-            'fotoProfil' => ['nullable','image'],
+            'jenisKelamin' => ['required', 'min:2', 'max:255', Rule::in(config('const.sex'))],
+            'kodePos' => ['nullable', 'string', 'min:1', 'max:10'],
+            'alamat' => ['nullable', 'string', 'min:2'],
+            'nomorPonsel' => ['nullable', 'string', 'min:2', 'max:16'],
+            'email' => ['required', 'string', 'min:2', 'max:255', 'email', 'unique:users,email,' . $this->userId],
+            'tempatLahir' => ['nullable', 'string', 'min:2', 'max:255'],
+            'tanggalLahir' => ['nullable', 'string', 'min:2', 'max:255'],
+            'agama' => ['nullable', 'string', 'min:2', 'max:255', Rule::in(config('const.religions'))],
+            'asalSekolah' => ['nullable', 'string', 'min:2', 'max:255'],
+            'tahunMasuk' => ['nullable', 'string', 'min:2', 'max:4'],
+            'namaAyah' => ['nullable', 'string', 'min:2', 'max:255'],
+            'namaIbu' => ['nullable', 'string', 'min:2', 'max:255'],
+            'pekerjaanAyah' => ['nullable', 'string', 'min:2', 'max:255'],
+            'pekerjaanIbu' => ['nullable', 'string', 'min:2', 'max:255'],
+            'kataSandi' => ['nullable', 'string', 'min:8', 'max:255', 'same:konfirmasiKataSandi', Password::default()],
+            'fotoProfil' => ['nullable', 'image'],
         ];
     }
 
-    public function edit(){
+    public function edit()
+    {
         $this->validate();
 
-        try{
+        try {
             DB::beginTransaction();
 
             $user = User::findOrFail($this->userId);
@@ -86,7 +88,7 @@ class Edit extends Component
                 'email_verified_at' => now(),
             ]);
 
-            if($this->kataSandi){
+            if ($this->kataSandi) {
                 $user->update([
                     'password' => bcrypt($this->kataSandi),
                 ]);
@@ -115,27 +117,27 @@ class Edit extends Component
                 'mother_job' => $this->pekerjaanIbu,
             ]);
 
-            if($this->fotoProfil){
-                if($user->avatar){
+            if ($this->fotoProfil) {
+                if ($user->avatar) {
                     File::delete(public_path('storage/' . $user->avatar));
 
                     $user->update([
-                        'avatar' => $this->fotoProfil->store('avatars','public')
+                        'avatar' => $this->fotoProfil->store('avatars', 'public')
                     ]);
                 }
 
-                if($student->photo){
+                if ($student->photo) {
                     File::delete(public_path('storage/' . $student->photo));
 
                     $student->update([
-                        'photo' => $this->fotoProfil->storage('student-photos','public'),
+                        'photo' => $this->fotoProfil->storage('student-photos', 'public'),
                     ]);
                 }
             }
 
 
             DB::commit();
-        }catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
             logger()->error(
@@ -164,11 +166,13 @@ class Edit extends Component
     }
 
     #[Computed()]
-    public function class_rooms(){
+    public function class_rooms()
+    {
         return ClassRoom::all();
     }
 
-    public function mount($id){
+    public function mount($id)
+    {
         $student = Student::findOrFail($id);
         $user = User::findOrFail($student->user_id);
 

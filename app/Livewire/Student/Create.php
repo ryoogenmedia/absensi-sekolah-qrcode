@@ -41,40 +41,42 @@ class Create extends Component
     public $fotoProfil;
     public $role = 'siswa';
 
-    public function rules(){
+    public function rules()
+    {
         return [
-            'namaPanggilan' => ['required','string','min:3','max:255'],
-            'namaLengkap' => ['required','string','min:3','max:255'],
-            'nis' => ['required','string','min:2','max:255','unique:students,nis'],
+            'namaPanggilan' => ['required', 'string', 'min:3', 'max:255'],
+            'namaLengkap' => ['required', 'string', 'min:3', 'max:255'],
+            'nis' => ['required', 'string', 'min:2', 'max:255', 'unique:students,nis'],
             'kelas' => ['required'],
-            'jenisKelamin' => ['required','min:2','max:255', Rule::in(config('const.sex'))],
-            'kodePos' => ['nullable','string','min:1','max:10'],
-            'alamat' => ['nullable','string','min:2'],
-            'nomorPonsel' => ['nullable','string','min:2','max:16'],
-            'email' => ['required','string','min:2','max:255','email','unique:users,email'],
-            'tempatLahir' => ['nullable','string','min:2','max:255'],
-            'tanggalLahir' => ['nullable','string','min:2','max:255'],
-            'agama' => ['nullable','string','min:2','max:255',Rule::in(config('const.religions'))],
-            'asalSekolah' => ['required','string','min:2','max:255'],
-            'tahunMasuk' => ['required','string','min:2','max:4'],
-            'namaAyah' => ['required','string','min:2','max:255'],
-            'namaIbu' => ['required','string','min:2','max:255'],
-            'pekerjaanAyah' => ['required','string','min:2','max:255'],
-            'pekerjaanIbu' => ['required','string','min:2','max:255'],
-            'kataSandi' => ['required','string','min:8','max:255','same:konfirmasiKataSandi',Password::default()],
-            'fotoProfil' => ['nullable','image'],
+            'jenisKelamin' => ['required', 'min:2', 'max:255', Rule::in(config('const.sex'))],
+            'kodePos' => ['nullable', 'string', 'min:1', 'max:10'],
+            'alamat' => ['nullable', 'string', 'min:2'],
+            'nomorPonsel' => ['nullable', 'string', 'min:2', 'max:16'],
+            'email' => ['required', 'string', 'min:2', 'max:255', 'email', 'unique:users,email'],
+            'tempatLahir' => ['nullable', 'string', 'min:2', 'max:255'],
+            'tanggalLahir' => ['nullable', 'string', 'min:2', 'max:255'],
+            'agama' => ['required', 'string', 'min:2', 'max:255', Rule::in(config('const.religions'))],
+            'asalSekolah' => ['nullable', 'string', 'min:2', 'max:255'],
+            'tahunMasuk' => ['nullable', 'string', 'min:2', 'max:4'],
+            'namaAyah' => ['nullable', 'string', 'min:2', 'max:255'],
+            'namaIbu' => ['nullable', 'string', 'min:2', 'max:255'],
+            'pekerjaanAyah' => ['nullable', 'string', 'min:2', 'max:255'],
+            'pekerjaanIbu' => ['nullable', 'string', 'min:2', 'max:255'],
+            'kataSandi' => ['required', 'string', 'min:8', 'max:255', 'same:konfirmasiKataSandi', Password::default()],
+            'fotoProfil' => ['nullable', 'image'],
         ];
     }
 
-    public function save(){
+    public function save()
+    {
         $this->validate();
 
-        try{
+        try {
             DB::beginTransaction();
 
             $user = User::create([
                 'username' => ucwords($this->namaPanggilan),
-                'avatar' => $this->fotoProfil ? $this->fotoProfil->store('avatars','public') : null,
+                'avatar' => $this->fotoProfil ? $this->fotoProfil->store('avatars', 'public') : null,
                 'role' => $this->role,
                 'email' => strtolower($this->email),
                 'password' => bcrypt($this->kataSandi),
@@ -100,11 +102,11 @@ class Create extends Component
                 'mother_name' => $this->namaIbu,
                 'father_job' => $this->pekerjaanAyah,
                 'mother_job' => $this->pekerjaanIbu,
-                'photo' => $this->fotoProfil ? $this->fotoProfil->store('student-photos','public') : null,
+                'photo' => $this->fotoProfil ? $this->fotoProfil->store('student-photos', 'public') : null,
             ]);
 
             DB::commit();
-        }catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
             logger()->error(
@@ -133,7 +135,8 @@ class Create extends Component
     }
 
     #[Computed()]
-    public function class_rooms(){
+    public function class_rooms()
+    {
         return ClassRoom::all();
     }
 
