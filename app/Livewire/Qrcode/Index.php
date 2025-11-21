@@ -6,6 +6,7 @@ use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
 use App\Livewire\Traits\DataTable\WithSorting;
+use App\Models\ClassRoom;
 use App\Models\Student;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -20,7 +21,15 @@ class Index extends Component
 
     public $filters = [
         'search' => '',
+        'nis' => '',
+        'kelas' => '',
     ];
+
+    #[Computed()]
+    public function class_rooms()
+    {
+        return ClassRoom::where('status_active', true)->get(['id', 'name_class']);
+    }
 
     #[On('muat-ulang')]
     #[Computed()]
@@ -28,6 +37,12 @@ class Index extends Component
     {
         $query = Student::query()
             ->when(!$this->sorts, fn($query) => $query->first())
+            ->when($this->filters['nis'], function ($q, $nis) {
+                $q->where('nis', $nis);
+            })
+            ->when($this->filters['kelas'], function ($q, $kelas) {
+                $q->where('class_room_id', $kelas);
+            })
             ->when($this->filters['search'], function ($query, $search) {
                 $query->where('full_name', 'LIKE', "%$search%")
                     ->orWhere('call_name', 'LIKE', "%$search%");

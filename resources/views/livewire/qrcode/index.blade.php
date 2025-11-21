@@ -33,9 +33,21 @@
     <x-modal.delete-confirmation />
 
     <div class="row mb-3 align-items-center justify-content-between">
-        <div class="col-12 col-lg-8 d-flex align-self-center">
-            <div>
+        <div class="col-12 col-lg-8 d-flex">
+            <div class="w-50">
                 <x-datatable.search placeholder="Cari nama siswa..." />
+            </div>
+
+            <div class="w-100 ms-2 d-flex gap-2">
+                <x-form.input wire:model.live="filters.nis" name="filters.nis" placeholder="Masukkan NIS Siswa"
+                    type="text" form-group-class />
+                <x-form.select wire:model.live="filters.kelas" name="filters.kelas" form-group-class>
+                    <option value="">Semua Kelas</option>
+                    @foreach ($this->class_rooms as $class_room)
+                        <option wire:key="{{ $class_room->id }}" value="{{ $class_room->id }}">
+                            {{ strtoupper($class_room->name_class) }}</option>
+                    @endforeach
+                </x-form.select>
             </div>
         </div>
         <div class="col-auto ms-auto d-flex mt-lg-0 mt-3">
