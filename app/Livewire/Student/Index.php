@@ -6,6 +6,7 @@ use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
 use App\Livewire\Traits\DataTable\WithSorting;
+use App\Models\ClassRoom;
 use App\Models\Student;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
@@ -21,6 +22,10 @@ class Index extends Component
 
     public $filters = [
         'search' => '',
+        'nis' => '',
+        'kelas' => '',
+        'agama' => '',
+        'jenisKelamin' => '',
     ];
 
     public function deleteSelected()
@@ -29,7 +34,7 @@ class Index extends Component
         $deleteCount = $student->count();
 
         foreach ($student as $data) {
-            if($data->photo){
+            if ($data->photo) {
                 File::delete(public_path('storage/' . $data->photo));
             }
 
@@ -52,12 +57,30 @@ class Index extends Component
         return redirect()->back();
     }
 
+    #[Computed()]
+    public function class_rooms()
+    {
+        return ClassRoom::where('status_active', true)->get(['id', 'name_class']);
+    }
+
     #[On('muat-ulang')]
     #[Computed()]
     public function rows()
     {
         $query = Student::query()
             ->when(!$this->sorts, fn($query) => $query->first())
+            ->when($this->filters['kelas'], function ($query, $kelas) {
+                $query->where('class_room_id', $kelas);
+            })
+            ->when($this->filters['nis'], function ($query, $nis) {
+                $query->where('nis', $nis);
+            })
+            ->when($this->filters['agama'], function ($query, $agama) {
+                $query->where('religion', $agama);
+            })
+            ->when($this->filters['jenisKelamin'], function ($query, $jenisKelamin) {
+                $query->where('sex', $jenisKelamin);
+            })
             ->when($this->filters['search'], function ($query, $search) {
                 $query->where('full_name', 'LIKE', "%$search%")
                     ->orWhere('call_name', 'LIKE', "%$search%")
