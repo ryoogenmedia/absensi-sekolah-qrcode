@@ -14,9 +14,12 @@
     <x-modal.delete-confirmation />
 
     <div class="row mb-3 align-items-center justify-content-between">
-        <div class="col-12 col-lg-8 d-flex align-self-center">
-            <div>
+        <div class="col-12 col-lg-5 d-flex">
+            <div class="w-100">
                 <x-datatable.search placeholder="Cari nama guru..." />
+            </div>
+            <div class="w-50 ms-2">
+                <x-datatable.filter.button target="teacher-filter" />
             </div>
         </div>
         <div class="col-auto ms-auto d-flex mt-lg-0 mt-3">
@@ -37,6 +40,36 @@
         </div>
     </div>
 
+    <x-datatable.filter.card id="teacher-filter">
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <x-form.input wire:model.live="filters.nip" name="filters.nip" placeholder="Masukkan NIP Guru"
+                    label="NIP" type="text" />
+
+                <x-form.select wire:model.live="filters.jenisKelamin" name="filters.jenisKelamin" label="Jenis Kelamin">
+                    <option value="">Semua Jenis Kelamin</option>
+                    @foreach (config('const.sex') as $sex)
+                        <option wire:key="{{ $sex }}" value="{{ $sex }}">
+                            {{ ucwords($sex) }}</option>
+                    @endforeach
+                </x-form.select>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <x-form.input wire:model.live="filters.email" name="filters.email" placeholder="Masukkan Email"
+                    label="Email" type="text" />
+
+                <x-form.select wire:model.live="filters.agama" name="filters.agama" label="Agama">
+                    <option value="">Semua Agama</option>
+                    @foreach (config('const.religions') as $religion)
+                        <option wire:key="{{ $religion }}" value="{{ $religion }}">
+                            {{ ucwords($religion) }}</option>
+                    @endforeach
+                </x-form.select>
+            </div>
+        </div>
+    </x-datatable.filter.card>
+
     <div class="card" wire:loading.class.delay="card-loading" wire:offline.class="card-loading">
         <div class="table-responsive mb-0">
             <table class="table card-table table-bordered datatable">
@@ -51,8 +84,7 @@
                         </th>
 
                         <th>
-                            <x-datatable.column-sort name="Nomor Ponsel" wire:click="sortBy('phone')"
-                                :direction="$sorts['phone'] ?? null" />
+                            <x-datatable.column-sort name="NIP" wire:click="sortBy('nip')" :direction="$sorts['nip'] ?? null" />
                         </th>
 
                         <th style="width: 40px">
@@ -65,8 +97,8 @@
 
 
                         <th>
-                            <x-datatable.column-sort name="Tempat / Tanggal Lahir" wire:click="sortBy('birth_date')"
-                                :direction="$sorts['birth_date'] ?? null" />
+                            <x-datatable.column-sort name="Jenis Kelamin" wire:click="sortBy('sex')"
+                                :direction="$sorts['sex'] ?? null" />
                         </th>
 
                         <th style="width: 10px"></th>
@@ -112,13 +144,13 @@
                                 </div>
                             </td>
 
-                            <td>{{ $row->phone ?? '-' }}</td>
+                            <td><b>{{ $row->nip ?? '-' }}</b></td>
 
                             <td>{{ $row->user->email ?? '-' }}</td>
 
                             <td>{{ $row->address ?? '-' }}, {{ $row->postal_code }}</td>
 
-                            <td><b>{{ $row->place_of_birth ?? '-' }}</b>, {{ $row->birth_date ?? '-' }}</td>
+                            <td>{{ $row->sex ?? '-' }}</td>
 
                             <td>
                                 <div class="d-flex">

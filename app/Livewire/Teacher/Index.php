@@ -21,6 +21,10 @@ class Index extends Component
 
     public $filters = [
         'search' => '',
+        'nip' => '',
+        'jenisKelamin' => '',
+        'email' => '',
+        'agama' => '',
     ];
 
     public function deleteSelected()
@@ -33,7 +37,7 @@ class Index extends Component
                 File::delete(public_path('storage/' . $data->avatar));
             }
 
-            if($data->photo){
+            if ($data->photo) {
                 File::delete(public_path('storage/' . $data->photo));
             }
 
@@ -57,6 +61,20 @@ class Index extends Component
     {
         $query = Teacher::query()
             ->when(!$this->sorts, fn($query) => $query->first())
+            ->when($this->filters['nip'], function ($query, $nip) {
+                $query->where('nip', $nip);
+            })
+            ->when($this->filters['jenisKelamin'], function ($query, $jenisKelamin) {
+                $query->where('sex', $jenisKelamin);
+            })
+            ->when($this->filters['email'], function ($query, $email) {
+                $query->whereHas('user', function ($query) use ($email) {
+                    $query->where('email', $email);
+                });
+            })
+            ->when($this->filters['agama'], function ($query, $agama) {
+                $query->where('religion', $agama);
+            })
             ->when($this->filters['search'], function ($query, $search) {
                 $query->where('name', 'LIKE', "%$search%");
             })->latest();
