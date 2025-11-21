@@ -10,9 +10,21 @@
     <x-modal.delete-confirmation />
 
     <div class="row mb-3 align-items-center justify-content-between">
-        <div class="col-12 col-lg-8 d-flex align-self-center">
-            <div>
+        <div class="col-12 col-lg-8 d-flex">
+            <div class="w-100">
                 <x-datatable.search placeholder="Cari nama siswa..." />
+            </div>
+
+            <div class="w-100 ms-2 d-flex justify-content-between gap-2">
+                <x-form.input wire:model.live="filters.startDate" name="filters.startDate" type="date"
+                    form-group-class />
+
+                <x-form.input wire:model.live="filters.endDate" name="filters.endDate" type="date"
+                    form-group-class />
+            </div>
+
+            <div class="w-50 ms-2">
+                <x-datatable.filter.button target="check-in-filter" />
             </div>
         </div>
         <div class="col-auto ms-auto d-flex mt-lg-0 mt-3">
@@ -32,6 +44,30 @@
             <button wire:click="muatUlang" class="btn py-1 ms-2"><span class="las la-redo-alt fs-1"></span></button>
         </div>
     </div>
+
+    <x-datatable.filter.card id="check-in-filter">
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <x-form.input wire:model.live="filters.waktuMasuk" name="filters.waktuMasuk" label="Waktu Masuk"
+                    type="time" />
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <x-form.input wire:model.live="filters.nis" name="filters.nis" label="NIS" type="text"
+                    placeholder="Masukkan NIS Siswa" />
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <x-form.select wire:model.live="filters.kelas" name="filters.kelas" label="Ruang Kelas">
+                    <option value="">Semua Kelas</option>
+                    @foreach ($this->class_rooms as $class_room)
+                        <option wire:key="{{ $class_room->id }}" value="{{ $class_room->id }}">
+                            {{ strtoupper($class_room->name_class) }}</option>
+                    @endforeach
+                </x-form.select>
+            </div>
+        </div>
+    </x-datatable.filter.card>
 
     <div class="card" wire:loading.class.delay="card-loading" wire:offline.class="card-loading">
         <div class="table-responsive mb-0">
