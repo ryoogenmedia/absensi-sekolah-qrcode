@@ -6,7 +6,7 @@
                     <li class="list-inline-item">
                         <a href="https://github.com/ryoogenmedia" target="_blank" class="link-secondary" rel="noopener">
                             @include('partials.svg.love')
-                            SMAN 19 Makassar
+                            SMPN 19 Makassar
                         </a>
                     </li>
                 </ul>
