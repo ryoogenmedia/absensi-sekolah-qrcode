@@ -22,6 +22,11 @@ class CheckOut extends Component
 
     public $filters = [
         'search' => '',
+        'startDate' => '',
+        'endDate' => '',
+        'waktuMasuk' => '',
+        'nis' => '',
+        'kelas' => '',
     ];
 
     public function deleteSelected()

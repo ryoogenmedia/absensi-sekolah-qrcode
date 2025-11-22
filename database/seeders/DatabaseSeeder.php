@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $isDeleteFile = config('const.auto_delete_file');
 
-        if($isDeleteFile){
+        if ($isDeleteFile) {
             // delete old files and directories
             File::deleteDirectory(public_path('storage/avatars'));
             File::deleteDirectory(public_path('storage/student-photos'));
@@ -26,19 +26,25 @@ class DatabaseSeeder extends Seeder
         }
 
         // call the seeders
-        $this->call([
-            UserTableSeeder::class,
-            ClassRoomTableSeeder::class,
-            SubjectStudyTableSeeder::class,
-            TeacherTableSeeder::class,
-            StudentTableSeeder::class,
-            StudentInSchoolSeeder::class,
-            ClassScheduleTableSeeder::class,
-            ClassAttendanceTableSeeder::class,
-            CheckInRecordTableSeeder::class,
-            CheckOutRecordTableSeeder::class,
-            WhatsappConfigTableSeeder::class,
-            StudentAttendanceTableSeeder::class,
-        ]);
+        if (env('APP_ENV') == 'production') {
+            $this->call([
+                UserTableSeeder::class,
+            ]);
+        } else {
+            $this->call([
+                UserTableSeeder::class,
+                ClassRoomTableSeeder::class,
+                SubjectStudyTableSeeder::class,
+                TeacherTableSeeder::class,
+                StudentTableSeeder::class,
+                StudentInSchoolSeeder::class,
+                ClassScheduleTableSeeder::class,
+                ClassAttendanceTableSeeder::class,
+                CheckInRecordTableSeeder::class,
+                CheckOutRecordTableSeeder::class,
+                WhatsappConfigTableSeeder::class,
+                StudentAttendanceTableSeeder::class,
+            ]);
+        }
     }
 }
