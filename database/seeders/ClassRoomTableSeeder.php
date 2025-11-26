@@ -15,7 +15,6 @@ class ClassRoomTableSeeder extends Seeder
         $faker = \Faker\Factory::create('id_ID');
         $listClass = config('const.class_room_examples');
 
-
         $i = 0;
         $classRooms = [];
         while (true) {

@@ -65,7 +65,7 @@ class TeacherTableSeeder extends Seeder
             ]);
         }
 
-        $limit = 50;
+        $limit = 5;
         $i = 1;
         $teachers = [];
         $users = [];

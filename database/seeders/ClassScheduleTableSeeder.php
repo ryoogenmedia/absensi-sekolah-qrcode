@@ -14,10 +14,11 @@ class ClassScheduleTableSeeder extends Seeder
     public function run(): void
     {
         $faker = Factory::create('id_ID');
-        $classRooms = ClassRoom::pluck('id')->toArray();
-        $teachers = Teacher::all();
-        $subjectStudyIds = SubjectStudy::pluck('id')->toArray();
-        $days = config('const.name_days');
+
+        $classRoomIds     = ClassRoom::pluck('id')->toArray();
+        $subjectStudyIds  = SubjectStudy::pluck('id')->toArray();
+        $days             = config('const.name_days_secound');
+        $teachers         = Teacher::all();
 
         $timeSlots = [
             ['08:00:00', '09:30:00'],
@@ -26,32 +27,32 @@ class ClassScheduleTableSeeder extends Seeder
             ['14:15:00', '15:45:00'],
         ];
 
-        // Menyimpan slot yang sudah dipakai agar tidak bentrok
         $usedSlots = [];
 
         foreach ($teachers as $teacher) {
-            // Assign random subject to teacher (jika belum ada kolom relasi subject di model Teacher, ini opsional)
-            $subjectStudyId = $faker->randomElement($subjectStudyIds);
-            $teacher->update(['subject_study_id' => $subjectStudyId]);
 
-            // Tentukan berapa kali guru ini akan mengajar
+            $subjectId = $faker->randomElement($subjectStudyIds);
+            $teacher->update(['subject_study_id' => $subjectId]);
+
             $teachCount = $faker->numberBetween(1, 3);
 
             for ($i = 0; $i < $teachCount; $i++) {
+
                 $availableSlots = [];
 
                 foreach ($days as $day) {
-                    foreach ($timeSlots as $slot) {
-                        foreach ($classRooms as $classRoomId) {
-                            $slotKey = "{$classRoomId}_{$day}_{$slot[0]}_{$slot[1]}";
+                    foreach ($timeSlots as [$start, $end]) {
+                        foreach ($classRoomIds as $roomId) {
 
-                            if (!isset($usedSlots[$slotKey])) {
+                            $key = "{$roomId}_{$day}_{$start}_{$end}";
+
+                            if (!isset($usedSlots[$key])) {
                                 $availableSlots[] = [
-                                    'day' => $day,
-                                    'start' => $slot[0],
-                                    'end' => $slot[1],
-                                    'class_room_id' => $classRoomId,
-                                    'key' => $slotKey,
+                                    'day'          => $day,
+                                    'start'        => $start,
+                                    'end'          => $end,
+                                    'class_room_id' => $roomId,
+                                    'key'          => $key
                                 ];
                             }
                         }
@@ -59,20 +60,21 @@ class ClassScheduleTableSeeder extends Seeder
                 }
 
                 if (empty($availableSlots)) {
-                    break; // Tidak ada slot tersedia
+                    break;
                 }
 
-                $chosen = $faker->randomElement($availableSlots);
-                $usedSlots[$chosen['key']] = true;
+                $slot = $faker->randomElement($availableSlots);
+
+                $usedSlots[$slot['key']] = true;
 
                 ClassSchedule::create([
-                    'class_room_id' => $chosen['class_room_id'],
-                    'teacher_id' => $teacher->id,
-                    'subject_study_id' => $subjectStudyId,
-                    'day_name' => $chosen['day'],
-                    'start_time' => $chosen['start'],
-                    'end_time' => $chosen['end'],
-                    'description' => $faker->sentence,
+                    'class_room_id'    => $slot['class_room_id'],
+                    'teacher_id'       => $teacher->id,
+                    'subject_study_id' => $subjectId,
+                    'day_name'         => $slot['day'],
+                    'start_time'       => $slot['start'],
+                    'end_time'         => $slot['end'],
+                    'description'      => $faker->sentence(),
                 ]);
             }
         }

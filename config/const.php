@@ -5,6 +5,15 @@ return [
         'admin',
         'siswa',
         'guru',
+        'wali siswa',
+    ],
+
+    'guardian_relationships' => [
+        'ayah',
+        'ibu',
+        'wali',
+        'saudara',
+        'lainnya',
     ],
 
     'attendance_status' => [
@@ -22,6 +31,15 @@ return [
         'jumat',
         'sabtu',
         'ahad',
+    ],
+
+    'name_days_secound' => [
+        'senin',
+        'selasa',
+        'rabu',
+        'kamis',
+        'jumat',
+        'sabtu',
     ],
 
     'sex' => [

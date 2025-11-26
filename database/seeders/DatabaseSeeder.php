@@ -42,8 +42,8 @@ class DatabaseSeeder extends Seeder
                 ClassAttendanceTableSeeder::class,
                 CheckInRecordTableSeeder::class,
                 CheckOutRecordTableSeeder::class,
-                WhatsappConfigTableSeeder::class,
                 StudentAttendanceTableSeeder::class,
+                StudentGuardianTableSeeder::class,
             ]);
         }
     }

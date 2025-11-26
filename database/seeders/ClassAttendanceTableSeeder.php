@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use App\Models\ClassAttendance;
 use App\Models\ClassSchedule;
 use App\Models\Student;
-use App\Models\StudentAttendance;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ClassAttendanceTableSeeder extends Seeder
 {
@@ -15,41 +15,61 @@ class ClassAttendanceTableSeeder extends Seeder
     {
         $faker = Factory::create('id_ID');
 
-        // Ambil semua jadwal, termasuk data relasi guru dan kelas
-        $schedules = ClassSchedule::with(['teacher:id', 'class_room:id'])
-            ->get(['id', 'teacher_id', 'class_room_id']);
+        $schedules = ClassSchedule::get(['id', 'class_room_id', 'teacher_id']);
 
-        // Kelompokkan berdasarkan guru
-        $schedulesByTeacher = $schedules->groupBy('teacher_id');
+        $studentsByClassRoom = Student::get(['id', 'class_room_id'])
+            ->groupBy('class_room_id');
 
-        foreach ($schedulesByTeacher as $teacherId => $teacherSchedules) {
-            foreach ($teacherSchedules as $schedule) {
-                // Gunakan class_room_id dari schedule yang sedang diproses
-                $classRoomId = $schedule->class_room_id;
+        $attendanceStatus = config('const.attendance_status');
 
-                // Buat 20 record class_attendance untuk setiap jadwal
-                for ($i = 0; $i < 5; $i++) {
-                    $classAttendance = ClassAttendance::create([
-                        'class_room_id' => $classRoomId,
-                        'class_schedule_id' => $schedule->id,
-                        'explanation_material' => $faker->sentence(),
-                        'name_material' => $faker->words(3, true),
-                        'created_at' => $faker->dateTimeBetween('-1 month', 'now'),
-                        'updated_at' => $faker->dateTimeBetween('-1 month', 'now'),
-                    ]);
+        $classAttendancesToInsert = [];
+        $studentAttendancesToInsert = [];
 
-                    // Ambil semua siswa dari kelas tersebut
-                    $students = Student::where('class_room_id', $classRoomId)->get(['id']);
+        foreach ($schedules as $schedule) {
 
-                    foreach ($students as $student) {
-                        StudentAttendance::create([
-                            'class_attendance_id' => $classAttendance->id,
-                            'student_id' => $student->id,
-                            'status_attendance' => $faker->randomElement(config('const.attendance_status')),
-                        ]);
-                    }
-                }
+            $classRoomId = $schedule->class_room_id;
+
+            $students = $studentsByClassRoom->get($classRoomId, collect());
+
+            if ($students->isEmpty()) {
+                continue;
+            }
+
+            for ($i = 0; $i < 5; $i++) {
+
+                $createdAt = $faker->dateTimeBetween('-1 month', 'now');
+                $updatedAt = $faker->dateTimeBetween('-1 month', 'now');
+
+                $classAttendancesToInsert[] = [
+                    'class_room_id'      => $classRoomId,
+                    'class_schedule_id'  => $schedule->id,
+                    'explanation_material' => $faker->sentence(),
+                    'name_material'      => $faker->words(3, true),
+                    'created_at'         => $createdAt,
+                    'updated_at'         => $updatedAt,
+                ];
             }
         }
+
+        DB::table('class_attendances')->insert($classAttendancesToInsert);
+
+        $allClassAttendances = ClassAttendance::orderBy('id', 'desc')
+            ->take(count($classAttendancesToInsert))
+            ->get();
+
+        foreach ($allClassAttendances as $classAttendance) {
+
+            $students = $studentsByClassRoom->get($classAttendance->class_room_id, collect());
+
+            foreach ($students as $student) {
+                $studentAttendancesToInsert[] = [
+                    'class_attendance_id' => $classAttendance->id,
+                    'student_id'          => $student->id,
+                    'status_attendance'   => $faker->randomElement($attendanceStatus),
+                ];
+            }
+        }
+
+        DB::table('student_attendances')->insert($studentAttendancesToInsert);
     }
 }

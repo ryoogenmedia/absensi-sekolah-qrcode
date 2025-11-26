@@ -13,24 +13,34 @@ class StudentAttendanceTableSeeder extends Seeder
     public function run(): void
     {
         $faker = Factory::create('id_ID');
-        $classAttendances = ClassAttendance::all(['id','class_room_id']);
-        $statusAttendance = config('const.attendance_status');
+        $statusList = config('const.attendance_status');
 
-        foreach ($classAttendances as $classAttendance) {
-            $students = Student::where('class_room_id', $classAttendance->class_room_id)->get(['id']);
+        $classAttendances = ClassAttendance::all(['id', 'class_room_id']);
 
-            foreach ($students as $student) {
-                $alreadyExists = StudentAttendance::where('class_attendance_id', $classAttendance->id)
-                    ->where('student_id', $student->id)
-                    ->exists();
+        $existing = StudentAttendance::select('class_attendance_id', 'student_id')
+            ->get()
+            ->mapWithKeys(fn($row) => [
+                "{$row->class_attendance_id}:{$row->student_id}" => true
+            ])
+            ->toArray();
 
-                if (!$alreadyExists) {
-                    StudentAttendance::create([
-                        'class_attendance_id' => $classAttendance->id,
-                        'student_id' => $student->id,
-                        'status_attendance' => $faker->randomElement($statusAttendance),
-                    ]);
+        foreach ($classAttendances as $ca) {
+
+            $students = Student::where('class_room_id', $ca->class_room_id)->pluck('id');
+
+            foreach ($students as $studentId) {
+
+                $key = "{$ca->id}:{$studentId}";
+
+                if (isset($existing[$key])) {
+                    continue;
                 }
+
+                StudentAttendance::create([
+                    'class_attendance_id' => $ca->id,
+                    'student_id'          => $studentId,
+                    'status_attendance'   => $faker->randomElement($statusList),
+                ]);
             }
         }
     }
