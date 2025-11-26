@@ -37,6 +37,9 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
         Route::get('/guru', [PrintReportController::class, 'teacher'])
             ->name('teacher');
 
+        Route::get('/jadwal-kelas', [PrintReportController::class, 'classSchedule'])
+            ->name('class-schedule');
+
         Route::get('/mata-pelajaran', [PrintReportController::class, 'subjectStudy'])
             ->name('subject-study');
 
@@ -66,6 +69,13 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
          */
         Route::prefix('guru')->name('teacher.')->group(function () {
             Route::get('/', Teacher\Index::class)->name('index');
+        });
+
+        /**
+         * class schedule report / laporan jadwal kelas
+         */
+        Route::prefix('jadwal-kelas')->name('class-schedule.')->group(function () {
+            Route::get('/', ClassSchedule\Index::class)->name('index');
         });
 
         /**

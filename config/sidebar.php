@@ -221,6 +221,12 @@ return [
                 'is-active' => 'report.subject-study*',
             ],
             [
+                'title' => 'Jadwal Kelas',
+                'description' => 'Melihat daftar jadwal kelas.',
+                'route-name' => 'report.class-schedule.index',
+                'is-active' => 'report.class-schedule*',
+            ],
+            [
                 'title' => 'Presensi Kelas',
                 'description' => 'Melihat daftar presensi kelas.',
                 'route-name' => 'report.attendance.class.index',
