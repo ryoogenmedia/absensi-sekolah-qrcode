@@ -41,7 +41,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * guardian stdudent / wali siswa
      */
-    Route::prefix('wali-siswa')->name('student-guardian.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('wali-siswa')->name('guardian-student.')->middleware('roles:admin,developer')->group(function () {
         Route::get('/', StudentGuardian\Index::class)->name('index');
         Route::get('/tambah', StudentGuardian\Create::class)->name('create');
         Route::get('/sunting/{id}', StudentGuardian\Edit::class)->name('edit');

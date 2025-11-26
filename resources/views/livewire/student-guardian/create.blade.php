@@ -1,3 +1,147 @@
 <div>
-    {{-- If your happiness depends on money, you will never be happy with yourself. --}}
+    <x-slot name="title">Tambah Wali Siswa</x-slot>
+
+    <x-slot name="pagePretitle">Menambah Data Wali Siswa</x-slot>
+
+    <x-slot name="pageTitle">Tambah Wali Siswa</x-slot>
+    <x-slot name="button">
+        <x-datatable.button.back name="Kembali" :route="route('guardian-student.index')" />
+    </x-slot>
+
+    <x-alert />
+
+    <form class="card" wire:submit.prevent="save" autocomplete="off">
+        <div class="card-header">
+            Tambah data wali siswa
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <x-form.input wire:model="namaWali" name="namaWali" label="Nama Wali"
+                        placeholder="masukkan nama wali" type="text" required autofocus />
+
+                    @php
+                        $grouped = $this->students->groupBy(fn($student) => $student->class_room->name_class);
+                    @endphp
+
+                    <x-form.select wire:model.live="siswa" name="siswa" label="Siswa"
+                        form-control-class="js-example-basic-single form-control">
+
+                        <option value="">Cari Nama / NIS Siswa</option>
+
+                        @foreach ($grouped as $className => $students)
+                            <optgroup label="Kelas {{ $className }}">
+                                @foreach ($students as $student)
+                                    <option value="{{ $student->id }}">
+                                        {{ $student->nis }} - {{ $student->full_name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
+
+                    </x-form.select>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <x-form.select wire:model="hubunganWali" name="hubunganWali" label="Hubungan Wali">
+                        <option value="">- Pilih -</option>
+                        @foreach (config('const.guardian_relationships') as $relationship)
+                            <option wire:key="{{ $relationship }}" value="{{ $relationship }}">
+                                {{ ucwords($relationship) }}</option>
+                        @endforeach
+                    </x-form.select>
+
+                    <x-form.input wire:model="kontakWali" name="kontakWali" label="Kontak Wali"
+                        placeholder="nomor ponsel / nomor whatsapp" type="text" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <x-form.input wire:model="email" name="email" label="Masukkan Email" placeholder="masukkan email"
+                        type="text" required />
+
+                    <div>
+                        @if ($this->avatar)
+                            <div class="col-lg-2 col-12 mb-lg-0 mb-2 mt-2 text-center">
+                                <span class="avatar avatar-md"
+                                    style="background-image: url({{ $this->avatar->temporaryUrl() }})"></span>
+                            </div>
+                        @else
+                            <div class="col-lg-2 col-12 mb-lg-0 mb-2 mt-2 text-center">
+                                <span class="avatar avatar-md"
+                                    style="background-image: url({{ asset('static/ryoogen/default/NO-IMAGE.png') }})"></span>
+                            </div>
+                        @endif
+
+                        <div class="col">
+                            <x-form.input wire:model="avatar" name="avatar" label="Foto Profil (Avatar)"
+                                placeholder="masukkan avatar" type="file"
+                                optional="Abaikan jika tidak ingin mengubah." />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <x-form.input wire:model="kataSandi" name="kataSandi" label="Kata Sandi (Password)"
+                        placeholder="**********" type="password" required />
+
+                    <x-form.input wire:model="konfirmasiKataSandi" name="konfirmasiKataSandi"
+                        label="Konfirmasi Kata Sandi (Password)" placeholder="**********" type="password" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div class="btn-list justify-content-end">
+                <button type="reset" class="btn">Reset</button>
+
+                <x-datatable.button.save target="save" />
+            </div>
+        </div>
+    </form>
 </div>
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2();
+
+            $('.js-example-basic-single').on('change', function(e) {
+                let value = $(this).val();
+                @this.set('siswa', value);
+            });
+        })
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2({
+                matcher: function(params, data) {
+
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    const searchTerm = params.term.toLowerCase();
+
+                    // text siswa
+                    const text = data.text.toLowerCase();
+
+                    // kelas dari attribute option
+                    const kelas = $(data.element).data('kelas')?.toLowerCase() || '';
+
+                    // cocokkan: nama siswa, nis, kelas
+                    if (text.includes(searchTerm) || kelas.includes(searchTerm)) {
+                        return data;
+                    }
+
+                    return null;
+                }
+            });
+        });
+    </script>
+@endpush

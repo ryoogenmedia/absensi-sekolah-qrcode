@@ -1,0 +1,33 @@
+/* Container utama */
+.select2-container .select2-selection--single {
+    height: 40px !important;
+    /* tinggi input */
+    border-radius: 10px !important;
+    border: 1px solid #d0d7de !important;
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+}
+
+/* Text di dalam Select2 */
+.select2-container .select2-selection__rendered {
+    line-height: 40px !important;
+    font-size: 15px;
+}
+
+/* Icon dropdown */
+.select2-container .select2-selection__arrow {
+    height: 40px !important;
+}
+
+/* Fokus */
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #467fcf !important;
+    box-shadow: 0 0 0 3px rgba(70, 127, 207, 0.2);
+}
+
+/* Highlight list saat dibuka */
+.select2-results__option--highlighted {
+    background-color: #467fcf !important;
+    color: white !important;
+}

@@ -19,6 +19,10 @@
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
 
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('css/custom-select2.css') }}">
+
     <!-- Livewire Styles -->
     @livewireStyles
     <!-- Component Style -->
@@ -33,6 +37,7 @@
     <!-- Livewire Styles -->
     @livewireScripts
 
+    <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('dist/js/tabler.js') }}"></script>
     <script src="{{ asset('dist/js/demo.min.js') }}"></script>
 
@@ -53,6 +58,7 @@
     <script src="{{ asset('js/today.js') }}"></script>
     <script src="{{ asset('js/password-toggle.js') }}"></script>
     <script src="{{ asset('js/helper/scoll-top.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @stack('scripts')
 </body>

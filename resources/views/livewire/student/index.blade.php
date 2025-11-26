@@ -203,11 +203,11 @@
 
                             <td><b>{{ $row->nis ?? '-' }}</b></td>
 
-                            <td>{{ $row->sex ?? '-' }}</td>
+                            <td>{{ ucwords($row->sex) ?? '-' }}</td>
 
                             <td>{{ $row->phone ?? '-' }}</td>
 
-                            <td>{{ $row->religion ?? '-' }}</td>
+                            <td>{{ ucwords($row->religion) ?? '-' }}</td>
 
                             <td>{{ $row->address ?? '-' }}, {{ $row->postal_code ?? '' }}</td>
 

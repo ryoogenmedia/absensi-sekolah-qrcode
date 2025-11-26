@@ -121,6 +121,15 @@ return [
     ],
 
     [
+        'title' => 'Wali Siswa',
+        'icon' => 'user-friends',
+        'route-name' => 'guardian-student.index',
+        'is-active' => 'guardian-student*',
+        'description' => 'Melihat daftar wali siswa.',
+        'roles' => ['admin', 'developer'],
+    ],
+
+    [
         'title' => 'Qr Code',
         'icon' => 'qrcode',
         'route-name' => 'qrcode.index',

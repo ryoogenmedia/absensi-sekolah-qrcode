@@ -6,7 +6,7 @@
     <x-slot name="pagePretitle">Kelola Data Wali Siswa</x-slot>
 
     <x-slot name="button">
-        <x-datatable.button.add name="Tambah Wali Siswa" :route="route('student-guardian.create')" />
+        <x-datatable.button.add name="Tambah Wali Siswa" :route="route('guardian-student.create')" />
     </x-slot>
 
     <x-alert />
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div wire:poll.30000ms class="card" wire:loading.class.delay="card-loading" wire:offline.class="card-loading">
+    <div class="card" wire:loading.class.delay="card-loading" wire:offline.class="card-loading">
         <div class="table-responsive mb-0">
             <table class="table card-table table-bordered datatable">
                 <thead>
@@ -62,8 +62,12 @@
                         </th>
 
                         <th>
-                            <x-datatable.column-sort name="Nomor Ponsel" wire:click="sortBy('guardian_contact')"
+                            <x-datatable.column-sort name="Kontak Wali" wire:click="sortBy('guardian_contact')"
                                 :direction="$sorts['guardian_contact'] ?? null" />
+                        </th>
+
+                        <th>
+                            Akun
                         </th>
 
                         <th style="width: 10px"></th>
@@ -107,7 +111,7 @@
                             <td>{{ $row->student->full_name ?? '-' }}</td>
 
                             <td>
-                                {{ $row->guardian_relationship ?? '-' }}
+                                {{ ucwords($row->guardian_relationship) ?? '-' }}
                             </td>
 
                             <td>
@@ -115,9 +119,15 @@
                             </td>
 
                             <td>
+                                <span class="badge bg-{{ $row->user ? 'lime' : 'red' }}">
+                                    {{ $row->user ? 'Ada' : 'Tidak Ada' }}
+                                </span>
+                            </td>
+
+                            <td>
                                 <div class="d-flex">
                                     <div class="ms-auto">
-                                        <a class="btn btn-sm" href="{{ route('student-guardian.edit', $row->id) }}">
+                                        <a class="btn btn-sm" href="{{ route('guardian-student.edit', $row->id) }}">
                                             Sunting
                                         </a>
                                     </div>
