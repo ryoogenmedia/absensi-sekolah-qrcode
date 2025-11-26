@@ -21,7 +21,7 @@ class CheckOutRecordTableSeeder extends Seeder
         $makeRecord = function ($date) use ($faker, $studentIds) {
             return [
                 'student_id'      => $faker->randomElement($studentIds),
-                'check_in_time'   => $faker->dateTimeBetween($date->format('Y-m-d') . ' 06:00:00', $date->format('Y-m-d') . ' 09:00:00'),
+                'check_out_time'   => $faker->dateTimeBetween($date->format('Y-m-d') . ' 06:00:00', $date->format('Y-m-d') . ' 09:00:00'),
                 'attendance_date' => $date->format('Y-m-d'),
                 'remarks'         => $faker->optional()->sentence,
                 'created_at'      => now(),

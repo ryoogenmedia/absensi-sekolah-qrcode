@@ -13,24 +13,26 @@ class Index extends Component
 {
     public $presensiType = 'check-in';
 
-    public function updatedPresensiType($value){
+    public function updatedPresensiType($value)
+    {
         Cache::delete('attendance-type');
         Cache::add('attendance-type', $value);
     }
 
     #[On('scanned')]
-    public function scanQr($code){
+    public function scanQr($code)
+    {
         $student = Student::where('nis', $code)->first();
 
-        if($student){
-            if($this->presensiType == 'check-in'){
+        if ($student) {
+            if ($this->presensiType == 'check-in') {
                 $this->checkInRecord($student);
             }
 
-            if($this->presensiType == 'check-out'){
+            if ($this->presensiType == 'check-out') {
                 $this->checkOutRecord($student);
             }
-        }else{
+        } else {
             session()->flash('alert', [
                 'type' => 'warning',
                 'message' => 'Tidak terdaftar',
@@ -61,7 +63,7 @@ class Index extends Component
 
         CheckInRecord::create([
             'student_id' => $student->id,
-            'check_in_time' => now()->format('H:i'),
+            'check_in_time' => now()->format('H:i:s'),
             'attendance_date' => $today,
         ]);
 
@@ -76,7 +78,8 @@ class Index extends Component
         return redirect()->route('scan-qr.index');
     }
 
-    public function checkOutRecord($student){
+    public function checkOutRecord($student)
+    {
         $today = now()->toDateString();
 
         $alreadyCheckedIn = CheckOutRecord::where('student_id', $student->id)
@@ -95,7 +98,7 @@ class Index extends Component
 
         CheckOutRecord::create([
             'student_id' => $student->id,
-            'check_in_time' => now()->format('H:i'),
+            'check_out_time' => now()->format('H:i:s'),
             'attendance_date' => $today,
         ]);
 
@@ -110,10 +113,11 @@ class Index extends Component
         return redirect()->route('scan-qr.index');
     }
 
-    public function mount(){
+    public function mount()
+    {
         $cache = Cache::get('attendance-type');
 
-        if($cache){
+        if ($cache) {
             $this->presensiType = $cache;
         }
     }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('check_out_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id');
-            $table->time('check_in_time')->nullable();
+            $table->time('check_out_time')->nullable();
             $table->date('attendance_date')->nullable();
             $table->text('remarks')->nullable();
             $table->timestamps();

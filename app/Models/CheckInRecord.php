@@ -21,20 +21,23 @@ class CheckInRecord extends Model
 
     protected $casts = [
         'student_id' => 'integer',
-        'check_in_time' => 'datetime:H:i',
+        'check_in_time' => 'datetime:H:i:s',
         'attendance_date' => 'date',
         'remarks' => 'string',
     ];
 
-    public function student(){
-        return $this->belongsTo(Student::class,'student_id','id')->withDefault();
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id', 'id')->withDefault();
     }
 
-    public function getCheckInTimeAttribute($value){
-        return Carbon::parse($value)->format('H:i');
+    public function getCheckInTimeAttribute($value)
+    {
+        return Carbon::parse($value)->format('H:i:s');
     }
 
-    public function getAttendanceDateAttribute($value){
+    public function getAttendanceDateAttribute($value)
+    {
         return Carbon::parse($value)->format('d/m/Y');
     }
 }
