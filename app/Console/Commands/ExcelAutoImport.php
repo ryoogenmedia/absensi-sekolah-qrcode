@@ -8,7 +8,6 @@ use App\Imports\ClassRoomImport;
 use App\Imports\StudentImport;
 use App\Imports\SubjectStudyImport;
 use App\Imports\TeacherImport;
-use Symfony\Component\Console\Helper\ProgressBar;
 
 class ExcelAutoImport extends Command
 {

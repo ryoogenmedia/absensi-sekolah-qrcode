@@ -52,6 +52,11 @@
                 color="blue" />
             <x-card.count-data title="Guru" :period="$this->period" :total="$this->totalTeacher" icon="user-tie" color="red" />
             <x-card.count-data title="Admin" :period="$this->period" :total="$this->totalAdmin" icon="database" color="purple" />
+            <x-card.count-data title="Jadwal Kelas" :period="$this->period" :total="$this->totalJadwalKelas" icon="calendar"
+                color="green" />
+            <x-card.count-data title="Mata Pelajaran" :period="$this->period" :total="$this->totalMataPelajaran" icon="book"
+                color="orange" />
+            <x-card.count-data title="Kelas" :period="$this->period" :total="$this->totalKelas" icon="building" color="teal" />
         </div>
 
         <div class="col-12 col-md-8 col-lg-9">
@@ -130,7 +135,7 @@
                     chart: {
                         type: "bar",
                         stacked: true,
-                        height: 340,
+                        height: 600,
                         parentHeightOffset: 0,
                         toolbar: {
                             show: false

@@ -5,8 +5,11 @@ namespace App\Livewire\Home;
 use App\Helpers\HomeChart;
 use App\Models\CheckInRecord;
 use App\Models\CheckOutRecord;
+use App\Models\ClassRoom;
+use App\Models\ClassSchedule;
 use App\Models\Student;
 use App\Models\StudentAttendance;
+use App\Models\SubjectStudy;
 use App\Models\Teacher;
 use App\Models\User;
 use Livewire\Component;
@@ -16,6 +19,9 @@ class AdminHome extends Component
     public $totalStudent = 0;
     public $totalTeacher = 0;
     public $totalAdmin = 0;
+    public $totalJadwalKelas = 0;
+    public $totalMataPelajaran = 0;
+    public $totalKelas = 0;
 
     public $period = 'daily';
 
@@ -27,23 +33,29 @@ class AdminHome extends Component
     public $checkInToday = 0;
     public $checkOutToday = 0;
 
-    public function getDataCount(){
+    public function getDataCount()
+    {
         $this->totalStudent = Student::count();
         $this->totalTeacher = Teacher::count();
+        $this->totalJadwalKelas = ClassSchedule::count();
+        $this->totalMataPelajaran = SubjectStudy::count();
+        $this->totalKelas = ClassRoom::count();
         $this->totalAdmin = User::where('role', 'admin')->count();
     }
 
-    public function getDataChart(){
-        $this->attendanceHadir = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance','hadir'), $this->period);
+    public function getDataChart()
+    {
+        $this->attendanceHadir = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance', 'hadir'), $this->period);
 
-        $this->attendanceAlpa = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance','alpa'), $this->period);
+        $this->attendanceAlpa = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance', 'alpa'), $this->period);
 
-        $this->attendanceIzin = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance','izin'), $this->period);
+        $this->attendanceIzin = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance', 'izin'), $this->period);
 
-        $this->attendanceSakit = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance','sakit'), $this->period);
+        $this->attendanceSakit = HomeChart::CHART_DATA(StudentAttendance::query()->where('status_attendance', 'sakit'), $this->period);
     }
 
-    public function mount(){
+    public function mount()
+    {
         $this->getDataCount();
         $this->getDataChart();
 
