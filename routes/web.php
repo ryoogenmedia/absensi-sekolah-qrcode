@@ -39,6 +39,15 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     });
 
     /**
+     * guardian stdudent / wali siswa
+     */
+    Route::prefix('wali-siswa')->name('student-guardian.')->middleware('roles:admin,developer')->group(function () {
+        Route::get('/', StudentGuardian\Index::class)->name('index');
+        Route::get('/tambah', StudentGuardian\Create::class)->name('create');
+        Route::get('/sunting/{id}', StudentGuardian\Edit::class)->name('edit');
+    });
+
+    /**
      * master / data master
      */
     Route::prefix('master')->name('master.')->middleware('roles:admin,developer')->namespace('Master')->group(function () {
