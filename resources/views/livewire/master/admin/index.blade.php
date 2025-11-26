@@ -30,6 +30,12 @@
 
                         <span>Hapus</span>
                     </button>
+
+                    <button class="dropdown-item" type="button" wire:click="exportExcel">
+                        <i class="las la-file-excel me-3"></i>
+
+                        <span>Export Excel</span>
+                    </button>
                 </div>
             </x-datatable.bulk.dropdown>
 

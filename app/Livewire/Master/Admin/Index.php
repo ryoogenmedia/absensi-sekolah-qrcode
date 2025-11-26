@@ -2,15 +2,18 @@
 
 namespace App\Livewire\Master\Admin;
 
+use App\Exports\AdminExport;
 use App\Livewire\Traits\DataTable\WithBulkActions;
 use App\Livewire\Traits\DataTable\WithCachedRows;
 use App\Livewire\Traits\DataTable\WithPerPagePagination;
 use App\Livewire\Traits\DataTable\WithSorting;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
@@ -22,6 +25,39 @@ class Index extends Component
     public $filters = [
         'search' => '',
     ];
+
+    public function exportExcel()
+    {
+        try {
+            return Excel::download(new AdminExport, 'data-admin.xlsx');
+        } catch (Exception $e) {
+
+            logger()->error(
+                '[export excel admin] ' .
+                    auth()->user()->username .
+                    ' gagal export data admin',
+                [$e->getMessage()]
+            );
+
+            session()->flash('alert', [
+                'type' => 'danger',
+                'message' => 'Gagal!',
+                'detail' => 'Export data admin gagal dilakukan.',
+            ]);
+
+            $this->resetForm();
+            return redirect()->back();
+        }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => 'Export data admin berhasil dilakukan.',
+        ]);
+
+        $this->resetForm();
+        return redirect()->back();
+    }
 
     public function deleteSelected()
     {
