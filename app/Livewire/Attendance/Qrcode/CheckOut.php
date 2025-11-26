@@ -24,7 +24,7 @@ class CheckOut extends Component
         'search' => '',
         'startDate' => '',
         'endDate' => '',
-        'waktuMasuk' => '',
+        'waktuKeluar' => '',
         'nis' => '',
         'kelas' => '',
     ];
@@ -67,8 +67,8 @@ class CheckOut extends Component
             ->when($this->filters['endDate'], function ($query, $endDate) {
                 $query->where('attendance_date', '<=', $endDate);
             })
-            ->when($this->filters['waktuMasuk'], function ($query, $waktuMasuk) {
-                $query->where('check_in_time', '>=', $waktuMasuk);
+            ->when($this->filters['waktuKeluar'], function ($query, $waktuMasuk) {
+                $query->where('check_out_time', '>=', $waktuMasuk);
             })
             ->when($this->filters['nis'], function ($query, $nis) {
                 $query->whereHas('student', function ($q) use ($nis) {

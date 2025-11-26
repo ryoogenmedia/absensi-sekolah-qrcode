@@ -102,4 +102,14 @@
 
 @push('scripts')
     <script src="{{ asset('js/sidebar.js') }}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".dropdown-menu").forEach(function(menu) {
+                menu.addEventListener("click", function(e) {
+                    e.stopPropagation(); // mencegah dropdown menutup
+                });
+            });
+        });
+    </script>
 @endpush

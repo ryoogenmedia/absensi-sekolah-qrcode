@@ -48,7 +48,7 @@
     <x-datatable.filter.card id="check-out-filter">
         <div class="row">
             <div class="col-12 col-lg-4">
-                <x-form.input wire:model.live="filters.waktuMasuk" name="filters.waktuMasuk" label="Waktu Masuk"
+                <x-form.input wire:model.live="filters.waktuKeluar" name="filters.waktuKeluar" label="Waktu Keluar"
                     type="time" />
             </div>
 
