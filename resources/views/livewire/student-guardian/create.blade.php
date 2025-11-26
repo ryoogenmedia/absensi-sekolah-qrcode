@@ -64,20 +64,20 @@
                     <x-form.input wire:model="email" name="email" label="Masukkan Email" placeholder="masukkan email"
                         type="text" required />
 
-                    <div>
+                    <div class="row">
                         @if ($this->avatar)
-                            <div class="col-lg-2 col-12 mb-lg-0 mb-2 mt-2 text-center">
+                            <div class="col-1 mb-lg-0 mb-2 mt-2 me-3 text-center">
                                 <span class="avatar avatar-md"
                                     style="background-image: url({{ $this->avatar->temporaryUrl() }})"></span>
                             </div>
                         @else
-                            <div class="col-lg-2 col-12 mb-lg-0 mb-2 mt-2 text-center">
+                            <div class="col-1 mb-lg-0 mb-2 mt-2 me-3 text-center">
                                 <span class="avatar avatar-md"
                                     style="background-image: url({{ asset('static/ryoogen/default/NO-IMAGE.png') }})"></span>
                             </div>
                         @endif
 
-                        <div class="col">
+                        <div class="col-lg-10 col-9 ms-5 ps-2">
                             <x-form.input wire:model="avatar" name="avatar" label="Foto Profil (Avatar)"
                                 placeholder="masukkan avatar" type="file"
                                 optional="Abaikan jika tidak ingin mengubah." />
