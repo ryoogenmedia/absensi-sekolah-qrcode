@@ -127,7 +127,7 @@
 
                             <td>{{ $row->student->class_room->name_class ?? '-' }}</td>
 
-                            <td>{{ $row->check_in_time ?? '-' }}</td>
+                            <td>{{ $row->check_out_time ?? '-' }}</td>
 
                             <td>{{ $row->attendance_date ?? '-' }}</td>
                         </tr>
