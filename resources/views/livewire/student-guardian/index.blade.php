@@ -67,7 +67,8 @@
                         </th>
 
                         <th>
-                            Akun
+                            <x-datatable.column-sort name="Akun" wire:click="sortBy('user.email')"
+                                :direction="$sorts['user.email'] ?? null" />
                         </th>
 
                         <th style="width: 10px"></th>
@@ -119,9 +120,7 @@
                             </td>
 
                             <td>
-                                <span class="badge bg-{{ $row->user ? 'lime' : 'red' }}">
-                                    {{ $row->user ? 'Ada' : 'Tidak Ada' }}
-                                </span>
+                                {{ $row->user->email ?? '-' }}
                             </td>
 
                             <td>

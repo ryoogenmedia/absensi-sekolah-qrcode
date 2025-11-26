@@ -80,7 +80,6 @@ class Index extends Component
         return redirect()->back();
     }
 
-
     public function importExcel()
     {
         try {
