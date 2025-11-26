@@ -26,22 +26,24 @@
                         $grouped = $this->students->groupBy(fn($student) => $student->class_room->name_class);
                     @endphp
 
-                    <x-form.select wire:model.live="siswa" name="siswa" label="Siswa"
-                        form-control-class="js-example-basic-single form-control">
+                    <div wire:ignore>
+                        <x-form.select wire:ignore.self wire:model="siswa" name="siswa" label="Siswa"
+                            form-control-class="js-example-basic-single form-control">
 
-                        <option value="">Cari Nama / NIS Siswa</option>
+                            <option value="">Cari Nama / NIS Siswa</option>
 
-                        @foreach ($grouped as $className => $students)
-                            <optgroup label="Kelas {{ $className }}">
-                                @foreach ($students as $student)
-                                    <option value="{{ $student->id }}">
-                                        {{ $student->nis }} - {{ $student->full_name }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
-                        @endforeach
+                            @foreach ($grouped as $className => $students)
+                                <optgroup label="Kelas {{ $className }}">
+                                    @foreach ($students as $student)
+                                        <option value="{{ $student->id }}">
+                                            {{ $student->nis }} - {{ $student->full_name }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
 
-                    </x-form.select>
+                        </x-form.select>
+                    </div>
                 </div>
 
                 <div class="col-12 col-lg-6">
@@ -109,41 +111,16 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            $('.js-example-basic-single').select2();
+        document.addEventListener("DOMContentLoaded", function() {
 
-            $('.js-example-basic-single').on('change', function(e) {
-                let value = $(this).val();
-                @this.set('siswa', value);
+            const select = document.querySelector('.js-example-basic-single');
+
+            $(select).select2();
+
+            select.addEventListener('change', function() {
+                @this.set('siswa', this.value);
             });
-        })
-    </script>
 
-    <script>
-        $(document).ready(function() {
-            $('.js-example-basic-single').select2({
-                matcher: function(params, data) {
-
-                    if ($.trim(params.term) === '') {
-                        return data;
-                    }
-
-                    const searchTerm = params.term.toLowerCase();
-
-                    // text siswa
-                    const text = data.text.toLowerCase();
-
-                    // kelas dari attribute option
-                    const kelas = $(data.element).data('kelas')?.toLowerCase() || '';
-
-                    // cocokkan: nama siswa, nis, kelas
-                    if (text.includes(searchTerm) || kelas.includes(searchTerm)) {
-                        return data;
-                    }
-
-                    return null;
-                }
-            });
         });
     </script>
 @endpush
