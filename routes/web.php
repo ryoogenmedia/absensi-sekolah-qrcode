@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CetakPdfController;
+use App\Http\Controllers\PrintReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +26,29 @@ Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name
 
 
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
+
+    /**
+     * Print Report / Cetak Laporan
+     */
+    Route::prefix('cetak-laporan')->middleware('roles:admin,developer')->name('print-report.')->group(function () {
+        Route::get('/siswa', [PrintReportController::class, 'student'])
+            ->name('student');
+
+        Route::get('/guru', [PrintReportController::class, 'teacher'])
+            ->name('teacher');
+
+        Route::get('/mata-pelajaran', [PrintReportController::class, 'subjectStudy'])
+            ->name('subject-study');
+
+        Route::get('/presensi/kelas', [PrintReportController::class, 'attendanceClass'])
+            ->name('attendance.class');
+
+        Route::get('/presensi/qrcode/masuk', [PrintReportController::class, 'attendanceQrcodeCheckIn'])
+            ->name('attendance.qrcode.check-in');
+
+        Route::get('/presensi/qrcode/keluar', [PrintReportController::class, 'attendanceQrcodeCheckOut'])
+            ->name('attendance.qrcode.check-out');
+    });
 
     /**
      *  report / laporan
