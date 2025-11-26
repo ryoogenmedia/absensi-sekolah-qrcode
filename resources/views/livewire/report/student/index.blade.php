@@ -22,8 +22,6 @@
 
     <x-alert />
 
-    <x-modal.delete-confirmation />
-
     <div class="row mb-3 align-items-center justify-content-between">
         <div class="col-12 col-lg-5 d-flex">
             <div class="w-100">
