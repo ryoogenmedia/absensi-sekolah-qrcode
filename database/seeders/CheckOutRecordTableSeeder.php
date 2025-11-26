@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\CheckOutRecord;
 use App\Models\Student;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
