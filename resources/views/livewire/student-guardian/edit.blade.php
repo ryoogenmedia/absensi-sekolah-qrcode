@@ -4,6 +4,7 @@
     <x-slot name="pagePretitle">Menyunting Data Wali Siswa</x-slot>
 
     <x-slot name="pageTitle">Sunting Wali Siswa</x-slot>
+
     <x-slot name="button">
         <x-datatable.button.back name="Kembali" :route="route('guardian-student.index')" />
     </x-slot>
