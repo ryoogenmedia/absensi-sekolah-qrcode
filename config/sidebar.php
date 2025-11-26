@@ -195,6 +195,61 @@ return [
     ],
 
     [
+        'title' => 'Laporan',
+        'description' => 'Menampilkan daftar laporan pada aplikasi.',
+        'icon' => 'print',
+        'route-name' => 'report.attendance.class.index',
+        'is-active' => 'report.attendance*',
+        'roles' => ['admin', 'developer'],
+        'sub-menus' => [
+            [
+                'title' => 'Siswa',
+                'description' => 'Melihat daftar laporan siswa.',
+                'route-name' => 'report.student.index',
+                'is-active' => 'report.student*',
+            ],
+            [
+                'title' => 'Guru',
+                'description' => 'Melihat daftar laporan guru.',
+                'route-name' => 'report.teacher.index',
+                'is-active' => 'report.teacher*',
+            ],
+            [
+                'title' => 'Mata Pelajaran',
+                'description' => 'Melihat daftar laporan mata pelajaran.',
+                'route-name' => 'report.subject-study.index',
+                'is-active' => 'report.subject-study*',
+            ],
+            [
+                'title' => 'Presensi Kelas',
+                'description' => 'Melihat daftar presensi kelas.',
+                'route-name' => 'report.attendance.class.index',
+                'is-active' => 'report.attendance.class*',
+            ],
+            [
+                'title' => 'Presensi Qrcode',
+                'description' => 'Melihat daftar presensi Qr Code.',
+                'route-name' => 'report.attendance.qrcode.check-in',
+                'is-active' => 'report.attendance.qrcode*',
+                'sub-menus' => [
+                    [
+                        'title' => 'Presensi Masuk',
+                        'description' => 'Melihat daftar presensi masuk.',
+                        'route-name' => 'report.attendance.qrcode.check-in',
+                        'is-active' => 'report.attendance.qrcode.check-in',
+                    ],
+                    [
+                        'title' => 'Presensi Keluar',
+                        'description' => 'Melihat daftar presensi keluar.',
+                        'route-name' => 'report.attendance.qrcode.check-out',
+                        'is-active' => 'report.attendance.qrcode.check-out',
+                    ],
+                ],
+            ],
+        ],
+    ],
+
+    [
         'title' => 'Pengaturan',
         'description' => 'Menampilkan pengaturan aplikasi.',
         'icon' => 'cog',

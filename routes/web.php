@@ -23,7 +23,51 @@ Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name
     Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:admin,developer')->name('card');
 });
 
+
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
+
+    /**
+     *  report / laporan
+     */
+    Route::prefix('laporan')->name('report.')->middleware('roles:admin,developer')->namespace('Report')->group(function () {
+        /**
+         * student report / laporan siswa
+         */
+        Route::prefix('siswa')->name('student.')->group(function () {
+            Route::get('/', Student\Index::class)->name('index');
+        });
+
+        /**
+         * teacher report / laporan guru
+         */
+        Route::prefix('guru')->name('teacher.')->group(function () {
+            Route::get('/', Teacher\Index::class)->name('index');
+        });
+
+        /**
+         * subject report / laporan mata pelajaran
+         */
+        Route::prefix('mata-pelajaran')->name('subject-study.')->group(function () {
+            Route::get('/', SubjectStudy\Index::class)->name('index');
+        });
+
+        /**
+         * attendance report / laporan presensi
+         */
+        Route::prefix('presensi')->name('attendance.')->group(function () {
+            // class attendance report / laporan presensi kelas
+            Route::prefix('kelas')->name('class.')->group(function () {
+                Route::get('/', Attendance\Class\Index::class)->name('index');
+            });
+
+            //qrcode attendance report / laporan presensi qrcode
+            Route::prefix('qrcode')->name('qrcode.')->group(function () {
+                Route::get('/masuk', Attendance\Qrcode\CheckIn::class)->name('check-in');
+                Route::get('/keluar', Attendance\Qrcode\CheckOut::class)->name('check-out');
+            });
+        });
+    });
+
     /**
      *  persence student / presensi siswa
      */
