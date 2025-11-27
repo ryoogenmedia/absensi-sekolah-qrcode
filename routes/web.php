@@ -238,7 +238,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
      * beranda / home
      */
     Route::get('beranda', Home\Index::class)->name('home')
-        ->middleware('roles:admin,siswa,guru,developer');
+        ->middleware('roles:admin,siswa,guru,developer, wali siswa');
 
     /**
      * class attendance / presensi kelas
@@ -260,7 +260,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * setting
      */
-    Route::prefix('pengaturan')->name('setting.')->middleware('roles:admin,siswa,guru,developer')->namespace('Setting')->group(function () {
+    Route::prefix('pengaturan')->name('setting.')->middleware('roles:admin,siswa,guru,developer,wali siswa')->namespace('Setting')->group(function () {
         Route::redirect('/', 'pengaturan/aplikasi');
 
         /**

@@ -7,7 +7,7 @@ return [
         'route-name' => 'home',
         'is-active' => 'home',
         'description' => 'Untuk melihat ringkasan aplikasi.',
-        'roles' => ['admin', 'developer', 'operator', 'guru', 'siswa'],
+        'roles' => ['admin', 'developer', 'operator', 'guru', 'siswa', 'wali siswa'],
     ],
 
     // SISWA
@@ -261,7 +261,7 @@ return [
         'icon' => 'cog',
         'route-name' => 'setting.profile.index',
         'is-active' => 'setting*',
-        'roles' => ['admin', 'developer', 'guru', 'operator', 'siswa'],
+        'roles' => ['admin', 'developer', 'guru', 'operator', 'siswa', 'wali siswa'],
         'sub-menus' => [
             [
                 'title' => 'Profil',
