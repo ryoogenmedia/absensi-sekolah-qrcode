@@ -3,10 +3,10 @@
         <span class="avatar avatar-sm" style="background-image: url({{ auth()->user()->avatarUrl() }})"></span>
 
         <div class="d-none d-xl-block ps-2">
-            <div>{{ auth()->user()->username }}</div>
+            <div>{{ strtolower(auth()->user()->username) }}</div>
 
             <div class="mt-1 small text-muted">
-                {{ strtolower(str_replace('-', ' ', auth()->user()->role)) }}
+                {{ ucwords(str_replace('-', ' ', auth()->user()->role)) }}
             </div>
         </div>
     </a>
