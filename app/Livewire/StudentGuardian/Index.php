@@ -148,7 +148,12 @@ class Index extends Component
         $query = StudentGuardian::query()
             ->when(!$this->sorts, fn($query) => $query->first())
             ->when($this->filters['search'], function ($query, $search) {
-                $query->where('guardian_name', 'LIKE', "%$search%");
+                $query->where('guardian_name', 'LIKE', "%$search%")
+                    ->orWhereHas('student', function ($query) use ($search) {
+                        $query->where('full_name', 'LIKE', "%$search%")
+                            ->orWhere('call_name', 'LIKE', "%$search%")
+                            ->orWhere('nis', 'LIKE', "%$search%");
+                    });
             })->latest();
 
         return $this->applyPagination($query);
