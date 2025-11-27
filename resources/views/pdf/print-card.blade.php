@@ -105,41 +105,93 @@
             width: 90px !important;
             height: 90px !important;
         }
+
+        .card-page {
+            page-break-inside: avoid;
+            page-break-after: always;
+            margin-bottom: 40px;
+        }
+
+        .card-wrapper {
+            width: 510px;
+            margin: 0 auto;
+        }
     </style>
 
 </head>
 
 <body>
+    @if ($students->count() < 2)
+        <div class="card-wrapper">
 
-    <div class="card-wrapper">
+            {{-- CARD 1 --}}
+            <div class="card-container">
+                <img src="{{ public_path('static/ryoogen/illustration/card-presensi-1.png') }}" class="card-image">
 
-        {{-- CARD 1 --}}
-        <div class="card-container">
-            <img src="{{ public_path('static/ryoogen/illustration/card-presensi-1.png') }}" class="card-image">
+                {{-- Foto --}}
+                @if (isset($student->photo))
+                    <div class="student-photo"
+                        style="background-image:url('{{ public_path('storage/' . $student->photo) }}')"></div>
+                @endif
 
-            {{-- Foto --}}
-            @if (isset($student->photo))
-                <div class="student-photo"
-                    style="background-image:url('{{ public_path('storage/' . $student->photo) }}')"></div>
-            @endif
+                {{-- Informasi Siswa --}}
+                <div class="student-info">
+                    <span class="label"></span> {{ $student->full_name ?? '-' }} <br>
+                    <span class="label"></span> {{ $student->nis ?? '-' }} <br>
+                    <span class="label"></span> {{ $student->class_room->name_class ?? '-' }}
+                </div>
 
-            {{-- Informasi Siswa --}}
-            <div class="student-info">
-                <span class="label"></span> {{ $student->full_name ?? '-' }} <br>
-                <span class="label"></span> {{ $student->nis ?? '-' }} <br>
-                <span class="label"></span> {{ $student->class_room->name_class ?? '-' }}
+                <div class="student-qrcode">
+                    {!! DNS2D::getBarcodeHTML("$student->nis", 'QRCODE', 2, 2) !!}
+                </div>
             </div>
 
-            <div class="student-qrcode">
-                {!! DNS2D::getBarcodeHTML("$student->nis", 'QRCODE', 2, 2) !!}
+            {{-- CARD 2 --}}
+            <div class="card-container" style="margin-top: 10px">
+                <img src="{{ public_path('static/ryoogen/illustration/card-presensi-2.png') }}" class="card-image">
             </div>
         </div>
+    @else
+        @foreach ($students as $siswa)
+            <div class="card-page"> <!-- Tambahkan wrapper anti terpotong -->
 
-        {{-- CARD 2 --}}
-        <div class="card-container" style="margin-top: 10px">
-            <img src="{{ public_path('static/ryoogen/illustration/card-presensi-2.png') }}" class="card-image">
-        </div>
-    </div>
+                <div class="card-wrapper">
+
+                    {{-- CARD 1 --}}
+                    <div class="card-container">
+                        <img src="{{ public_path('static/ryoogen/illustration/card-presensi-1.png') }}"
+                            class="card-image">
+
+                        {{-- Foto --}}
+                        @if ($siswa->photo)
+                            <div class="student-photo"
+                                style="background-image:url('{{ public_path('storage/' . $siswa->photo) }}')"></div>
+                        @endif
+
+                        {{-- Informasi --}}
+                        <div class="student-info">
+                            {{ $siswa->full_name }} <br>
+                            {{ $siswa->nis }} <br>
+                            {{ $siswa->class_room->name_class ?? '-' }}
+                        </div>
+
+                        <div class="student-qrcode">
+                            {!! DNS2D::getBarcodeHTML("$siswa->nis", 'QRCODE', 2, 2) !!}
+                        </div>
+                    </div>
+
+                    {{-- CARD 2 --}}
+                    <div class="card-container" style="margin-top: 10px">
+                        <img src="{{ public_path('static/ryoogen/illustration/card-presensi-2.png') }}"
+                            class="card-image">
+                    </div>
+
+                </div>
+
+            </div>
+        @endforeach
+
+    @endif
 </body>
 
 </html>

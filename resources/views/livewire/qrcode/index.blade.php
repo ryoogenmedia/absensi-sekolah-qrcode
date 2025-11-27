@@ -8,7 +8,7 @@
 <div>
     <x-slot name="title">Qrcode Siswa</x-slot>
 
-    <div class="row g-2 align-items-center mb-4 content-button">
+    <div class="row g-2 align-items-center mb-4">
         <div class="col">
             <div class="page-pretitle">
                 Qrcode Siswa
@@ -20,8 +20,9 @@
 
         <div class="col-auto ms-auto d-print-none">
             <div class="btn-list">
-                <a href="{{ route('print-pdf.card') }}" target="_blank" class="btn btn-blue">
-                    <span class="las la-print fs-1 me-lg-2 me-0"></span>
+                <a href="{{ route('print-pdf.card', ['kelas' => $filters['kelas'] ?? '']) }}" target="_blank"
+                    class="btn btn-blue">
+                    <span class="las la-id-card fs-1 me-lg-2 me-0"></span>
                     <span class="d-lg-inline d-none">Cetak Semua Kartu Siswa</span>
                 </a>
             </div>

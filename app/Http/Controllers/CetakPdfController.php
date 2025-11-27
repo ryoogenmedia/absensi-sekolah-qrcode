@@ -9,26 +9,43 @@ class CetakPdfController extends Controller
 {
     public function card(Request $request)
     {
-        $student = null;
-        $cardId = $request->card_id ?? null;
+        $cardId = $request->card_id;
+        $kelas  = $request->kelas;
 
-        if ($cardId) {
+        // Ambil data student
+        if ($kelas) {
+            $students = Student::where('class_room_id', $kelas)->get();
+        } elseif ($cardId) {
             $student = Student::where('nis', $cardId)->first();
+
+            // Jika tidak ditemukan
+            if (!$student) {
+                abort(404, 'Data siswa tidak ditemukan.');
+            }
+
+            // Samakan format menjadi collection
+            $students = collect([$student]);
         } else {
-            $student = Student::all();
+            $students = Student::all();
         }
 
+        // Generate PDF
         $pdf = \PDF::loadView('pdf.print-card', [
-            'student' => $student,
-            'card_id' => $cardId,
-        ])->setPaper('a4', 'portrait');
+            'students' => $students,
+            'card_id'  => $cardId,
+            'kelas'    => $kelas,
+        ])->setPaper('a3', 'portrait');
 
-        if ($cardId) {
-            $fileName = "cetak-kartu-siswa-{$student->full_name}-{$student->nis}";
+        // Tentukan nama file
+        if ($cardId && isset($student)) {
+            $safeName = preg_replace('/[^A-Za-z0-9\-]/', '_', $student->full_name);
+            $fileName = "cetak-kartu-siswa-{$safeName}-{$student->nis}";
+        } elseif ($kelas) {
+            $fileName = "cetak-kartu-kelas-{$kelas}";
         } else {
             $fileName = "cetak-semua-kartu-siswa";
         }
 
-        return $pdf->stream($fileName);
+        return $pdf->stream($fileName . '.pdf');
     }
 }
