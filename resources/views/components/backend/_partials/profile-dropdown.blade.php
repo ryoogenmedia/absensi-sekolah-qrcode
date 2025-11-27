@@ -6,7 +6,7 @@
             <div>{{ auth()->user()->username }}</div>
 
             <div class="mt-1 small text-muted">
-                {{ ucwords(str_replace('-', ' ', auth()->user()->role)) }}
+                {{ strtolower(str_replace('-', ' ', auth()->user()->role)) }}
             </div>
         </div>
     </a>
