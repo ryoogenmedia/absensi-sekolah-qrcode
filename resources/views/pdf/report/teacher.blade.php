@@ -49,7 +49,7 @@
 
 <body>
     <div class="logo-container">
-        <img class="logo" src="{{ public_path('ryoogenmedia/logo-dark.png') }}" alt="logo">
+        <img class="logo" src="{{ public_path('static/ryoogen/logo/DARK.png') }}" alt="logo">
     </div>
 
     <h4>DATA LAPORAN GURU</h4>
