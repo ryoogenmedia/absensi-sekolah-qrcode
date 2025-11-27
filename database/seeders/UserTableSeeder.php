@@ -16,21 +16,21 @@ class UserTableSeeder extends Seeder
     {
         $users = [
             [
-                'username'          => 'bintang_admin',
+                'username'          => 'Bintang Admin',
                 'email'             => 'muhbintang650@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => Hash::make('bintang123'),
                 'role'              => 'developer',
             ],
             [
-                'username'          => 'fery_admin',
+                'username'          => 'Fery Admin',
                 'email'             => 'feryfadulrahman@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => Hash::make('fery123'),
                 'role'              => 'developer',
             ],
             [
-                'username'          => 'nurhaliza_admin',
+                'username'          => 'Nurhaliza Admin',
                 'email'             => 'nurhalizaadmin@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => Hash::make('nurhaliza123'),
