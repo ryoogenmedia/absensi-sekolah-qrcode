@@ -10,7 +10,7 @@
 <div>
     <x-slot name="title">Ruang Kelas</x-slot>
 
-    <div class="custom-header row g-2 align-items-center mb-4">
+    <div class="row g-2 align-items-center mb-4">
         <div class="col">
             <div class="page-pretitle">
                 Ruang Kelas
