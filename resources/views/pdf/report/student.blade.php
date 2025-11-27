@@ -76,8 +76,8 @@
                     <td style="text-align: center">{{ $loop->iteration }}</td>
                     <td>{{ $student->full_name ?? '-' }}</td>
                     <td>{{ $student->nis ?? '-' }}</td>
-                    <td>{{ $student->gender ?? '-' }}</td>
-                    <td>{{ $student->phone_number ?? '-' }}</td>
+                    <td>{{ $student->sex ?? '-' }}</td>
+                    <td>{{ $student->phone ?? '-' }}</td>
                     <td>{{ $student->religion ?? '-' }}</td>
                     <td>{{ $student->address ?? '-' }}</td>
                 </tr>

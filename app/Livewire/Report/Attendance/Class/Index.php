@@ -87,7 +87,7 @@ class Index extends Component
     #[Computed()]
     public function allData()
     {
-        return ClassAttendance::all();
+        return StudentAttendance::all();
     }
 
     public function updatedFilters()

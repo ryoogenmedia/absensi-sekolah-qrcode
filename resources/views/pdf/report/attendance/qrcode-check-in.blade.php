@@ -60,6 +60,7 @@
 
     @if ($date_start || $date_end)
         <h3>
+            PERIODE
             {{ implode(
                 ' - ',
                 array_filter([

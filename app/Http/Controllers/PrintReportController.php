@@ -5,18 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\CheckInRecord;
 use App\Models\CheckOutRecord;
 use App\Models\ClassAttendance;
+use App\Models\ClassRoom;
 use App\Models\ClassSchedule;
 use App\Models\Student;
+use App\Models\StudentAttendance;
 use App\Models\SubjectStudy;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class PrintReportController extends Controller
 {
-
-    public function generateReport(Request $request, $model, $view, $fileName, $extra = [])
+    public function generateReport(Request $request, $source, $view, $fileName, $extra = [])
     {
-        $dataQuery = $model::query();
+        $dataQuery = $source instanceof \Illuminate\Database\Eloquent\Builder
+            ? $source
+            : $source::query();
 
         $dateStart = $request->date_start ? $request->date_start . '-01' : null;
         $dateEnd   = $request->date_end
@@ -34,7 +37,7 @@ class PrintReportController extends Controller
         $data = $dataQuery->get();
 
         if (!$dateStart && !$dateEnd) {
-            $data = $model::all();
+            $data = $dataQuery->get();
         }
 
         $payload = array_merge([
@@ -43,45 +46,44 @@ class PrintReportController extends Controller
             'date_end'   => $request->date_end,
         ], $extra);
 
-        $pdf = \PDF::loadView($view, $payload)
-            ->setPaper('a4', 'portrait');
+        $pdf = \PDF::loadView($view, $payload)->setPaper('a4', 'portrait');
 
         $file = "cetak-data-{$fileName}";
-        if ($dateStart && $dateEnd) {
-            $file .= "-[$request->date_start-$request->date_end]";
-        } elseif ($dateStart) {
-            $file .= "-[$request->date_start]";
-        } elseif ($dateEnd) {
-            $file .= "-[$request->date_end]";
-        }
-        $file .= ".pdf";
 
-        return $pdf->stream($file);
+        if ($request->date_start && $request->date_end) {
+            $file .= "-[{$request->date_start}-{$request->date_end}]";
+        } elseif ($request->date_start) {
+            $file .= "-[{$request->date_start}]";
+        } elseif ($request->date_end) {
+            $file .= "-[{$request->date_end}]";
+        }
+
+        return $pdf->stream($file . ".pdf");
     }
 
     public function student(Request $request)
     {
+        $kelas = ClassRoom::findOrFail($request->kelas);
+
         return $this->generateReport(
             $request,
-            Student::class,
-            'print.student',
+            Student::query()->where('class_room_id', $kelas->id),
+            'pdf.report.student',
             'laporan-siswa',
-            [
-                'kelas' => $request->kelas
-            ]
+            ['kelas' => $kelas->name_class ?? 'SEMUA KELAS']
         );
     }
 
     public function teacher(Request $request)
     {
+        $mapel = SubjectStudy::findOrFail($request->mapel);
+
         return $this->generateReport(
             $request,
-            Teacher::class,
-            'print.teacher',
+            Teacher::query()->where('subject_study_id', $mapel->id),
+            'pdf.report.teacher',
             'laporan-guru',
-            [
-                'mata_pelajaran' => $request->mata_pelajaran
-            ]
+            ['mata_pelajaran' => $mapel->name_subject]
         );
     }
 
@@ -90,20 +92,24 @@ class PrintReportController extends Controller
         return $this->generateReport(
             $request,
             SubjectStudy::class,
-            'print.subject-study',
+            'pdf.report.subject-study',
             'laporan-mata-pelajaran'
         );
     }
 
     public function classSchedule(Request $request)
     {
+        $kelas = ClassRoom::find($request->kelas);
+
         return $this->generateReport(
             $request,
-            ClassSchedule::class,
-            'print.class-schedule',
+            ClassSchedule::query()->when($kelas, function ($query) use ($kelas) {
+                $query->where('class_room_id', $kelas->id);
+            }),
+            'pdf.report.class-schedule',
             'laporan-jadwal-kelas',
             [
-                'class_room' => $request->class_room,
+                'class_room' => $kelas->name_class ?? 'SEMUA KELAS',
                 'start_time' => $request->start_time,
                 'end_time'   => $request->end_time,
             ]
@@ -112,14 +118,18 @@ class PrintReportController extends Controller
 
     public function attendanceClass(Request $request)
     {
+        $kelas = ClassRoom::find($request->kelas);
+
         return $this->generateReport(
             $request,
-            ClassAttendance::class,
-            'print.class-attendance',
+            StudentAttendance::query()->when($kelas, function ($query) use ($kelas) {
+                $query->whereHas('class_attendance', function ($q) use ($kelas) {
+                    $q->where('class_room_id', $kelas->id);
+                });
+            }),
+            'pdf.report.attendance.class-report',
             'laporan-kehadiran-kelas',
-            [
-                'class_room' => $request->class_room
-            ]
+            ['class_room' => $kelas->name_class ?? 'SEMUA KELAS']
         );
     }
 
@@ -127,8 +137,8 @@ class PrintReportController extends Controller
     {
         return $this->generateReport(
             $request,
-            CheckOutRecord::class,
-            'print.qr-checkin',
+            CheckInRecord::class,
+            'pdf.report.attendance.qrcode-check-in',
             'laporan-check-in'
         );
     }
@@ -137,8 +147,8 @@ class PrintReportController extends Controller
     {
         return $this->generateReport(
             $request,
-            CheckInRecord::class,
-            'print.qr-checkout',
+            CheckOutRecord::class,
+            'pdf.report.attendance.qrcode-check-out',
             'laporan-check-out'
         );
     }

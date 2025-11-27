@@ -55,7 +55,7 @@
     <h4>DATA LAPORAN GURU</h4>
 
     @if ($mata_pelajaran)
-        <h3>{{ $mata_pelajaran }}</h3>
+        <h3>MAPEL {{ strtoupper($mata_pelajaran) }}</h3>
     @endif
 
     <table>
@@ -75,10 +75,9 @@
                 <tr>
                     <td style="text-align: center">{{ $loop->iteration }}</td>
                     <td>{{ $teacher->name ?? '-' }}</td>
-                    <td>{{ $teacher->name ?? '-' }}</td>
                     <td>{{ $teacher->subject_study->name_subject ?? '-' }}</td>
                     <td>{{ $teacher->nip ?? '-' }}</td>
-                    <td>{{ $teacher->email ?? '-' }}</td>
+                    <td>{{ $teacher->user->email ?? '-' }}</td>
                     <td>{{ $teacher->address ?? '-' }}</td>
                     <td>{{ $teacher->sex ?? '-' }}</td>
                 </tr>

@@ -60,6 +60,7 @@
 
     @if ($date_start || $date_end)
         <h3>
+            PERIODE
             {{ implode(
                 ' - ',
                 array_filter([
@@ -74,33 +75,39 @@
         <thead>
             <tr>
                 <th>NO</th>
-                <th>Kelas</th>
+                <th class="text-center">Kelas</th>
+
+                <th>Tanggal Presensi</th>
+
+                <th>Nama Presensi</th>
+
                 <th>Guru Pengajar</th>
-                <th>Hari</th>
-                <th>Jam Mulai</th>
-                <th>Jam Selesai</th>
+
                 <th>Mata Pelajaran</th>
+
+                <th>Status Presensi</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($data as $class_attendance)
+            @forelse ($data as $attendance)
                 <tr>
-                    <td class="text-center">
-                        <b>{{ $class_attendance->class_attendance->class_room->name_class ?? '' }}</b>
+                    <td class="text-center">{{ $loop->iteration }}</td>
+
+                    <td class="text-center"><b>{{ $attendance->class_attendance->class_room->name_class ?? '' }}</b>
                     </td>
 
                     <td>
-                        {{ $class_attendance->class_attendance->created_at->translatedFormat('l, d F Y') ?? '-' }}
+                        {{ $attendance->class_attendance->created_at->translatedFormat('l, d F Y') ?? '-' }}
                     </td>
 
-                    <td>{{ $class_attendance->student->full_name ?? '-' }}</td>
+                    <td>{{ $attendance->student->full_name ?? '-' }}</td>
 
-                    <td>{{ $class_attendance->class_attendance->class_schedule->teacher->name ?? '-' }}</td>
+                    <td>{{ $attendance->class_attendance->class_schedule->teacher->name ?? '-' }}</td>
 
-                    <td>{{ strtoupper($class_attendance->class_attendance->class_schedule->subject_study->name_subject ?? '-') }}
+                    <td>{{ strtoupper($attendance->class_attendance->class_schedule->subject_study->name_subject ?? '-') }}
                     </td>
 
-                    <td>{{ ucwords($class_attendance->status_attendance) ?? '-' }}</td>
+                    <td>{{ ucwords($attendance->status_attendance) ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>
