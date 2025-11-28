@@ -41,8 +41,6 @@
                                     @endforeach
                                 </optgroup>
                             @endforeach
-
-
                         </x-form.select>
                     </div>
                 </div>

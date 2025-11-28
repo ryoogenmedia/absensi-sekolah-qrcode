@@ -37,6 +37,8 @@
                 <livewire:setting.profile.teacher-profile />
             @elseif (auth()->user()->role == 'siswa' && auth()->user()->student)
                 <livewire:setting.profile.student-profile />
+            @elseif (auth()->user()->role == 'wali siswa' && auth()->user()->studentGuardian)
+                <livewire:setting.profile.student-guardian-profile />
             @else
                 <div class="card">
                     <div class="card-body py-5 text-center">
