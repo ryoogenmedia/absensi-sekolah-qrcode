@@ -18,71 +18,81 @@ class StudentGuardianGenerate extends Command
         $this->info("Generating guardian & user login...");
 
         $password = Hash::make('wali12345');
-        $count = 0;
 
-        // Preload data (sangat penting untuk kecepatan)
+        // ==== Hitung total student untuk progress bar ====
+        $totalStudents = Student::count();
+        $this->output->progressStart($totalStudents);
+
+        // Preload data (SUPER penting untuk kecepatan)
         $existingUsernames = User::pluck('id', 'username')->toArray();
         $existingGuardianStudentIds = StudentGuardian::pluck('student_id')->toArray();
 
-        Student::chunk(500, function ($students) use (&$count, $existingUsernames, $existingGuardianStudentIds, $password) {
+        $count = 0;
+
+        Student::chunk(10, function ($students) use (&$count, $existingUsernames, $existingGuardianStudentIds, $password) {
 
             foreach ($students as $student) {
 
-                // Skip jika sudah memiliki guardian
-                if (in_array($student->id, $existingGuardianStudentIds)) continue;
+                // Skip jika sudah ada guardian
+                if (!in_array($student->id, $existingGuardianStudentIds)) {
 
-                // Tentukan nama wali
-                if ($student->father_name) {
-                    $guardianName = $student->father_name;
-                    $relationship = 'Ayah';
-                } elseif ($student->mother_name) {
-                    $guardianName = $student->mother_name;
-                    $relationship = 'Ibu';
-                } else {
-                    $guardianName = "Wali " . $student->full_name;
-                    $relationship = 'Wali';
-                }
+                    // Tentukan wali
+                    if ($student->father_name) {
+                        $guardianName = $student->father_name;
+                        $relationship = 'Ayah';
+                    } elseif ($student->mother_name) {
+                        $guardianName = $student->mother_name;
+                        $relationship = 'Ibu';
+                    } else {
+                        $guardianName = "Wali " . $student->full_name;
+                        $relationship = 'Wali';
+                    }
 
-                // Username (pasti unik)
-                $username = "wali_{$student->id}";
+                    // Username unik
+                    $username = "wali_{$student->id}";
 
-                // Jika user sudah ada, tidak membuat ulang
-                if (isset($existingUsernames[$username])) {
-                    $userId = $existingUsernames[$username];
-                } else {
+                    // Cek user sudah ada atau belum
+                    if (isset($existingUsernames[$username])) {
+                        $userId = $existingUsernames[$username];
+                    } else {
+                        $email = $this->shortEmail($student->id);
 
-                    // EMAIL SANGAT PENDEK → w123@g.com
-                    $email = $this->shortEmail($student->id);
+                        $user = User::create([
+                            'username' => $username,
+                            'email' => $email,
+                            'role' => 'guardian',
+                            'password' => $password,
+                            'force_logout' => false,
+                        ]);
 
-                    $user = User::create([
-                        'username' => $username,
-                        'email' => $email,
-                        'role' => 'guardian',
-                        'password' => $password,
-                        'force_logout' => false,
+                        $userId = $user->id;
+                    }
+
+                    // Buat data guardian
+                    StudentGuardian::create([
+                        'student_id' => $student->id,
+                        'user_id' => $userId,
+                        'guardian_name' => $guardianName,
+                        'guardian_relationship' => $relationship,
+                        'guardian_contact' => $student->phone ?? '-',
                     ]);
 
-                    $userId = $user->id;
+                    $count++;
                 }
 
-                // Insert Student Guardian
-                StudentGuardian::create([
-                    'student_id' => $student->id,
-                    'user_id' => $userId,
-                    'guardian_name' => $guardianName,
-                    'guardian_relationship' => $relationship,
-                    'guardian_contact' => $student->phone ?? '-',
-                ]);
-
-                $count++;
+                // === Update progress bar ===
+                $this->output->progressAdvance();
             }
         });
 
-        $this->info("SELESAI! Total guardian baru: {$count}");
+        // Tutup progress bar
+        $this->output->progressFinish();
+
+        $this->info("\nSELESAI! Total guardian baru: {$count}");
     }
 
     /**
-     * Email pendek dan unik, format: w{ID}@g.com
+     * Email pendek dan unik → w{ID}@g.com
      * Contoh: w40@g.com
      */
     private function shortEmail($studentId)
