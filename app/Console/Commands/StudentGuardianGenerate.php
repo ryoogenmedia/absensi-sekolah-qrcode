@@ -15,26 +15,27 @@ class StudentGuardianGenerate extends Command
 
     public function handle()
     {
-        $this->info("Generating guardian users...");
+        $this->info("Generating guardian & user login...");
+
+        $password = Hash::make('wali12345');
         $count = 0;
 
+        // Preload data (sangat penting untuk kecepatan)
         $existingUsernames = User::pluck('id', 'username')->toArray();
         $existingGuardianStudentIds = StudentGuardian::pluck('student_id')->toArray();
 
-        Student::chunk(300, function ($students) use (&$count, $existingUsernames, $existingGuardianStudentIds) {
+        Student::chunk(500, function ($students) use (&$count, $existingUsernames, $existingGuardianStudentIds, $password) {
 
             foreach ($students as $student) {
 
-                // Skip jika guardian sudah ada
-                if (in_array($student->id, $existingGuardianStudentIds)) {
-                    continue;
-                }
+                // Skip jika sudah memiliki guardian
+                if (in_array($student->id, $existingGuardianStudentIds)) continue;
 
                 // Tentukan nama wali
-                if (!empty($student->father_name)) {
+                if ($student->father_name) {
                     $guardianName = $student->father_name;
                     $relationship = 'Ayah';
-                } elseif (!empty($student->mother_name)) {
+                } elseif ($student->mother_name) {
                     $guardianName = $student->mother_name;
                     $relationship = 'Ibu';
                 } else {
@@ -42,29 +43,29 @@ class StudentGuardianGenerate extends Command
                     $relationship = 'Wali';
                 }
 
-                // Username fix → selalu pakai ID siswa
+                // Username (pasti unik)
                 $username = "wali_{$student->id}";
 
-                // Jika user sudah ada → skip buat ulang email
+                // Jika user sudah ada, tidak membuat ulang
                 if (isset($existingUsernames[$username])) {
                     $userId = $existingUsernames[$username];
                 } else {
 
-                    // === EMAIL UNIK ===
-                    $email = $this->generateUniqueGuardianEmail($student);
+                    // EMAIL SANGAT PENDEK → w123@g.com
+                    $email = $this->shortEmail($student->id);
 
                     $user = User::create([
                         'username' => $username,
                         'email' => $email,
                         'role' => 'guardian',
-                        'password' => Hash::make('password'),
+                        'password' => $password,
                         'force_logout' => false,
                     ]);
 
                     $userId = $user->id;
                 }
 
-                // Simpan StudentGuardian
+                // Insert Student Guardian
                 StudentGuardian::create([
                     'student_id' => $student->id,
                     'user_id' => $userId,
@@ -77,21 +78,15 @@ class StudentGuardianGenerate extends Command
             }
         });
 
-        $this->info("DONE! Total guardians generated: {$count}");
+        $this->info("SELESAI! Total guardian baru: {$count}");
     }
 
-
     /**
-     * Generate unique guardian email
+     * Email pendek dan unik, format: w{ID}@g.com
+     * Contoh: w40@g.com
      */
-    private function generateUniqueGuardianEmail($student)
+    private function shortEmail($studentId)
     {
-        $firstName = explode(" ", trim($student->full_name))[0];
-        $cleanName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($firstName));
-
-        // Timestamp + student ID = dijamin unik selamanya
-        $uniquePart = time() . '_' . $student->id;
-
-        return "wali_{$cleanName}_{$uniquePart}@gmail.com";
+        return "w{$studentId}@g.com";
     }
 }
