@@ -17,23 +17,25 @@ class StudentGuardianProfile extends Component
     public $kontakWali;
     public $siswa;
 
+    public $studentGuardianId;
+
     public function rules()
     {
         return [
             'namaWali' => ['required', 'string', 'max:255'],
             'hubunganWali' => ['required', 'string', 'max:100'],
             'kontakWali' => ['required', 'string', 'max:50'],
-            'siswa' => ['required', 'exists:students,id '],
+            'siswa' => ['required', 'exists:students,id'],
         ];
     }
 
     #[Computed()]
     public function students()
     {
-        return Student::all();
+        return Student::all(['id', 'nis', 'full_name', 'class_room_id'])->load('class_room');
     }
 
-    public function save()
+    public function edit()
     {
         $this->validate();
 
@@ -70,15 +72,26 @@ class StudentGuardianProfile extends Component
                 'message' => 'Gagal!',
                 'detail' => "Gagal menyunting data profil wali siswa.",
             ]);
+
+            return redirect()->back();
         }
+
+        session()->flash('alert', [
+            'type' => 'success',
+            'message' => 'Berhasil!',
+            'detail' => "Berhasil menyunting data profil wali siswa.",
+        ]);
+
+        return redirect()->back();
     }
 
     public function mount()
     {
-        $student = auth()->user()->student;
-        $guardian = $student->guardian;
+        $guardian = auth()->user()->student_guardian;
+        $student = $guardian->student;
 
         if ($guardian) {
+            $this->studentGuardianId = $guardian->id;
             $this->namaWali = $guardian->guardian_name;
             $this->hubunganWali = $guardian->guardian_relationship;
             $this->kontakWali = $guardian->guardian_contact;

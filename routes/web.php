@@ -238,7 +238,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
      * beranda / home
      */
     Route::get('beranda', Home\Index::class)->name('home')
-        ->middleware('roles:admin,siswa,guru,developer, wali siswa');
+        ->middleware('roles:admin,siswa,guru,developer,wali siswa');
 
     /**
      * class attendance / presensi kelas

@@ -57,12 +57,19 @@ class User extends Authenticatable
             : 'https://gravatar.com/avatar/' . md5(strtolower(trim($this->email))) . '?s=1024';
     }
 
-    public function teacher(){
+    public function teacher()
+    {
         return $this->hasOne(Teacher::class, 'user_id', 'id')->withDefault();
     }
 
-    public function student(){
+    public function student()
+    {
         return $this->hasOne(Student::class, 'user_id', 'id')->withDefault();
+    }
+
+    public function student_guardian()
+    {
+        return $this->hasOne(StudentGuardian::class, 'user_id', 'id')->withDefault();
     }
 
     public function setUsernameAttribute($value)

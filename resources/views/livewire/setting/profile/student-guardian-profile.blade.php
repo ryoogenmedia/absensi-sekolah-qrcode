@@ -10,6 +10,10 @@
                     <x-form.input required wire:model="namaWali" name="namaWali" label="Nama Wali Siswa" type="text"
                         placeholder="masukkan nama wali siswa" autofocus />
 
+                    @php
+                        $grouped = $this->students->groupBy(fn($student) => $student->class_room->name_class);
+                    @endphp
+
                     <div wire:ignore>
                         <x-form.select wire:model="siswa" name="siswa" label="Siswa"
                             form-control-class="js-example-basic-single form-control">
@@ -31,9 +35,9 @@
 
                 <div class="col-lg-6 col-12">
                     <x-form.select required wire:model="hubunganWali" name="hubunganWali" label="Hubungan dengan Siswa">
-                        <option value="" selected>- Pilih Hubungan -</option>
-                        @foreach (config('const.relationships') as $hubungan)
-                            <option value="{{ $hubungan }}">{{ $hubungan }}</option>
+                        <option value="" selected>- Pilih -</option>
+                        @foreach (config('const.guardian_relationships') as $hubungan)
+                            <option value="{{ $hubungan }}">{{ ucwords($hubungan) }}</option>
                         @endforeach
                     </x-form.select>
 

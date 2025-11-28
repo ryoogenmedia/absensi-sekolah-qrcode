@@ -36,16 +36,24 @@ class Student extends Model
         'birth_date' => 'date',
     ];
 
-    public function student_attendances(){
-        return $this->hasMany(StudentAttendance::class,'student_id','id');
+    public function student_attendances()
+    {
+        return $this->hasMany(StudentAttendance::class, 'student_id', 'id');
     }
 
-    public function class_room(){
-        return $this->belongsTo(ClassRoom::class,'class_room_id','id')->withDefault();
+    public function class_room()
+    {
+        return $this->belongsTo(ClassRoom::class, 'class_room_id', 'id')->withDefault();
     }
 
-    public function user(){
-        return $this->belongsTo(User::class,'user_id','id')->withDefault();
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')->withDefault();
+    }
+
+    public function guardian()
+    {
+        return $this->hasOne(StudentGuardian::class, 'student_id', 'id')->withDefault();
     }
 
     public function getBirthDateAttribute($value)
