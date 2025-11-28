@@ -28,11 +28,27 @@ class StudentGuardianGenerate extends Command
                 continue;
             }
 
-            $guardianName = $student->father_name ?? $student->mother_name ?? 'Orang Tua';
-            $relationship = $student->father_name ? 'Ayah' : ($student->mother_name ? 'Ibu' : 'Wali');
+            $hasFather = !empty($student->father_name);
+            $hasMother = !empty($student->mother_name);
+
+            if ($hasFather) {
+                $guardianName = $student->father_name;
+                $relationship = 'Ayah';
+            } elseif ($hasMother) {
+                $guardianName = $student->mother_name;
+                $relationship = 'Ibu';
+            } else {
+                $guardianName = "Wali " . $student->full_name;
+                $relationship = 'Wali';
+            }
+
+            $firstName = explode(" ", trim($student->full_name))[0];
+
+            $emailName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($firstName));
+
+            $email = "wali_{$emailName}@gmail.com";
 
             $username = "wali_{$student->id}";
-            $email = "wali_{$student->id}@gmail.com";
 
             $user = User::where('username', $username)->first();
 
@@ -45,7 +61,7 @@ class StudentGuardianGenerate extends Command
                     'force_logout' => false,
                 ]);
 
-                $this->info("Created user for guardian: {$username}");
+                $this->info("Created user: {$username} ({$email})");
             } else {
                 $this->line("SKIP user: Already exists ({$username})");
             }
@@ -63,6 +79,6 @@ class StudentGuardianGenerate extends Command
             $count++;
         }
 
-        $this->info("DONE! Total guardian generated: {$count}");
+        $this->info("DONE! Total guardians generated: {$count}");
     }
 }
