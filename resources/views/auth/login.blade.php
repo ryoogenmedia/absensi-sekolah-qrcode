@@ -17,16 +17,6 @@
                 <div class="mb-2">
                     <label class="form-label">
                         <span>Kata Sandi</span>
-
-                        <span>
-                            @if (Route::has('password.request'))
-                                <span class="form-label-description">
-                                    <a href="{{ route('password.request') }}">
-                                        Lupa kata sandi?
-                                    </a>
-                                </span>
-                            @endif
-                        </span>
                     </label>
 
                     <input class="form-control" type="password" name="password" placeholder="************" required>
