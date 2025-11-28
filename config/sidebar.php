@@ -30,6 +30,26 @@ return [
         'roles' => ['siswa'],
     ],
 
+    // GUARDIAN
+
+    [
+        'title' => 'Kehadiran Anak Anda',
+        'icon' => 'calendar-check',
+        'route-name' => 'guardian-student-presence.index',
+        'is-active' => 'guardian-student-presence.index',
+        'description' => 'Untuk melihat kehadiran anda.',
+        'roles' => ['wali siswa'],
+    ],
+
+    [
+        'title' => 'Jadwal Mapel Anak Anda',
+        'icon' => 'calendar-alt',
+        'route-name' => 'guardian-student-schedule.index',
+        'is-active' => 'guardian-student-schedule.index',
+        'description' => 'Untuk melihat jadwal mapel anda.',
+        'roles' => ['wali siswa'],
+    ],
+
     // GURU
 
     [

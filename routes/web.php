@@ -103,6 +103,20 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     });
 
     /**
+     * guardian student schedule / jadwal siswa wali
+     */
+    Route::prefix('jadwal-siswa-wali')->name('guardian-student-schedule.')->middleware('roles:wali siswa')->group(function () {
+        Route::get('/', GuardianStudentSchedule\Index::class)->name('index');
+    });
+
+    /**
+     * guardian student presence / presensi siswa wali
+     */
+    Route::prefix('presensi-siswa-wali')->name('guardian-student-presence.')->middleware('roles:wali siswa')->group(function () {
+        Route::get('/', GuardianStudentPresence\Index::class)->name('index');
+    });
+
+    /**
      *  persence student / presensi siswa
      */
     Route::prefix('presensi-siswa')->name('presence-student.')->middleware('roles:siswa')->group(function () {
