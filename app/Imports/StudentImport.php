@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\ClassRoom;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -16,16 +17,14 @@ class StudentImport implements ToModel, WithHeadingRow, WithChunkReading, Should
 {
     public function model(array $row)
     {
-        // -----------------------------------
-        // ABAIKAN BARIS KOSONG
-        // -----------------------------------
+        if (!isset($row['nis']) || empty(trim($row['nis']))) {
+            return null;
+        }
+
         if (!isset($row['nama_lengkap']) || empty(trim($row['nama_lengkap']))) {
             return null;
         }
 
-        // -----------------------------------
-        // KONVERSI TANGGAL LAHIR
-        // -----------------------------------
         $tanggalLahir = null;
 
         if (!empty($row['tanggal_lahir'])) {
@@ -34,43 +33,37 @@ class StudentImport implements ToModel, WithHeadingRow, WithChunkReading, Should
                 : date('Y-m-d', strtotime($row['tanggal_lahir']));
         }
 
-        // -----------------------------------
-        // CARI CLASS ROOM
-        // -----------------------------------
-        $classRoom = null;
+        $classRoomId = null;
 
         if (!empty($row['kelas'])) {
             $classRoom = ClassRoom::where('name_class', trim($row['kelas']))->first();
+            $classRoomId = $classRoom->id ?? null;
         }
 
-        // -----------------------------------
-        // BUAT / UPDATE USER SISWA
-        // -----------------------------------
+        if ($classRoomId === null) {
+            Log::warning("❗ SKIP IMPORT SISWA — Kelas '{$row['kelas']}' tidak ditemukan. NIS: {$row['nis']}");
+            return null;
+        }
+
         $user = User::updateOrCreate(
+            ['username' => $row['nis']],
             [
-                'email' => $row['email'] ?? null, // kolom unik
-            ],
-            [
-                'username'          => $row['nama_lengkap'] ?? 'Siswa Baru',
+                'name'              => $row['nama_lengkap'],
+                'email'             => $row['email'] ?? null,
                 'password'          => Hash::make($row['kata_sandi'] ?? $row['nis']),
                 'email_verified_at' => now(),
                 'role'              => 'siswa',
             ]
         );
 
-        // -----------------------------------
-        // SIMPAN / UPDATE SISWA
-        // -----------------------------------
         return Student::updateOrCreate(
-            [
-                'nis' => $row['nis'] ?? null, // kolom unik
-            ],
+            ['nis' => $row['nis']],
             [
                 'user_id'        => $user->id,
-                'class_room_id'  => $classRoom->id ?? null,
+                'class_room_id'  => $classRoomId,
                 'in_school'      => true,
 
-                'full_name'      => $row['nama_lengkap'] ?? null,
+                'full_name'      => $row['nama_lengkap'],
                 'call_name'      => $row['nama_panggilan'] ?? null,
                 'sex'            => $row['jenis_kelamin'] ?? null,
 
@@ -91,7 +84,7 @@ class StudentImport implements ToModel, WithHeadingRow, WithChunkReading, Should
                 'father_job'     => $row['pekerjaan_ayah'] ?? null,
                 'mother_job'     => $row['pekerjaan_ibu'] ?? null,
 
-                'photo'          => null, // Upload foto lain
+                'photo'          => null,
             ]
         );
     }

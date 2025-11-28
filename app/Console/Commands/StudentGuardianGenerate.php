@@ -11,73 +11,69 @@ use Illuminate\Support\Facades\Hash;
 class StudentGuardianGenerate extends Command
 {
     protected $signature = 'generate:student-guardian';
-
     protected $description = 'Generate guardian + user login for students without guardians';
 
     public function handle()
     {
         $this->info("Generating guardian users...");
-
-        $students = Student::all();
         $count = 0;
 
-        foreach ($students as $student) {
+        $existingUsernames = User::pluck('id', 'username')->toArray();
+        $existingGuardianStudentIds = StudentGuardian::pluck('student_id')->toArray();
 
-            if ($student->guardian && $student->guardian->exists) {
-                $this->line("SKIP guardian: Exists for student ID {$student->id}");
-                continue;
-            }
+        Student::chunk(300, function ($students) use (&$count, $existingUsernames, $existingGuardianStudentIds) {
 
-            $hasFather = !empty($student->father_name);
-            $hasMother = !empty($student->mother_name);
+            foreach ($students as $student) {
 
-            if ($hasFather) {
-                $guardianName = $student->father_name;
-                $relationship = 'Ayah';
-            } elseif ($hasMother) {
-                $guardianName = $student->mother_name;
-                $relationship = 'Ibu';
-            } else {
-                $guardianName = "Wali " . $student->full_name;
-                $relationship = 'Wali';
-            }
+                if (in_array($student->id, $existingGuardianStudentIds)) {
+                    continue;
+                }
 
-            $firstName = explode(" ", trim($student->full_name))[0];
+                $hasFather = !empty($student->father_name);
+                $hasMother = !empty($student->mother_name);
 
-            $emailName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($firstName));
+                if ($hasFather) {
+                    $guardianName = $student->father_name;
+                    $relationship = 'Ayah';
+                } elseif ($hasMother) {
+                    $guardianName = $student->mother_name;
+                    $relationship = 'Ibu';
+                } else {
+                    $guardianName = "Wali " . $student->full_name;
+                    $relationship = 'Wali';
+                }
 
-            $email = "wali_{$emailName}@gmail.com";
+                $firstName = explode(" ", trim($student->full_name))[0];
+                $emailName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($firstName));
 
-            $username = "wali_{$student->id}";
+                $email = "wali_{$emailName}@gmail.com";
+                $username = "wali_{$student->id}";
 
-            $user = User::where('username', $username)->first();
+                if (isset($existingUsernames[$username])) {
+                    $userId = $existingUsernames[$username];
+                } else {
+                    $user = User::create([
+                        'username' => $username,
+                        'email' => $email,
+                        'role' => 'guardian',
+                        'password' => Hash::make('password'),
+                        'force_logout' => false,
+                    ]);
 
-            if (!$user) {
-                $user = User::create([
-                    'username' => $username,
-                    'email' => $email,
-                    'role' => 'guardian',
-                    'password' => Hash::make('password'),
-                    'force_logout' => false,
+                    $userId = $user->id;
+                }
+
+                StudentGuardian::create([
+                    'student_id' => $student->id,
+                    'user_id' => $userId,
+                    'guardian_name' => $guardianName,
+                    'guardian_relationship' => $relationship,
+                    'guardian_contact' => $student->phone ?? '-',
                 ]);
 
-                $this->info("Created user: {$username} ({$email})");
-            } else {
-                $this->line("SKIP user: Already exists ({$username})");
+                $count++;
             }
-
-            StudentGuardian::create([
-                'student_id' => $student->id,
-                'user_id' => $user->id,
-                'guardian_name' => $guardianName,
-                'guardian_relationship' => $relationship,
-                'guardian_contact' => $student->phone ?? '-',
-            ]);
-
-            $this->info("Generated guardian for student ID {$student->id}");
-
-            $count++;
-        }
+        });
 
         $this->info("DONE! Total guardians generated: {$count}");
     }
