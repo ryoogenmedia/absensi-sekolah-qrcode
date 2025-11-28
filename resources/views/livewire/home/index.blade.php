@@ -19,6 +19,10 @@
         <livewire:home.student-home />
     @endif
 
+    @if (auth()->user()->role == 'wali siswa')
+        <livewire:home.student-guardian-home />
+    @endif
+
     <div class="card mt-4" wire:poll.30000ms>
         <h4 class="card-header">Riwayat Login Pengguna</h4>
         <div class="card-body">

@@ -34,7 +34,7 @@ class ClassScheduleTableSeeder extends Seeder
             $subjectId = $faker->randomElement($subjectStudyIds);
             $teacher->update(['subject_study_id' => $subjectId]);
 
-            $teachCount = $faker->numberBetween(1, 3);
+            $teachCount = $faker->numberBetween(1, 20);
 
             for ($i = 0; $i < $teachCount; $i++) {
 

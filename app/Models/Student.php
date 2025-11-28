@@ -46,6 +46,16 @@ class Student extends Model
         return $this->belongsTo(ClassRoom::class, 'class_room_id', 'id')->withDefault();
     }
 
+    public function check_in_records()
+    {
+        return $this->hasMany(CheckInRecord::class, 'student_id', 'id');
+    }
+
+    public function check_out_records()
+    {
+        return $this->hasMany(CheckOutRecord::class, 'student_id', 'id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id')->withDefault();
