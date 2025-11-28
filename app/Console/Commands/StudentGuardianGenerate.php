@@ -60,7 +60,7 @@ class StudentGuardianGenerate extends Command
                         $user = User::create([
                             'username' => $username,
                             'email' => $email,
-                            'role' => 'guardian',
+                            'role' => 'wali siswa',
                             'password' => $password,
                             'force_logout' => false,
                         ]);
