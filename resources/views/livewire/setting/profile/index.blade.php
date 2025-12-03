@@ -14,7 +14,12 @@
                     <span class="avatar avatar-xl mb-3 avatar-rounded"
                         style="background-image: url({{ auth()->user()->avatarUrl() ? auth()->user()->avatarUrl() : asset('storage/' . auth()->user()->avatar) }})"></span>
 
-                    <h3 class="m-0 mb-1">{{ auth()->user()->name }}
+                    <h3 class="m-0 mb-1">
+                        @if (auth()->user()->role == 'siswa' && auth()->user()->student())
+                            <div>{{ strtoloer(auth()->user()->student->full_name) }}</div>
+                        @else
+                            <div>{{ strtolower(auth()->user()->username) }}</div>
+                        @endif
                     </h3>
 
                     <div class="text-muted">{{ auth()->user()->email ?? '-' }}</div>

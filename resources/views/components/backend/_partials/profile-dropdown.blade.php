@@ -3,7 +3,11 @@
         <span class="avatar avatar-sm" style="background-image: url({{ auth()->user()->avatarUrl() }})"></span>
 
         <div class="d-none d-xl-block ps-2">
-            <div>{{ strtolower(auth()->user()->username) }}</div>
+            @if (auth()->user()->role == 'siswa' && auth()->user()->student())
+                <div>{{ strtoloer(auth()->user()->student->full_name) }}</div>
+            @else
+                <div>{{ strtolower(auth()->user()->username) }}</div>
+            @endif
 
             <div class="mt-1 small text-muted">
                 {{ ucwords(str_replace('-', ' ', auth()->user()->role)) }}
