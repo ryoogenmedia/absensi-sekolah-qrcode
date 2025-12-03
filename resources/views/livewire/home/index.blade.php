@@ -38,8 +38,12 @@
 
                                 <div class="ms-2">
                                     <div class="header font-weight-bold">
-                                        @if (isset($login->student))
+                                        @if (isset($login->student->full_name))
                                             <small><b>{{ $login->student->full_name ?? '-' }}</b></small>
+                                        @elseif (isset($logn->guardian->guardian_name))
+                                            <small><b>{{ $login->guardian->guardian_name ?? '-' }}</b></small>
+                                        @elseif (isset($logn->teacher->name))
+                                            <small><b>{{ $login->teacher->name ?? '-' }}</b></small>
                                         @else
                                             <small><b>{{ $login->username ?? '-' }}</b></small>
                                         @endif
