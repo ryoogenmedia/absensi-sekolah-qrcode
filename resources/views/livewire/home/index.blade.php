@@ -38,7 +38,7 @@
 
                                 <div class="ms-2">
                                     <div class="header font-weight-bold">
-                                        @if (auth()->user()->role == 'siswa' && auth()->user()->student)
+                                        @if (isset($login->student))
                                             <small><b>{{ $login->student->full_name ?? '-' }}</b></small>
                                         @else
                                             <small><b>{{ $login->username ?? '-' }}</b></small>

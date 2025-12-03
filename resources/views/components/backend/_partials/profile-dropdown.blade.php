@@ -4,7 +4,7 @@
 
         <div class="d-none d-xl-block ps-2">
             @if (auth()->user()->role == 'siswa' && auth()->user()->student())
-                <div>{{ strtoloer(auth()->user()->student->full_name) }}</div>
+                <div>{{ strtolower(auth()->user()->student->full_name) }}</div>
             @else
                 <div>{{ strtolower(auth()->user()->username) }}</div>
             @endif
