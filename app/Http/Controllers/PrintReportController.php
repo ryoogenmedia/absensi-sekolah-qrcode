@@ -12,14 +12,19 @@ use App\Models\StudentAttendance;
 use App\Models\SubjectStudy;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 
 class PrintReportController extends Controller
 {
     public function generateReport(Request $request, $source, $view, $fileName, $extra = [])
     {
-        $dataQuery = $source instanceof \Illuminate\Database\Eloquent\Builder
+        $dataQuery = $source instanceof Builder
             ? $source
-            : $source::query();
+            : (is_string($source) && class_exists($source) ? $source::query() : null);
+
+        if ($dataQuery === null) {
+            $dataQuery = Student::query();
+        }
 
         $dateStart = $request->date_start ? $request->date_start . '-01' : null;
         $dateEnd   = $request->date_end
@@ -35,10 +40,6 @@ class PrintReportController extends Controller
         }
 
         $data = $dataQuery->get();
-
-        if (!$dateStart && !$dateEnd) {
-            $data = $dataQuery->get();
-        }
 
         $payload = array_merge([
             'data'       => $data,
@@ -63,27 +64,43 @@ class PrintReportController extends Controller
 
     public function student(Request $request)
     {
-        $kelas = ClassRoom::findOrFail($request->kelas);
+        $kelas = $request->kelas ? ClassRoom::find($request->kelas) : null;
+
+        $query = Student::query();
+
+        if ($kelas) {
+            $query->where('class_room_id', $kelas->id);
+        }
+
+        $kelasName = $kelas->name_class ?? 'SEMUA KELAS';
 
         return $this->generateReport(
             $request,
-            Student::query()->where('class_room_id', $kelas->id),
+            $query,
             'pdf.report.student',
             'laporan-siswa',
-            ['kelas' => $kelas->name_class ?? 'SEMUA KELAS']
+            ['kelas' => $kelasName]
         );
     }
 
     public function teacher(Request $request)
     {
-        $mapel = SubjectStudy::findOrFail($request->mapel);
+        $mapel = $request->mapel ? SubjectStudy::find($request->mapel) : null;
+
+        $query = Teacher::query();
+
+        if ($mapel) {
+            $query->where('subject_study_id', $mapel->id);
+        }
+
+        $mapelName = $mapel->name_subject ?? 'SEMUA MATA PELAJARAN';
 
         return $this->generateReport(
             $request,
-            Teacher::query()->where('subject_study_id', $mapel->id),
+            $query,
             'pdf.report.teacher',
             'laporan-guru',
-            ['mata_pelajaran' => $mapel->name_subject]
+            ['mata_pelajaran' => $mapelName]
         );
     }
 
@@ -99,17 +116,23 @@ class PrintReportController extends Controller
 
     public function classSchedule(Request $request)
     {
-        $kelas = ClassRoom::find($request->kelas);
+        $kelas = $request->kelas ? ClassRoom::find($request->kelas) : null;
+
+        $query = ClassSchedule::query();
+
+        $query->when($kelas, function (Builder $q) use ($kelas) {
+            $q->where('class_room_id', $kelas->id);
+        });
+
+        $kelasName = $kelas->name_class ?? 'SEMUA KELAS';
 
         return $this->generateReport(
             $request,
-            ClassSchedule::query()->when($kelas, function ($query) use ($kelas) {
-                $query->where('class_room_id', $kelas->id);
-            }),
+            $query,
             'pdf.report.class-schedule',
             'laporan-jadwal-kelas',
             [
-                'class_room' => $kelas->name_class ?? 'SEMUA KELAS',
+                'class_room' => $kelasName,
                 'start_time' => $request->start_time,
                 'end_time'   => $request->end_time,
             ]
@@ -118,18 +141,24 @@ class PrintReportController extends Controller
 
     public function attendanceClass(Request $request)
     {
-        $kelas = ClassRoom::find($request->kelas);
+        $kelas = $request->kelas ? ClassRoom::find($request->kelas) : null;
+
+        $query = StudentAttendance::query();
+
+        $query->when($kelas, function (Builder $q) use ($kelas) {
+            $q->whereHas('class_attendance', function ($subQuery) use ($kelas) {
+                $subQuery->where('class_room_id', $kelas->id);
+            });
+        });
+
+        $kelasName = $kelas->name_class ?? 'SEMUA KELAS';
 
         return $this->generateReport(
             $request,
-            StudentAttendance::query()->when($kelas, function ($query) use ($kelas) {
-                $query->whereHas('class_attendance', function ($q) use ($kelas) {
-                    $q->where('class_room_id', $kelas->id);
-                });
-            }),
+            $query,
             'pdf.report.attendance.class-report',
             'laporan-kehadiran-kelas',
-            ['class_room' => $kelas->name_class ?? 'SEMUA KELAS']
+            ['class_room' => $kelasName]
         );
     }
 
