@@ -27,21 +27,25 @@ class ClassAttendance extends Model
         'name_material' => 'string',
     ];
 
-    public function student_attendances(){
-        return $this->hasMany(StudentAttendance::class,'class_attendance_id','id');
+    public function student_attendances()
+    {
+        return $this->hasMany(StudentAttendance::class, 'class_attendance_id', 'id');
     }
 
-    public function class_room(){
-        return $this->belongsTo(ClassRoom::class,'class_room_id','id')->withDefault();
+    public function class_room()
+    {
+        return $this->belongsTo(ClassRoom::class, 'class_room_id', 'id')->withDefault();
     }
 
-    public function class_schedule(){
-        return $this->belongsTo(ClassSchedule::class,'class_schedule_id','id')->withDefault();
+    public function class_schedule()
+    {
+        return $this->belongsTo(ClassSchedule::class, 'class_schedule_id', 'id')->withDefault();
     }
 
-    public function pictureEvidenceUrl(){
+    public function pictureEvidenceUrl()
+    {
         return $this->picture_evidence
             ? asset('storage/' . $this->picture_evidence)
-            : asset('static/ryoogen/default/NO-IMAGE.png');
+            : asset('static/nurhaliza/default/NO-IMAGE.png');
     }
 }

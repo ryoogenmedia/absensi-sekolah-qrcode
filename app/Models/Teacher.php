@@ -33,16 +33,19 @@ class Teacher extends Model
         'admission_year' => 'year',
     ];
 
-    public function subject_study(){
-        return $this->belongsTo(SubjectStudy::class,'subject_study_id','id')->withDefault();
+    public function subject_study()
+    {
+        return $this->belongsTo(SubjectStudy::class, 'subject_study_id', 'id')->withDefault();
     }
 
-    public function class_schedules(){
-        return $this->hasMany(ClassSchedule::class,'teacher_id','id');
+    public function class_schedules()
+    {
+        return $this->hasMany(ClassSchedule::class, 'teacher_id', 'id');
     }
 
-    public function user(){
-        return $this->belongsTo(User::class,'user_id','id')->withDefault();
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')->withDefault();
     }
 
     public function getBirthDateAttribute($value)
@@ -63,6 +66,6 @@ class Teacher extends Model
     {
         return $this->photo
             ? asset('storage/' . $this->photo)
-            : asset('static/ryoogen/default/NO-IMAGE.png');
+            : asset('static/nurhaliza/default/NO-IMAGE.png');
     }
 }

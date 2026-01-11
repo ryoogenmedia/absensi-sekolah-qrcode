@@ -126,7 +126,7 @@
 
             {{-- CARD 1 --}}
             <div class="card-container">
-                <img src="{{ public_path('static/ryoogen/illustration/card-presensi-1.png') }}" class="card-image">
+                <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}" class="card-image">
 
                 {{-- Foto --}}
                 @if (isset($student->photo))
@@ -148,7 +148,7 @@
 
             {{-- CARD 2 --}}
             <div class="card-container" style="margin-top: 10px">
-                <img src="{{ public_path('static/ryoogen/illustration/card-presensi-2.png') }}" class="card-image">
+                <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-2.png') }}" class="card-image">
             </div>
         </div>
     @else
@@ -159,7 +159,7 @@
 
                     {{-- CARD 1 --}}
                     <div class="card-container">
-                        <img src="{{ public_path('static/ryoogen/illustration/card-presensi-1.png') }}"
+                        <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}"
                             class="card-image">
 
                         {{-- Foto --}}
@@ -182,7 +182,7 @@
 
                     {{-- CARD 2 --}}
                     <div class="card-container" style="margin-top: 10px">
-                        <img src="{{ public_path('static/ryoogen/illustration/card-presensi-2.png') }}"
+                        <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-2.png') }}"
                             class="card-image">
                     </div>
 

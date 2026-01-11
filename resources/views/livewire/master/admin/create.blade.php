@@ -47,7 +47,7 @@
                     @else
                         <div class="col-lg-2 col-12 mb-lg-0 mb-2 mt-2 text-center">
                             <span class="avatar avatar-md"
-                                style="background-image: url({{ asset('static/ryoogen/default/NO-IMAGE.png') }})"></span>
+                                style="background-image: url({{ asset('static/nurhaliza/default/NO-IMAGE.png') }})"></span>
                         </div>
                     @endif
 
