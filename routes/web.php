@@ -24,7 +24,6 @@ Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name
     Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:admin,developer')->name('card');
 });
 
-
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
 
     /**
