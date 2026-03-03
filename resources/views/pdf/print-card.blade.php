@@ -129,20 +129,20 @@
                 <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}" class="card-image">
 
                 {{-- Foto --}}
-                @if (isset($student->photo))
+                @if (isset($students->photo))
                     <div class="student-photo"
-                        style="background-image:url('{{ public_path('storage/' . $student->photo) }}')"></div>
+                        style="background-image:url('{{ public_path('storage/' . $students->photo) }}')"></div>
                 @endif
 
                 {{-- Informasi Siswa --}}
                 <div class="student-info">
-                    <span class="label"></span> {{ $student->full_name ?? '-' }} <br>
-                    <span class="label"></span> {{ $student->nis ?? '-' }} <br>
-                    <span class="label"></span> {{ $student->class_room->name_class ?? '-' }}
+                    <span class="label"></span> {{ $students->full_name ?? '-' }} <br>
+                    <span class="label"></span> {{ $students->nis ?? '-' }} <br>
+                    <span class="label"></span> {{ $students->class_room->name_class ?? '-' }}
                 </div>
 
                 <div class="student-qrcode">
-                    {!! DNS2D::getBarcodeHTML("$student->nis", 'QRCODE', 2, 2) !!}
+                    {!! DNS2D::getBarcodeHTML("$students->nis", 'QRCODE', 2, 2) !!}
                 </div>
             </div>
 
