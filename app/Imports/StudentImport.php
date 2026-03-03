@@ -5,125 +5,127 @@ namespace App\Imports;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\ClassRoom;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class StudentImport implements ToModel, WithHeadingRow, WithChunkReading, ShouldQueue
+class StudentImport implements
+    ToModel,
+    WithHeadingRow,
+    WithChunkReading,
+    WithBatchInserts,
+    ShouldQueue
 {
-    private function generateUniqueEmail($name)
-    {
-        $base = strtolower(preg_replace('/[^a-z0-9]/', '', str_replace(' ', '', $name)));
-        $domain = "siswa.com";
-
-        $email = "{$base}@{$domain}";
-
-        if (!User::where('email', $email)->exists()) {
-            return $email;
-        }
-
-        $counter = 2;
-        while (true) {
-            $newEmail = "{$base}{$counter}@{$domain}";
-            if (!User::where('email', $newEmail)->exists()) {
-                return $newEmail;
-            }
-            $counter++;
-        }
-    }
+    // Pelacak agar tidak duplikat dalam satu file excel
+    private $processedNis = [];
+    private $processedEmails = [];
 
     public function model(array $row)
     {
-        if (!isset($row['nis']) || empty(trim($row['nis']))) {
+        $nis = trim($row['nis'] ?? '');
+        $nama = trim($row['nama_lengkap'] ?? '');
+        $emailExcel = trim($row['email'] ?? '');
+
+        // 1. Validasi Kolom Wajib
+        if (empty($nis) || empty($nama)) {
             return null;
         }
 
-        if (!isset($row['nama_lengkap']) || empty(trim($row['nama_lengkap']))) {
+        // 2. Cek Duplikasi NIS (Database & Local)
+        if (in_array($nis, $this->processedNis) || Student::where('nis', $nis)->exists()) {
+            Log::warning("Siswa dengan NIS {$nis} dilewati karena duplikat.");
             return null;
         }
 
-        $tanggalLahir = null;
-        if (!empty($row['tanggal_lahir'])) {
-            $tanggalLahir = is_numeric($row['tanggal_lahir'])
-                ? ExcelDate::excelToDateTimeObject($row['tanggal_lahir'])->format('Y-m-d')
-                : date('Y-m-d', strtotime($row['tanggal_lahir']));
-        }
-
-        $classRoomId = null;
-        if (!empty($row['kelas'])) {
-            $classRoom = ClassRoom::where('name_class', trim($row['kelas']))->first();
-            $classRoomId = $classRoom->id ?? null;
-        }
-
-        if ($classRoomId === null) {
-            Log::warning("❗ SKIP IMPORT SISWA — Kelas '{$row['kelas']}' tidak ditemukan. NIS: {$row['nis']}");
-            return null;
-        }
-
-        $existingUser = User::where('username', $row['nis'])->first();
-
-        if ($existingUser) {
-            $emailToUse = $existingUser->email;
+        // 3. Penanganan Email (Mencegah Error 1062)
+        // Jika email kosong atau sudah ada di DB atau sudah diproses di baris sebelumnya
+        if (empty($emailExcel) || User::where('email', $emailExcel)->exists() || in_array($emailExcel, $this->processedEmails)) {
+            $emailFinal = $this->generateUniqueEmail($nama);
         } else {
-            $emailFromExcel = $row['email'] ?? null;
-
-            if (!$emailFromExcel || User::where('email', $emailFromExcel)->exists()) {
-                $emailToUse = $this->generateUniqueEmail($row['nama_lengkap']);
-            } else {
-                $emailToUse = $emailFromExcel;
-            }
+            $emailFinal = $emailExcel;
         }
 
-        $user = User::updateOrCreate(
-            ['username' => $row['nis']],
-            [
-                'name'              => $row['nama_lengkap'],
-                'email'             => $emailToUse,
-                'password'          => Hash::make($row['kata_sandi'] ?? $row['nis']),
-                'email_verified_at' => now(),
-                'role'              => 'siswa',
-            ]
-        );
+        // Simpan ke daftar pelacak local
+        $this->processedNis[] = $nis;
+        $this->processedEmails[] = $emailFinal;
 
-        return Student::updateOrCreate(
-            ['nis' => $row['nis']],
-            [
-                'user_id'        => $user->id,
-                'class_room_id'  => $classRoomId,
-                'in_school'      => true,
+        /* --- Normalisasi Data Tambahan --- */
+        $kelasExcel = strtoupper(trim($row['kelas'] ?? 'TANPA KELAS'));
+        $classRoom = ClassRoom::firstOrCreate(['name_class' => $kelasExcel]);
 
-                'full_name'      => $row['nama_lengkap'],
-                'call_name'      => $row['nama_panggilan'] ?? null,
-                'sex'            => $row['jenis_kelamin'] ?? null,
+        $inputSex = strtoupper(trim($row['jenis_kelamin'] ?? 'L'));
+        $sex = str_starts_with($inputSex, 'P') ? 'P' : 'L';
 
-                'phone'          => $row['nomor_ponsel'] ?? null,
-                'religion'       => $row['agama'] ?? null,
+        /* --- Eksekusi Database --- */
+        try {
+            // Gunakan updateOrCreate untuk User agar lebih aman
+            $user = User::updateOrCreate(
+                ['username' => $nis], // Cari berdasarkan username (NIS)
+                [
+                    'name'              => $nama,
+                    'email'             => $emailFinal,
+                    'password'          => Hash::make($row['kata_sandi'] ?? $nis),
+                    'role'              => 'siswa',
+                    'email_verified_at' => now(),
+                ]
+            );
 
-                'origin_school'  => $row['asal_sekolah'] ?? null,
+            return new Student([
+                'nis'           => $nis,
+                'user_id'       => $user->id,
+                'class_room_id' => $classRoom->id,
+                'full_name'     => $nama,
+                'sex'           => $sex,
+                'birth_date'    => $this->transformDate($row['tanggal_lahir'] ?? null),
+                'in_school'     => true,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Gagal simpan siswa {$nama}: " . $e->getMessage());
+            return null;
+        }
+    }
 
-                'birth_date'     => $tanggalLahir,
-                'place_of_birth' => $row['tempat_lahir'] ?? null,
+    /**
+     * Helper untuk Generate Email Unik
+     */
+    private function generateUniqueEmail($name)
+    {
+        $base = strtolower(preg_replace('/[^a-z0-9]/', '', str_replace(' ', '', $name)));
+        $email = $base . rand(100, 999) . "@siswa.com";
 
-                'address'        => $row['alamat'] ?? null,
-                'postal_code'    => $row['kode_pos'] ?? null,
-                'admission_year' => $row['tahun_masuk'] ?? null,
+        // Pastikan benar-benar unik di DB
+        while (User::where('email', $email)->exists() || in_array($email, $this->processedEmails)) {
+            $email = $base . rand(1000, 9999) . "@siswa.com";
+        }
+        return $email;
+    }
 
-                'father_name'    => $row['nama_ayah'] ?? null,
-                'mother_name'    => $row['nama_ibu'] ?? null,
-                'father_job'     => $row['pekerjaan_ayah'] ?? null,
-                'mother_job'     => $row['pekerjaan_ibu'] ?? null,
-
-                'photo'          => null,
-            ]
-        );
+    /**
+     * Helper untuk Format Tanggal
+     */
+    private function transformDate($value)
+    {
+        if (empty($value)) return null;
+        try {
+            return is_numeric($value)
+                ? ExcelDate::excelToDateTimeObject($value)->format('Y-m-d')
+                : date('Y-m-d', strtotime($value));
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 100;
+    } // Mengecilkan chunk agar lebih stabil
+    public function batchSize(): int
+    {
+        return 100;
     }
 }
