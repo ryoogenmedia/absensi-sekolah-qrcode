@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kartu Presensi Siswa</title>
-
     <style>
         body {
             margin: 0;
@@ -14,17 +13,20 @@
             background: #f5f5f5;
         }
 
-        /* Wrapper seluruh kartu */
+        .card-page {
+            page-break-inside: avoid;
+            page-break-after: always;
+            margin-bottom: 40px;
+        }
+
         .card-wrapper {
             width: 510px;
             margin: 30px auto;
             display: flex;
             flex-direction: column;
             gap: 28px;
-            /* spacing CARD 1 & CARD 2 */
         }
 
-        /* Container kartu */
         .card-container {
             width: 480px;
             height: 300px;
@@ -32,7 +34,6 @@
             margin: 0 auto;
         }
 
-        /* Background PNG */
         .card-image {
             width: 100%;
             height: 100%;
@@ -42,7 +43,6 @@
             z-index: 1;
         }
 
-        /* FOTO SISWA */
         .student-photo {
             position: absolute;
             top: 45px;
@@ -56,7 +56,6 @@
             z-index: 3;
         }
 
-        /* INFORMASI SISWA DI CARD 1 */
         .student-info {
             position: absolute;
             top: 100px;
@@ -68,24 +67,6 @@
             font-weight: bold;
         }
 
-        .student-info .label {
-            font-weight: normal;
-            color: #ffeeee;
-        }
-
-        /* CARD 2 - SYARAT */
-        .syarat-text {
-            position: absolute;
-            top: 110px;
-            left: 45px;
-            width: 380px;
-            font-size: 14px;
-            color: white;
-            line-height: 1.4;
-            z-index: 3;
-        }
-
-        /* QR DI CARD 2 */
         .student-qrcode {
             position: absolute;
             bottom: 37px;
@@ -105,93 +86,51 @@
             width: 90px !important;
             height: 90px !important;
         }
-
-        .card-page {
-            page-break-inside: avoid;
-            page-break-after: always;
-            margin-bottom: 40px;
-        }
-
-        .card-wrapper {
-            width: 510px;
-            margin: 0 auto;
-        }
     </style>
-
 </head>
 
 <body>
-    @if ($students->count() < 2)
-        <div class="card-wrapper">
+    {{--
+        Cukup gunakan satu loop @foreach.
+        Jika $students hanya berisi 1 data, loop akan berjalan 1 kali.
+        Jika lebih, loop akan berjalan sesuai jumlah data.
+    --}}
+    @foreach ($students as $siswa)
+        <div class="card-page">
+            <div class="card-wrapper">
 
-            {{-- CARD 1 --}}
-            <div class="card-container">
-                <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}" class="card-image">
+                {{-- CARD 1 (DEPAN) --}}
+                <div class="card-container">
+                    <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}" class="card-image">
 
-                {{-- Foto --}}
-                @if (isset($students->photo))
-                    <div class="student-photo"
-                        style="background-image:url('{{ public_path('storage/' . $students->photo) }}')"></div>
-                @endif
+                    {{-- Foto --}}
+                    @if ($siswa->photo)
+                        <div class="student-photo"
+                            style="background-image:url('{{ public_path('storage/' . $siswa->photo) }}')"></div>
+                    @endif
 
-                {{-- Informasi Siswa --}}
-                <div class="student-info">
-                    <span class="label"></span> {{ $students->full_name ?? '-' }} <br>
-                    <span class="label"></span> {{ $students->nis ?? '-' }} <br>
-                    <span class="label"></span> {{ $students->class_room->name_class ?? '-' }}
+                    {{-- Informasi --}}
+                    <div class="student-info">
+                        {{ $siswa->full_name ?? '-' }} <br>
+                        {{ $siswa->nis ?? '-' }} <br>
+                        {{ $siswa->class_room->name_class ?? '-' }}
+                    </div>
+
+                    {{-- QR Code --}}
+                    <div class="student-qrcode">
+                        {!! DNS2D::getBarcodeHTML("$siswa->nis", 'QRCODE', 2, 2) !!}
+                    </div>
                 </div>
 
-                <div class="student-qrcode">
-                    {!! DNS2D::getBarcodeHTML("$students->nis", 'QRCODE', 2, 2) !!}
+                {{-- CARD 2 (BELAKANG) --}}
+                <div class="card-container" style="margin-top: 10px">
+                    <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-2.png') }}"
+                        class="card-image">
                 </div>
-            </div>
 
-            {{-- CARD 2 --}}
-            <div class="card-container" style="margin-top: 10px">
-                <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-2.png') }}" class="card-image">
             </div>
         </div>
-    @else
-        @foreach ($students as $siswa)
-            <div class="card-page"> <!-- Tambahkan wrapper anti terpotong -->
-
-                <div class="card-wrapper">
-
-                    {{-- CARD 1 --}}
-                    <div class="card-container">
-                        <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}"
-                            class="card-image">
-
-                        {{-- Foto --}}
-                        @if ($siswa->photo)
-                            <div class="student-photo"
-                                style="background-image:url('{{ public_path('storage/' . $siswa->photo) }}')"></div>
-                        @endif
-
-                        {{-- Informasi --}}
-                        <div class="student-info">
-                            {{ $siswa->full_name }} <br>
-                            {{ $siswa->nis }} <br>
-                            {{ $siswa->class_room->name_class ?? '-' }}
-                        </div>
-
-                        <div class="student-qrcode">
-                            {!! DNS2D::getBarcodeHTML("$siswa->nis", 'QRCODE', 2, 2) !!}
-                        </div>
-                    </div>
-
-                    {{-- CARD 2 --}}
-                    <div class="card-container" style="margin-top: 10px">
-                        <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-2.png') }}"
-                            class="card-image">
-                    </div>
-
-                </div>
-
-            </div>
-        @endforeach
-
-    @endif
+    @endforeach
 </body>
 
 </html>
