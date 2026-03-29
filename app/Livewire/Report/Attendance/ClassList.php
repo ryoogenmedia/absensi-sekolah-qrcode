@@ -67,6 +67,36 @@ class ClassList extends Component
         $this->resetPage();
     }
 
+    public function validateAndPrint()
+    {
+        // Validasi kelas dan tanggal harus diisi
+        if (empty($this->filters['kelas'])) {
+            $this->dispatch('alert', [
+                'type' => 'warning',
+                'message' => 'Filter Kelas harus dipilih sebelum mencetak!'
+            ]);
+            return '';
+        }
+
+        if (empty($this->filters['startDate']) || empty($this->filters['endDate'])) {
+            $this->dispatch('alert', [
+                'type' => 'warning',
+                'message' => 'Filter Tanggal Mulai dan Akhir harus diisi sebelum mencetak!'
+            ]);
+            return '';
+        }
+
+        // Jika valid, buat URL dan return
+        $url = route('print-report.attendance.class.list') . '?' . http_build_query([
+            'search' => $this->filters['search'],
+            'kelas' => $this->filters['kelas'],
+            'startDate' => $this->filters['startDate'],
+            'endDate' => $this->filters['endDate'],
+        ]);
+
+        return $url;
+    }
+
     public function render()
     {
         return view('livewire.report.attendance.class-list');

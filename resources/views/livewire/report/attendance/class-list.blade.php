@@ -1,11 +1,24 @@
-<div>
+<div x-data="{ printLoading: false }">
     <div class="card" wire:loading.class="opacity-50" style="transition: opacity 0.3s ease;">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Data Record / Daftar Kehadiran</h3>
-            <a href="{{ route('print-report.attendance.class.list') }}?search={{ $filters['search'] }}&kelas={{ $filters['kelas'] }}&startDate={{ $filters['startDate'] }}&endDate={{ $filters['endDate'] }}"
-                target="_blank" class="btn btn-danger btn-sm">
-                <span class="las la-print me-2"></span>Cetak Data Record
-            </a>
+            <button
+                @click="async () => {
+                printLoading = true;
+                const url = await $wire.validateAndPrint();
+                if (url) {
+                    window.open(url, '_blank');
+                }
+                printLoading = false;
+            }"
+                :disabled="printLoading" class="btn btn-danger btn-sm">
+                <template x-if="!printLoading">
+                    <span><span class="las la-print me-2"></span>Cetak Data Record</span>
+                </template>
+                <template x-if="printLoading">
+                    <span><span class="spinner-border spinner-border-sm me-2"></span>Validasi...</span>
+                </template>
+            </button>
         </div>
 
         <div class="table-responsive mb-0">

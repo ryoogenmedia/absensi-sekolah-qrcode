@@ -120,11 +120,25 @@
         .page-break {
             page-break-after: always;
         }
+
+        .logo-container {
+            padding: 5px 0;
+            text-align: center;
+        }
+
+        .logo {
+            width: 300px;
+            height: 100px;
+        }
     </style>
 </head>
 
 <body>
     <div class="header">
+        <div class="logo-container">
+            <img class="logo" src="{{ public_path('static/nurhaliza/logo/DARK.png') }}" alt="logo">
+        </div>
+
         <h1>LAPORAN PRESENSI KELAS</h1>
         <p>Data Record / Daftar Kehadiran</p>
         <p>Kelas: <strong>{{ $kelas }}</strong></p>
