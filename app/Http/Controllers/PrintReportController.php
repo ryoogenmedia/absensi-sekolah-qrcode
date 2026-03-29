@@ -181,4 +181,109 @@ class PrintReportController extends Controller
             'laporan-check-out'
         );
     }
+
+    public function attendanceClassList(Request $request)
+    {
+        $kelas = $request->kelas ? ClassRoom::find($request->kelas) : null;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+
+        $query = StudentAttendance::query()
+            ->with([
+                'student:id,full_name',
+                'class_attendance.class_room:id,name_class',
+                'class_attendance.class_schedule.teacher:id,name',
+                'class_attendance.class_schedule.subject_study:id,name_subject'
+            ])
+            ->when($startDate, function (Builder $q) use ($startDate) {
+                $q->whereHas('class_attendance', fn($subQ) => $subQ->where('created_at', '>=', $startDate . ' 00:00:00'));
+            })
+            ->when($endDate, function (Builder $q) use ($endDate) {
+                $q->whereHas('class_attendance', fn($subQ) => $subQ->where('created_at', '<=', $endDate . ' 23:59:59'));
+            })
+            ->when($kelas, function (Builder $q) use ($kelas) {
+                $q->whereHas('class_attendance', fn($subQ) => $subQ->where('class_room_id', $kelas->id));
+            })
+            ->when($request->search, function (Builder $q) use ($request) {
+                $q->whereHas('student', fn($subQ) => $subQ->where('full_name', 'LIKE', "%{$request->search}%"));
+            });
+
+        $data = $query->get();
+        $kelasName = $kelas->name_class ?? 'SEMUA KELAS';
+
+        $pdf = \PDF::loadView('pdf.report.attendance.class-list', [
+            'data'       => $data,
+            'kelas'      => $kelasName,
+            'startDate'  => $startDate,
+            'endDate'    => $endDate,
+        ])->setPaper('a4', 'landscape');
+
+        $fileName = "laporan-presensi-list-{$kelasName}";
+        if ($startDate && $endDate) {
+            $fileName .= "-[{$startDate}_{$endDate}]";
+        }
+
+        return $pdf->stream($fileName . ".pdf");
+    }
+
+    public function attendanceClassSummary(Request $request)
+    {
+        $kelas = $request->kelas ? ClassRoom::find($request->kelas) : null;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+
+        $statuses = collect(config('const.attendance_status'))
+            ->map(fn($s) => is_array($s) ? $s['value'] : $s);
+
+        if ($kelas) {
+            $data = Student::where('class_room_id', $kelas->id)
+                ->withCount([
+                    'student_attendances as total_hadir' => function ($query) use ($startDate, $endDate) {
+                        $query->where('status_attendance', 'hadir')
+                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+                    }
+                ])
+                ->get();
+            $summaryType = 'siswa';
+        } else {
+            $query = ClassRoom::query()
+                ->select('class_rooms.id', 'class_rooms.name_class')
+                ->leftJoin('students', 'students.class_room_id', '=', 'class_rooms.id')
+                ->leftJoin('student_attendances', 'student_attendances.student_id', '=', 'students.id')
+                ->leftJoin('class_attendances', 'class_attendances.id', '=', 'student_attendances.class_attendance_id')
+                ->where('class_rooms.status_active', true)
+                ->groupBy('class_rooms.id', 'class_rooms.name_class');
+
+            if ($startDate && $endDate) {
+                $query->whereDate('class_attendances.created_at', '>=', $startDate)
+                    ->whereDate('class_attendances.created_at', '<=', $endDate);
+            }
+
+            foreach ($statuses as $status) {
+                $query->selectRaw("SUM(CASE WHEN student_attendances.status_attendance = '{$status}' THEN 1 ELSE 0 END) as count_{$status}");
+            }
+
+            $data = $query->get();
+            $summaryType = 'kelas';
+        }
+
+        $kelasName = $kelas->name_class ?? 'SEMUA KELAS';
+
+        $pdf = \PDF::loadView('pdf.report.attendance.class-summary', [
+            'data'        => $data,
+            'kelas'       => $kelasName,
+            'startDate'   => $startDate,
+            'endDate'     => $endDate,
+            'summaryType' => $summaryType,
+            'statuses'    => $statuses,
+        ])->setPaper('a4', 'landscape');
+
+        $fileName = "laporan-presensi-ringkasan-{$kelasName}";
+        if ($startDate && $endDate) {
+            $fileName .= "-[{$startDate}_{$endDate}]";
+        }
+
+        return $pdf->stream($fileName . ".pdf");
+    }
 }

@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Livewire\Report\Attendance;
+
+use App\Livewire\Traits\DataTable\WithBulkActions;
+use App\Livewire\Traits\DataTable\WithCachedRows;
+use App\Livewire\Traits\DataTable\WithPerPagePagination;
+use App\Livewire\Traits\DataTable\WithSorting;
+use App\Models\ClassRoom;
+use App\Models\StudentAttendance;
+use Carbon\Carbon;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+
+class ClassList extends Component
+{
+    use WithBulkActions, WithPerPagePagination, WithCachedRows, WithSorting;
+
+    public $filters = [
+        'search' => '',
+        'kelas' => '',
+        'startDate' => '',
+        'endDate' => '',
+    ];
+
+    public function mount($filters = [])
+    {
+        // Priority: session filters > passed filters > default filters
+        $sessionFilters = session('attendance_class_filters', []);
+        $this->filters = array_merge($this->filters, $sessionFilters ?: $filters);
+    }
+
+    #[Computed()]
+    public function class_rooms()
+    {
+        return ClassRoom::where('status_active', true)->get(['id', 'name_class']);
+    }
+
+    #[Computed()]
+    public function rows()
+    {
+        $query = StudentAttendance::query()
+            ->with([
+                'student:id,full_name',
+                'class_attendance.class_room:id,name_class',
+                'class_attendance.class_schedule.teacher:id,name',
+                'class_attendance.class_schedule.subject_study:id,name_subject'
+            ])
+            ->when($this->filters['startDate'], function ($query) {
+                $query->whereHas('class_attendance', fn($q) => $q->where('created_at', '>=', Carbon::parse($this->filters['startDate'])->startOfDay()));
+            })
+            ->when($this->filters['endDate'], function ($query) {
+                $query->whereHas('class_attendance', fn($q) => $q->where('created_at', '<=', Carbon::parse($this->filters['endDate'])->endOfDay()));
+            })
+            ->when($this->filters['kelas'], function ($query, $kelas) {
+                $query->whereHas('class_attendance', fn($q) => $q->where('class_room_id', $kelas));
+            })
+            ->when($this->filters['search'], function ($query, $search) {
+                $query->whereHas('student', fn($q) => $q->where('full_name', 'LIKE', "%{$search}%"));
+            });
+
+        return $this->applyPagination($query);
+    }
+
+    public function updatedFilters()
+    {
+        $this->resetPage();
+    }
+
+    public function render()
+    {
+        return view('livewire.report.attendance.class-list');
+    }
+}

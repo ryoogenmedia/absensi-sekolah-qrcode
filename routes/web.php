@@ -45,6 +45,12 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
         Route::get('/presensi/kelas', [PrintReportController::class, 'attendanceClass'])
             ->name('attendance.class');
 
+        Route::get('/presensi/kelas/list', [PrintReportController::class, 'attendanceClassList'])
+            ->name('attendance.class.list');
+
+        Route::get('/presensi/kelas/ringkasan', [PrintReportController::class, 'attendanceClassSummary'])
+            ->name('attendance.class.summary');
+
         Route::get('/presensi/qrcode/masuk', [PrintReportController::class, 'attendanceQrcodeCheckIn'])
             ->name('attendance.qrcode.check-in');
 
