@@ -1,4 +1,11 @@
-<div x-data="{ currentTab: @entangle('tab') }">
+<div x-data="{
+    currentTab: @entangle('tab'),
+    alerts: [],
+    showAlert(alert) {
+        this.alerts.push(alert);
+        setTimeout(() => this.alerts.shift(), 5000);
+    }
+}" @show-alert.window="showAlert($event.detail)">
     <div class="row g-2 align-items-center mb-4">
         <div class="col">
             <div class="page-pretitle">Cetak Laporan Presensi Kelas</div>
@@ -8,6 +15,44 @@
     </div>
 
     <x-alert />
+
+    {{-- Dynamic Alert Display --}}
+    <div style="z-index: 10000; position: fixed; top: 20px; right: 20px;" class="d-flex flex-column gap-2">
+        <template x-for="alert in alerts" :key="Math.random()">
+            <div class="alert" :class="'alert-' + alert.type" role="alert" style="min-width: 400px;">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <h1 class="mb-0"
+                            :class="alert.type === 'warning' ? 'text-warning las la-exclamation-triangle' :
+                                alert.type === 'danger' ? 'text-danger las la-times-circle' :
+                                alert.type === 'success' ? 'text-success las la-check-circle' :
+                                'text-info las la-info-circle'">
+                        </h1>
+                    </div>
+                    <div>
+                        <h4 class="alert-title" x-text="alert.message"></h4>
+                        <div class="text-muted" x-text="alert.detail"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('show-alert', (event) => {
+                let alertData = event[0] || {};
+                let alertEvent = new CustomEvent('show-alert', {
+                    detail: {
+                        type: alertData.type || 'info',
+                        message: alertData.message || 'Informasi',
+                        detail: alertData.detail || '',
+                    }
+                });
+                window.dispatchEvent(alertEvent);
+            });
+        });
+    </script>
 
     <div class="row">
         <div class="col-12 col-md-4">

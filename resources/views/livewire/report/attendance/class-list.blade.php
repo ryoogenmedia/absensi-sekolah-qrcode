@@ -1,4 +1,19 @@
 <div x-data="{ printLoading: false }">
+    <div class="alert alert-warning alert-dismissible bg-white" role="alert">
+        <div class="d-flex">
+            <div class="me-3">
+                <h1 class="text-warning las la-exclamation-triangle"></h1>
+            </div>
+
+            <div>
+                <h4 class="alert-title">Filter Wajib Diisi Saat Dicetak</h4>
+                <div class="text-muted">Silakan pilih kelas dan periode tanggal untuk melihat data presensi.</div>
+            </div>
+        </div>
+
+        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+    </div>
+
     <div class="card" wire:loading.class="opacity-50" style="transition: opacity 0.3s ease;">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Data Record / Daftar Kehadiran</h3>

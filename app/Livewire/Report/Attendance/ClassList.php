@@ -71,17 +71,19 @@ class ClassList extends Component
     {
         // Validasi kelas dan tanggal harus diisi
         if (empty($this->filters['kelas'])) {
-            $this->dispatch('alert', [
+            $this->dispatch('show-alert', [
                 'type' => 'warning',
-                'message' => 'Filter Kelas harus dipilih sebelum mencetak!'
+                'message' => 'Perhatian!',
+                'detail' => "Data kelas wajib di isi sebelum mencetak.",
             ]);
             return '';
         }
 
         if (empty($this->filters['startDate']) || empty($this->filters['endDate'])) {
-            $this->dispatch('alert', [
+            $this->dispatch('show-alert', [
                 'type' => 'warning',
-                'message' => 'Filter Tanggal Mulai dan Akhir harus diisi sebelum mencetak!'
+                'message' => 'Perhatian!',
+                'detail' => "Tanggal mulai dan selesai wajib diisi sebelum mencetak.",
             ]);
             return '';
         }
