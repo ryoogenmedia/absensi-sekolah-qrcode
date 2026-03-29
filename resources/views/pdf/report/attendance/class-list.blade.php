@@ -201,7 +201,7 @@
         <div class="footer">
             <div>Total Data: <strong>{{ $data->count() }}</strong> record</div>
             <div class="footer-date">
-                <div>Jakarta, {{ now()->translatedFormat('d F Y') }}</div>
+                <div>Makassar, {{ now()->translatedFormat('d F Y') }}</div>
                 <div style="margin-top: 50px;"><u>_____________________</u></div>
             </div>
         </div>
