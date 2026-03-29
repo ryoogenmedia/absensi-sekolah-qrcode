@@ -15,7 +15,7 @@
     </div>
 
     {{-- Alert tetap di atas untuk menunjukkan pesan sukses/error --}}
-    <div wire:loading.remove wire:target="filters, search, tab">
+    <div wire:loading.remove wire:target="filters, search, tab, kelas">
         <x-alert />
     </div>
 
@@ -160,6 +160,21 @@
         {{-- Footer hanya tampil di tab list --}}
         <div x-show="currentTab == 'list'">
             {{ $this->rows->links() }}
+        </div>
+
+        <div style="z-index: 9999; position: fixed; bottom: 20px; right: 20px;"
+            class="d-flex flex-column align-items-end gap-2">
+
+            <div class="btn btn-blue shadow-lg" wire:loading.delay wire:target="tab, filters, search">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                    <span>Memproses Data...</span>
+                </div>
+            </div>
+
+            <div class="btn btn-danger shadow-lg" wire:offline>
+                <i class="las la-wifi-slash me-2"></i> Anda sedang offline.
+            </div>
         </div>
     </div>
 
