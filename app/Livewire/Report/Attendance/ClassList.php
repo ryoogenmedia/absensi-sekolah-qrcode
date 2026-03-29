@@ -10,6 +10,7 @@ use App\Models\ClassRoom;
 use App\Models\StudentAttendance;
 use Carbon\Carbon;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ClassList extends Component
@@ -23,11 +24,13 @@ class ClassList extends Component
         'endDate' => '',
     ];
 
-    public function mount($filters = [])
+    public function mount()
     {
-        // Priority: session filters > passed filters > default filters
+        // Load filters dari session
         $sessionFilters = session('attendance_class_filters', []);
-        $this->filters = array_merge($this->filters, $sessionFilters ?: $filters);
+        if ($sessionFilters) {
+            $this->filters = $sessionFilters;
+        }
     }
 
     #[Computed()]
@@ -64,6 +67,20 @@ class ClassList extends Component
 
     public function updatedFilters()
     {
+        $this->resetPage();
+    }
+
+    #[On('filters-changed')]
+    public function onFiltersChanged($filters)
+    {
+        $this->filters = $filters;
+        $this->resetPage();
+    }
+
+    #[On('reset-filters')]
+    public function onResetFilters()
+    {
+        $this->reset('filters');
         $this->resetPage();
     }
 

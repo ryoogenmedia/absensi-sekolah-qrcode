@@ -19,11 +19,9 @@ class ClassFilter extends Component
     public function mount()
     {
         // Load filters dari session jika ada
-        $savedFilters = session('attendance_class_filters');
-        if ($savedFilters) {
-            $this->filters = $savedFilters;
-            // Dispatch event ke parent dengan filters yang di-load dari session
-            $this->dispatch('filters-changed', filters: $this->filters);
+        $sessionFilters = session('attendance_class_filters');
+        if ($sessionFilters) {
+            $this->filters = $sessionFilters;
         }
     }
 

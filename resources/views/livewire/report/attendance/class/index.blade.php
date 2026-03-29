@@ -41,7 +41,7 @@
     <script>
         document.addEventListener('livewire:init', () => {
             Livewire.on('show-alert', (event) => {
-                let alertData = event[0] || {};
+                let alertData = event || {};
                 let alertEvent = new CustomEvent('show-alert', {
                     detail: {
                         type: alertData.type || 'info',
@@ -70,13 +70,13 @@
         </div>
     </div>
 
-    @livewire('report.attendance.class-filter', key('filter-' . json_encode($filters)))
+    @livewire('report.attendance.class-filter')
 
     <div x-show="currentTab == 'list'">
-        @livewire('report.attendance.class-list', ['filters' => $filters], key('list-' . json_encode($filters)))
+        @livewire('report.attendance.class-list')
     </div>
 
     <div x-show="currentTab == 'summary'">
-        @livewire('report.attendance.class-summary', ['filters' => $filters], key('summary-' . json_encode($filters)))
+        @livewire('report.attendance.class-summary')
     </div>
 </div>
