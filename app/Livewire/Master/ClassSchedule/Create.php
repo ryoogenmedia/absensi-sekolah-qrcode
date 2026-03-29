@@ -22,23 +22,61 @@ class Create extends Component
     public $waktuKeluar;
     public $keterangan;
 
-    public function rules(){
+    // Property untuk menampilkan tabel di Blade
+    public $previousSchedule = [];
+    public $prevClassRoomSchedule = [];
+
+    public function rules()
+    {
         return [
             'guru' => ['required'],
             'kelas' => ['required'],
             'mataPelajaran' => ['required'],
-
-            'hari' => ['required','string','min:2','max:255',Rule::in(config('const.name_days'))],
-            'waktuMasuk' => ['required','min:2','max:255'],
-            'waktuKeluar' => ['required','string','min:2','max:255'],
-            'keterangan' => ['nullable','string'],
+            'hari' => ['required', 'string', Rule::in(config('const.name_days'))],
+            'waktuMasuk' => ['required'],
+            'waktuKeluar' => ['required', 'after:waktuMasuk'],
+            'keterangan' => ['nullable', 'string'],
         ];
     }
 
-    public function save(){
+    // Mengambil jadwal yang sudah ada berdasarkan kelas yang dipilih
+    public function updatedKelas($value)
+    {
+        if ($value) {
+            $this->prevClassRoomSchedule = ClassSchedule::where('class_room_id', $value)->get();
+        } else {
+            $this->prevClassRoomSchedule = [];
+        }
+    }
+
+    public function save()
+    {
         $this->validate();
 
-        try{
+        // Cek Bentrok
+        $conflict = ClassSchedule::where('class_room_id', $this->kelas)
+            ->where('day_name', $this->hari)
+            ->where(function ($query) {
+                $query->whereRaw("TIME(start_time) < TIME(?)", [$this->waktuKeluar])
+                    ->whereRaw("TIME(end_time) > TIME(?)", [$this->waktuMasuk]);
+            })->get();
+
+        if ($conflict->count() > 0) {
+            $this->previousSchedule = $conflict; // Isi property agar tabel muncul di Blade
+
+            $message = "Jadwal bentrok dengan mata pelajaran yang sudah ada!";
+            $this->addError('waktuMasuk', $message);
+            $this->addError('waktuKeluar', $message);
+
+            session()->flash('alert', [
+                'type' => 'warning',
+                'message' => 'Peringatan!',
+                'detail' => $message,
+            ]);
+            return;
+        }
+
+        try {
             DB::beginTransaction();
 
             ClassSchedule::create([
@@ -52,47 +90,42 @@ class Create extends Component
             ]);
 
             DB::commit();
-        }catch(Exception $e){
-            DB::rollBack();
 
-            logger()->error(
-                '[class schedule] ' .
-                    auth()->user()->username .
-                    ' gagal menambahkan jadwal kelas',
-                [$e->getMessage()]
-            );
+            session()->flash('alert', [
+                'type' => 'success',
+                'message' => 'Berhasil!',
+                'detail' => "Data jadwal berhasil disimpan.",
+            ]);
+
+            return redirect()->route('master.class-schedule.index');
+        } catch (Exception $e) {
+            DB::rollBack();
+            logger()->error('[ClassSchedule] Create Error: ' . $e->getMessage());
 
             session()->flash('alert', [
                 'type' => 'danger',
                 'message' => 'Gagal!',
-                'detail' => "Gagal menambahkan data pengguna.",
+                'detail' => "Terjadi kesalahan sistem saat menyimpan data.",
             ]);
-
-            return redirect()->back();
         }
-
-        session()->flash('alert', [
-            'type' => 'success',
-            'message' => 'Berhasil!',
-            'detail' => "Berhasil menambahkan data pengguna.",
-        ]);
-
-        return redirect()->route('master.class-schedule.index');
     }
 
     #[Computed()]
-    public function teachers(){
-        return Teacher::all(['id','name','nip']);
+    public function teachers()
+    {
+        return Teacher::all(['id', 'name', 'nip']);
     }
 
     #[Computed()]
-    public function class_rooms(){
-        return ClassRoom::all(['id','name_class']);
+    public function class_rooms()
+    {
+        return ClassRoom::all(['id', 'name_class']);
     }
 
     #[Computed()]
-    public function subject_studies(){
-        return SubjectStudy::all(['id','name_subject']);
+    public function subject_studies()
+    {
+        return SubjectStudy::all(['id', 'name_subject']);
     }
 
     public function render()
