@@ -122,6 +122,21 @@ class Index extends Component
         }
     }
 
+    public function resetFilters()
+    {
+        // Reset properti filters ke nilai awal
+        $this->reset('filters');
+
+        // Jika Anda menggunakan pencarian (search)
+        $this->reset('search');
+
+        // Opsional: Jika ingin memberikan feedback ke user
+        $this->dispatch('alert', [
+            'type' => 'success',
+            'message' => 'Filter telah dibersihkan.'
+        ]);
+    }
+
     public function updatedFilters()
     {
         $this->resetPage();
