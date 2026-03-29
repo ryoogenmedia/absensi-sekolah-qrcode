@@ -37,7 +37,7 @@ class ClassFilter extends Component
     {
         // Simpan filters ke session setiap kali ada perubahan
         session()->put('attendance_class_filters', $this->filters);
-        
+
         // Notify parent tentang perubahan filter
         $this->dispatch('filters-changed', filters: $this->filters);
     }
@@ -47,13 +47,13 @@ class ClassFilter extends Component
     {
         // Hapus filters dari session
         session()->forget('attendance_class_filters');
-        
+
         // Reset filters di component
         $this->reset('filters');
-        
+
         // Notify parent tentang reset
         $this->dispatch('filters-changed', filters: $this->filters);
-        
+
         // Show alert
         $this->dispatch('alert', [
             'type' => 'success',
