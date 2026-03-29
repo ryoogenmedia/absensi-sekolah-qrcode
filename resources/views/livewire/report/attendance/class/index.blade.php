@@ -110,7 +110,7 @@
                                 </td>
                                 <td>
                                     <span
-                                        class="badge {{ $row->status_attendance == 'present' ? 'bg-green-lt' : 'bg-red-lt' }}">
+                                        class="badge {{ $row->status_attendance == 'hadir' ? 'bg-green-lt' : 'bg-red-lt' }}">
                                         {{ ucwords($row->status_attendance) }}
                                     </span>
                                 </td>
