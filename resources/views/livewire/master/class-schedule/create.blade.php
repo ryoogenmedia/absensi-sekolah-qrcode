@@ -56,7 +56,7 @@
                         @endforeach
                     </x-form.select>
 
-                    <x-form.select wire:model="mataPelajaran" name="mataPelajaran" label="Mata Pelajaran">
+                    <x-form.select wire:model.live="mataPelajaran" name="mataPelajaran" label="Mata Pelajaran">
                         <option value="">- pilih mata pelajaran -</option>
                         @foreach ($this->subject_studies as $subject_study)
                             <option wire:key="subject-{{ $subject_study->id }}" value="{{ $subject_study->id }}">

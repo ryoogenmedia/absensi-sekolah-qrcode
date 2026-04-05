@@ -49,6 +49,12 @@ class Create extends Component
         }
     }
 
+    // Reset guru saat mapel berubah
+    public function updatedMataPelajaran($value)
+    {
+        $this->guru = null;
+    }
+
     public function save()
     {
         $this->validate();
@@ -113,7 +119,10 @@ class Create extends Component
     #[Computed()]
     public function teachers()
     {
-        return Teacher::all(['id', 'name', 'nip']);
+        if (!$this->mataPelajaran) {
+            return [];
+        }
+        return Teacher::where('subject_study_id', $this->mataPelajaran)->get(['id', 'name', 'nip']);
     }
 
     #[Computed()]
