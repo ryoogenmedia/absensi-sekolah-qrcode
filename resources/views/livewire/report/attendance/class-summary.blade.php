@@ -14,7 +14,10 @@
                     <tr>
                         @if ($filters['kelas'])
                             <th>Nama Siswa</th>
-                            <th class="text-center">Total Hadir</th>
+                            <th class="text-center">Hadir</th>
+                            <th class="text-center">Alpa</th>
+                            <th class="text-center">Izin</th>
+                            <th class="text-center">Sakit</th>
                         @else
                             <th>Kelas</th>
                             @foreach (config('const.attendance_status') as $status)
@@ -29,7 +32,13 @@
                         <tr wire:key="summary-{{ $loop->index }}">
                             @if ($filters['kelas'])
                                 <td>{{ $data->full_name }}</td>
-                                <td class="text-center"><span class="badge bg-primary">{{ $data->total_hadir }}</span>
+                                <td class="text-center"><span class="badge bg-green">{{ $data->total_hadir }}</span>
+                                </td>
+                                <td class="text-center"><span class="badge bg-danger">{{ $data->total_alpa }}</span>
+                                </td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $data->total_izin }}</span>
+                                </td>
+                                <td class="text-center"><span class="badge bg-info">{{ $data->total_sakit }}</span>
                                 </td>
                             @else
                                 <td><b>{{ strtoupper($data->name_class) }}</b></td>
@@ -40,7 +49,7 @@
                             @endif
                         </tr>
                     @empty
-                        <x-datatable.empty colspan="10" />
+                        <x-datatable.empty colspan="{{ $filters['kelas'] ? 5 : 11 }}" />
                     @endforelse
                 </tbody>
             </table>

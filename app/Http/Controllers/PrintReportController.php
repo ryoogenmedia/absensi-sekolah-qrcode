@@ -242,6 +242,21 @@ class PrintReportController extends Controller
                         $query->where('status_attendance', 'hadir')
                             ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
                             ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+                    },
+                    'student_attendances as total_alpa' => function ($query) use ($startDate, $endDate) {
+                        $query->where('status_attendance', 'alpa')
+                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+                    },
+                    'student_attendances as total_izin' => function ($query) use ($startDate, $endDate) {
+                        $query->where('status_attendance', 'izin')
+                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+                    },
+                    'student_attendances as total_sakit' => function ($query) use ($startDate, $endDate) {
+                        $query->where('status_attendance', 'sakit')
+                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
                     }
                 ])
                 ->get();

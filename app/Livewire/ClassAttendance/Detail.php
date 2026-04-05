@@ -9,9 +9,12 @@ use App\Livewire\Traits\DataTable\WithSorting;
 use App\Models\ClassAttendance;
 use App\Models\ClassSchedule;
 use App\Models\Student;
+use App\Models\StudentAttendance;
 use Illuminate\Support\Facades\File;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class Detail extends Component
 {
@@ -24,6 +27,9 @@ class Detail extends Component
         'search' => '',
         'search_student' => '',
     ];
+
+    public $date_start;
+    public $date_end;
 
     public $classScheduleId;
     public $classSchedule;
@@ -53,24 +59,28 @@ class Detail extends Component
         return redirect()->back();
     }
 
-    public function openModal($id){
+    public function openModal($id)
+    {
         $classAttendance = ClassAttendance::findOrFail($id);
         $this->pictureEvidence = $classAttendance->pictureEvidenceUrl();
         $this->show = true;
     }
 
-    public function closeModal(){
+    public function closeModal()
+    {
         $this->show = false;
         $this->pictureEvidence = null;
     }
 
-    public function getTotalPresence(){
+    public function getTotalPresence()
+    {
         $this->totalPresence = ClassAttendance::where('class_schedule_id', $this->classScheduleId)
             ->count();
     }
 
     #[Computed()]
-    public function class_attendances(){
+    public function class_attendances()
+    {
         $query = ClassAttendance::query()
             ->when($this->filters['search'], function ($query, $search) {
                 $query->where('name_material', 'LIKE', "%$search%");
@@ -80,14 +90,21 @@ class Detail extends Component
     }
 
     #[Computed()]
-    public function students(){
+    public function students()
+    {
         $query = Student::query()
-            ->when($this->filters['search_student'], function($query, $search){
+            ->when($this->filters['search_student'], function ($query, $search) {
                 $query->where('full_name', 'LIKE', "%$search%")
                     ->orWhere('nis', 'LIKE', "%$search%");
-            })->whereHas('student_attendances', function($query){
-                $query->whereHas('class_attendance', function($query){
-                    $query->where('class_schedule_id', $this->classScheduleId);
+            })->whereHas('student_attendances', function ($query) {
+                $query->whereHas('class_attendance', function ($subQuery) {
+                    $subQuery->where('class_schedule_id', $this->classScheduleId)
+                        ->when($this->date_start, function ($q, $date) {
+                            $q->whereDate('created_at', '>=', $date);
+                        })
+                        ->when($this->date_end, function ($q, $date) {
+                            $q->whereDate('created_at', '<=', $date);
+                        });
                 });
             });
 
@@ -116,7 +133,61 @@ class Detail extends Component
         $this->reset();
     }
 
-    public function mount($id){
+    public function getStudentAttendanceSummary($studentId)
+    {
+        $attendances = StudentAttendance::where('student_id', $studentId)
+            ->whereHas('class_attendance', function ($query) {
+                $query->where('class_schedule_id', $this->classScheduleId)
+                    ->when($this->date_start, function ($q, $date) {
+                        $q->whereDate('created_at', '>=', $date);
+                    })
+                    ->when($this->date_end, function ($q, $date) {
+                        $q->whereDate('created_at', '<=', $date);
+                    });
+            })->get();
+
+        return [
+            'hadir' => $attendances->where('status_attendance', 'hadir')->count(),
+            'alpa' => $attendances->where('status_attendance', 'alpa')->count(),
+            'izin' => $attendances->where('status_attendance', 'izin')->count(),
+            'sakit' => $attendances->where('status_attendance', 'sakit')->count(),
+            'total' => $attendances->count(),
+        ];
+    }
+
+    public function downloadStudentPdf($studentId)
+    {
+        $student = Student::findOrFail($studentId);
+        $summary = $this->getStudentAttendanceSummary($studentId);
+
+        $attendances = StudentAttendance::where('student_id', $studentId)
+            ->whereHas('class_attendance', function ($query) {
+                $query->where('class_schedule_id', $this->classScheduleId)
+                    ->when($this->date_start, function ($q, $date) {
+                        $q->whereDate('created_at', '>=', $date);
+                    })
+                    ->when($this->date_end, function ($q, $date) {
+                        $q->whereDate('created_at', '<=', $date);
+                    });
+            })->with('class_attendance')
+            ->orderBy('created_at')
+            ->get();
+
+        $data = [
+            'student' => $student,
+            'classSchedule' => $this->classSchedule,
+            'summary' => $summary,
+            'attendances' => $attendances,
+            'date_start' => $this->date_start,
+            'date_end' => $this->date_end,
+        ];
+
+        $pdf = Pdf::loadView('exports.student-attendance-pdf', $data);
+        return $pdf->download('Rekap-' . $student->full_name . '-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    public function mount($id)
+    {
         $this->classSchedule = ClassSchedule::findOrFail($id);
         $this->classScheduleId = $this->classSchedule->id;
         $this->getTotalPresence();

@@ -6,11 +6,9 @@ use App\Models\ClassRoom;
 use App\Models\Student;
 use Carbon\Carbon;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[Lazy]
 class ClassSummary extends Component
 {
     public $filters = [
@@ -20,27 +18,18 @@ class ClassSummary extends Component
         'endDate' => '',
     ];
 
-    public function mount()
+    public function mount($filters = null)
     {
-        // Load filters dari session
-        $sessionFilters = session('attendance_class_filters', []);
-        if ($sessionFilters) {
-            $this->filters = $sessionFilters;
+        // If filters passed from parent, use them
+        if ($filters && is_array($filters)) {
+            $this->filters = $filters;
+        } else {
+            // Otherwise load filters dari session
+            $sessionFilters = session('attendance_class_filters', []);
+            if ($sessionFilters) {
+                $this->filters = $sessionFilters;
+            }
         }
-    }
-
-    public function placeholder()
-    {
-        return <<<'HTML'
-            <div class="d-flex align-items-center justify-content-center" style="min-height: 300px;">
-                <div class="text-center">
-                    <div class="spinner-grow text-primary mb-3" role="status" style="width: 2rem; height: 2rem;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="text-muted">Memproses ringkasan data...</p>
-                </div>
-            </div>
-        HTML;
     }
 
     #[Computed()]
@@ -58,15 +47,36 @@ class ClassSummary extends Component
             : null;
 
         if ($this->filters['kelas']) {
-            return Student::where('class_room_id', $this->filters['kelas'])
-                ->withCount([
-                    'student_attendances as total_hadir' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status_attendance', 'hadir')
-                            ->when($startDate, fn($q) => $q->whereBetween('created_at', [$startDate, now()]))
-                            ->when($endDate, fn($q) => $q->whereBetween('created_at', [now(), $endDate]));
-                    }
-                ])
+            // Optimized query dengan single SELECT
+            $dateCondition = 'true';
+            if ($startDate && $endDate) {
+                $dateCondition = "class_attendances.created_at BETWEEN '{$startDate}' AND '{$endDate}'";
+            } elseif ($startDate) {
+                $dateCondition = "class_attendances.created_at >= '{$startDate}'";
+            } elseif ($endDate) {
+                $dateCondition = "class_attendances.created_at <= '{$endDate}'";
+            }
+
+            return Student::where('students.class_room_id', $this->filters['kelas'])
+                ->leftJoin('student_attendances', 'student_attendances.student_id', '=', 'students.id')
+                ->leftJoin('class_attendances', 'class_attendances.id', '=', 'student_attendances.class_attendance_id')
+                ->select('students.id', 'students.full_name')
+                ->selectRaw("SUM(CASE WHEN (student_attendances.status_attendance = 'hadir' AND {$dateCondition}) THEN 1 ELSE 0 END) as total_hadir")
+                ->selectRaw("SUM(CASE WHEN (student_attendances.status_attendance = 'alpa' AND {$dateCondition}) THEN 1 ELSE 0 END) as total_alpa")
+                ->selectRaw("SUM(CASE WHEN (student_attendances.status_attendance = 'izin' AND {$dateCondition}) THEN 1 ELSE 0 END) as total_izin")
+                ->selectRaw("SUM(CASE WHEN (student_attendances.status_attendance = 'sakit' AND {$dateCondition}) THEN 1 ELSE 0 END) as total_sakit")
+                ->groupBy('students.id', 'students.full_name')
+                ->orderBy('students.full_name')
                 ->get();
+        }
+
+        $dateCondition = 'true';
+        if ($startDate && $endDate) {
+            $dateCondition = "class_attendances.created_at BETWEEN '{$startDate}' AND '{$endDate}'";
+        } elseif ($startDate) {
+            $dateCondition = "class_attendances.created_at >= '{$startDate}'";
+        } elseif ($endDate) {
+            $dateCondition = "class_attendances.created_at <= '{$endDate}'";
         }
 
         $query = ClassRoom::query()
@@ -77,23 +87,19 @@ class ClassSummary extends Component
             ->where('class_rooms.status_active', true)
             ->groupBy('class_rooms.id', 'class_rooms.name_class');
 
-        if ($startDate && $endDate) {
-            $query->whereBetween('class_attendances.created_at', [$startDate, $endDate]);
-        }
-
         foreach ($statuses as $status) {
-            $query->selectRaw("
-            SUM(CASE WHEN student_attendances.status_attendance = ? THEN 1 ELSE 0 END) as count_{$status}
-        ", [$status]);
+            $query->selectRaw("SUM(CASE WHEN (student_attendances.status_attendance = '{$status}' AND {$dateCondition}) THEN 1 ELSE 0 END) as count_{$status}");
         }
 
-        return $query->get();
+        return $query->orderBy('class_rooms.name_class')->get();
     }
 
     #[On('filters-changed')]
     public function onFiltersChanged($filters)
     {
-        $this->filters = $filters;
+        if (is_array($filters)) {
+            $this->filters = $filters;
+        }
     }
 
     #[On('reset-filters')]

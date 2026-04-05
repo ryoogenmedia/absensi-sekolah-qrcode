@@ -2,7 +2,7 @@
     <div class="row mb-1 align-items-center justify-content-between">
         <div class="col-12 col-lg-8 d-flex">
             <div class="w-100">
-                <x-datatable.search wire:model.live="filters.search" placeholder="Cari nama siswa..." />
+                <x-datatable.search wire:model.debounce-750ms="filters.search" placeholder="Cari nama siswa..." />
             </div>
 
             <div class="w-100 ms-2">

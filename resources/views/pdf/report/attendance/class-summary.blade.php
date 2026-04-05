@@ -116,8 +116,11 @@
                     <tr>
                         <th class="text-center" style="width: 5%;">No</th>
                         @if ($summaryType == 'siswa')
-                            <th style="width: 70%;">Nama Siswa</th>
-                            <th class="text-center" style="width: 15%;">Total Hadir</th>
+                            <th style="width: 35%;">Nama Siswa</th>
+                            <th class="text-center" style="width: 12%;">Hadir</th>
+                            <th class="text-center" style="width: 12%;">Alpa</th>
+                            <th class="text-center" style="width: 12%;">Izin</th>
+                            <th class="text-center" style="width: 12%;">Sakit</th>
                         @else
                             <th style="width: 20%;">Kelas</th>
                             @foreach ($statuses as $status)
@@ -134,6 +137,9 @@
                             @if ($summaryType == 'siswa')
                                 <td>{{ $row->full_name }}</td>
                                 <td class="text-center">{{ $row->total_hadir ?? 0 }}</td>
+                                <td class="text-center">{{ $row->total_alpa ?? 0 }}</td>
+                                <td class="text-center">{{ $row->total_izin ?? 0 }}</td>
+                                <td class="text-center">{{ $row->total_sakit ?? 0 }}</td>
                             @else
                                 <td>{{ strtoupper($row->name_class) }}</td>
                                 @foreach ($statuses as $status)

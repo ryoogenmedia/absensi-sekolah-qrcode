@@ -73,10 +73,10 @@
     @livewire('report.attendance.class-filter')
 
     <div x-show="currentTab == 'list'">
-        @livewire('report.attendance.class-list')
+        @livewire('report.attendance.class-list', ['filters' => $filters])
     </div>
 
     <div x-show="currentTab == 'summary'">
-        @livewire('report.attendance.class-summary')
+        @livewire('report.attendance.class-summary', ['filters' => $filters])
     </div>
 </div>

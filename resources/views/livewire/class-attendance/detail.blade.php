@@ -75,7 +75,7 @@
         <div class="col-12 col-lg-6 d-flex align-self-center">
             <x-datatable.search class="w-100" placeholder="Cari nama materi..." />
         </div>
-        <div class="col-lg-6 col-12 ms-auto d-flex mt-lg-0 mt-3">
+        <div class="col-lg-6 col-12 ms-auto d-flex gap-2 mt-lg-0 mt-3">
             <x-datatable.bulk.dropdown>
                 <div class="dropdown-menu dropdown-menu-end datatable-dropdown">
                     <button wire:click="$dispatch('openDeleteModal')" data-bs-toggle="modal"
@@ -87,7 +87,13 @@
                 </div>
             </x-datatable.bulk.dropdown>
 
-            <a href="{{ route('class-attendance.create', $this->classScheduleId) }}" class="btn btn-blue ms-1"><span
+            <a href="{{ route('print-report.attendance.class.summary', ['kelas' => $this->classSchedule->class_room_id, 'startDate' => $this->date_start, 'endDate' => $this->date_end]) }}"
+                class="btn btn-warning text-dark" title="Print Rekap Kelas Lengkap" target="_blank">
+                <span class="las la-print me-lg-1 me-0"></span>
+                <span class="d-lg-inline d-none">Print Rekap Kelas</span>
+            </a>
+
+            <a href="{{ route('class-attendance.create', $this->classScheduleId) }}" class="btn btn-blue"><span
                     class="las la-plus me-lg-1 me-0"></span> <span class="d-lg-inline d-none">Tambah Presensi
                     Pertemuan</span></a>
         </div>
@@ -200,11 +206,30 @@
                 Detail Kehadiran Siswa
             </h2>
         </div>
+        <div class="col-auto">
+            <a href="{{ route('print-report.attendance.class.summary', ['kelas' => $this->classSchedule->class_room_id, 'startDate' => $this->date_start, 'endDate' => $this->date_end]) }}"
+                class="btn btn-warning text-dark" title="Print Rekap Kelas Lengkap" target="_blank">
+                <span class="las la-print me-1"></span> Print Rekap Kelas
+            </a>
+        </div>
     </div>
 
     <div class="row mb-3 align-items-center justify-content-between">
         <div class="col-12 col-lg-6 d-flex align-self-center">
             <x-datatable.search class="w-100" placeholder="Cari nama / nis siswa..." var="search_student" />
+        </div>
+        <div class="col-lg-6 col-12 d-flex gap-2 mt-lg-0 mt-3">
+            <div class="flex-grow-1">
+                <input type="date" wire:model.live="date_start" class="form-control" placeholder="Tanggal Mulai">
+            </div>
+            <div class="flex-grow-1">
+                <input type="date" wire:model.live="date_end" class="form-control" placeholder="Tanggal Selesai">
+            </div>
+            @if ($date_start || $date_end)
+                <button wire:click="$set('date_start', null); $set('date_end', null);" class="btn btn-secondary">
+                    <i class="las la-times"></i> Reset
+                </button>
+            @endif
         </div>
     </div>
 
@@ -217,11 +242,21 @@
 
                         <th rowspan="2" class="align-middle">NIM</th>
 
+                        <th class="text-center" colspan="5">
+                            Ringkasan Kehadiran</th>
+
                         <th class="text-center" colspan="{{ $totalPresence }}">
                             Jumlah Pertemuan</th>
+
+                        <th rowspan="2" class="align-middle w-1">Aksi</th>
                     </tr>
 
                     <tr>
+                        <th class="text-center w-1">Hadir</th>
+                        <th class="text-center w-1">Alpa</th>
+                        <th class="text-center w-1">Izin</th>
+                        <th class="text-center w-1">Sakit</th>
+                        <th class="text-center w-1">Total</th>
                         @for ($i = 1; $i <= $totalPresence; $i++)
                             <th class="text-center w-1">Ke-{{ $i }}</th>
                         @endfor
@@ -258,27 +293,67 @@
 
                             <td>{{ $row->nis ?? '-' }}</td>
 
+                            {{-- Summary Statistics --}}
+                            @php
+                                $summary = $this->getStudentAttendanceSummary($row->id);
+                            @endphp
+                            <td class="text-center">
+                                <span class="badge bg-green text-white">{{ $summary['hadir'] }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-red text-white">{{ $summary['alpa'] }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-yellow text-white">{{ $summary['izin'] }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-cyan text-white">{{ $summary['sakit'] }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-blue text-white">{{ $summary['total'] }}</span>
+                            </td>
+
                             @foreach ($row->student_attendances as $attendance)
                                 @if ($attendance->class_attendance->class_schedule_id == $this->classScheduleId)
-                                    <td class="text-center">
-                                        <span style="width: 30px; height: 30px" @class([
-                                            'badge fs-5 d-flex justify-content-center align-items-center rounded-md text-white',
-                                            'bg-green' => $attendance->status_attendance === 'hadir',
-                                            'bg-red' => $attendance->status_attendance === 'alpa',
-                                            'bg-yellow' => $attendance->status_attendance === 'izin',
-                                            'bg-cyan' => $attendance->status_attendance === 'sakit',
-                                        ])>
-                                            {{ match ($attendance->status_attendance) {
-                                                'hadir' => 'H',
-                                                'alpa' => 'A',
-                                                'izin' => 'I',
-                                                'sakit' => 'S',
-                                                default => '',
-                                            } }}
-                                        </span>
-                                    </td>
+                                    @php
+                                        $attendanceDate = $attendance->class_attendance->created_at->format('Y-m-d');
+                                        $isInDateRange = true;
+
+                                        if ($this->date_start && $this->date_start > $attendanceDate) {
+                                            $isInDateRange = false;
+                                        }
+                                        if ($this->date_end && $this->date_end < $attendanceDate) {
+                                            $isInDateRange = false;
+                                        }
+                                    @endphp
+                                    @if ($isInDateRange)
+                                        <td class="text-center">
+                                            <span style="width: 30px; height: 30px" @class([
+                                                'badge fs-5 d-flex justify-content-center align-items-center rounded-md text-white',
+                                                'bg-green' => $attendance->status_attendance === 'hadir',
+                                                'bg-red' => $attendance->status_attendance === 'alpa',
+                                                'bg-yellow' => $attendance->status_attendance === 'izin',
+                                                'bg-cyan' => $attendance->status_attendance === 'sakit',
+                                            ])>
+                                                {{ match ($attendance->status_attendance) {
+                                                    'hadir' => 'H',
+                                                    'alpa' => 'A',
+                                                    'izin' => 'I',
+                                                    'sakit' => 'S',
+                                                    default => '',
+                                                } }}
+                                            </span>
+                                        </td>
+                                    @endif
                                 @endif
                             @endforeach
+
+                            <td>
+                                <button wire:click="downloadStudentPdf({{ $row->id }})" type="button"
+                                    class="btn btn-sm btn-primary" title="Download Rekap PDF">
+                                    <span class="las la-file-pdf"></span> PDF
+                                </button>
+                            </td>
                         </tr>
                     @empty
                         <x-datatable.empty colspan="10" />

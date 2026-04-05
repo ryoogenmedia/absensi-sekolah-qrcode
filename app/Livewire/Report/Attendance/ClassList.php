@@ -24,12 +24,17 @@ class ClassList extends Component
         'endDate' => '',
     ];
 
-    public function mount()
+    public function mount($filters = null)
     {
-        // Load filters dari session
-        $sessionFilters = session('attendance_class_filters', []);
-        if ($sessionFilters) {
-            $this->filters = $sessionFilters;
+        // If filters passed from parent, use them
+        if ($filters && is_array($filters)) {
+            $this->filters = $filters;
+        } else {
+            // Otherwise load filters dari session
+            $sessionFilters = session('attendance_class_filters', []);
+            if ($sessionFilters) {
+                $this->filters = $sessionFilters;
+            }
         }
     }
 
@@ -42,24 +47,31 @@ class ClassList extends Component
     #[Computed()]
     public function rows()
     {
+        $startDate = $this->filters['startDate']
+            ? Carbon::parse($this->filters['startDate'])->startOfDay()
+            : null;
+        $endDate = $this->filters['endDate']
+            ? Carbon::parse($this->filters['endDate'])->endOfDay()
+            : null;
+
         $query = StudentAttendance::query()
             ->with([
                 'student:id,full_name',
+                'class_attendance:id,class_room_id,class_schedule_id,created_at,name_material',
                 'class_attendance.class_room:id,name_class',
+                'class_attendance.class_schedule:id,teacher_id,subject_study_id',
                 'class_attendance.class_schedule.teacher:id,name',
                 'class_attendance.class_schedule.subject_study:id,name_subject'
-            ])
-            ->when($this->filters['startDate'], function ($query) {
-                $query->whereHas('class_attendance', fn($q) => $q->where('created_at', '>=', Carbon::parse($this->filters['startDate'])->startOfDay()));
-            })
-            ->when($this->filters['endDate'], function ($query) {
-                $query->whereHas('class_attendance', fn($q) => $q->where('created_at', '<=', Carbon::parse($this->filters['endDate'])->endOfDay()));
-            })
-            ->when($this->filters['kelas'], function ($query, $kelas) {
-                $query->whereHas('class_attendance', fn($q) => $q->where('class_room_id', $kelas));
-            })
-            ->when($this->filters['search'], function ($query, $search) {
-                $query->whereHas('student', fn($q) => $q->where('full_name', 'LIKE', "%{$search}%"));
+            ])->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereHas('class_attendance', fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]));
+            })->when($startDate && !$endDate, function ($query) use ($startDate) {
+                $query->whereHas('class_attendance', fn($q) => $q->where('created_at', '>=', $startDate));
+            })->when(!$startDate && $endDate, function ($query) use ($endDate) {
+                $query->whereHas('class_attendance', fn($q) => $q->where('created_at', '<=', $endDate));
+            })->when($this->filters['kelas'], function ($query) {
+                $query->whereHas('class_attendance', fn($q) => $q->where('class_room_id', $this->filters['kelas']));
+            })->when($this->filters['search'], function ($query) {
+                $query->whereHas('student', fn($q) => $q->where('full_name', 'LIKE', "%{$this->filters['search']}%"));
             });
 
         return $this->applyPagination($query);
