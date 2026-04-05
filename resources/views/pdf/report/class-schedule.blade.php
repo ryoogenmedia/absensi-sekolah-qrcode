@@ -73,7 +73,6 @@
                 <th>Nama Presensi</th>
                 <th>Guru Pengajar</th>
                 <th>Mata Pelajaran</th>
-                <th>Status Presensi</th>
             </tr>
         </thead>
         <tbody>
