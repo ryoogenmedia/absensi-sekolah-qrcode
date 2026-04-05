@@ -157,9 +157,10 @@ class Detail extends Component
 
     public function downloadStudentPdf($studentId)
     {
-        $student = Student::findOrFail($studentId);
+        $student = Student::with('class_room')->findOrFail($studentId);
         $summary = $this->getStudentAttendanceSummary($studentId);
 
+        // Query with eager loading untuk menghindari N+1
         $attendances = StudentAttendance::where('student_id', $studentId)
             ->whereHas('class_attendance', function ($query) {
                 $query->where('class_schedule_id', $this->classScheduleId)
@@ -169,15 +170,24 @@ class Detail extends Component
                     ->when($this->date_end, function ($q, $date) {
                         $q->whereDate('created_at', '<=', $date);
                     });
-            })->with('class_attendance')
+            })
+            ->with('class_attendance')
             ->orderBy('created_at')
             ->get();
+
+        // Prepare filtered data di controller, jangan di blade
+        $izinList = $attendances->where('status_attendance', 'izin')->values();
+        $alpaList = $attendances->where('status_attendance', 'alpa')->values();
+        $sakitList = $attendances->where('status_attendance', 'sakit')->values();
 
         $data = [
             'student' => $student,
             'classSchedule' => $this->classSchedule,
             'summary' => $summary,
             'attendances' => $attendances,
+            'izinList' => $izinList,
+            'alpaList' => $alpaList,
+            'sakitList' => $sakitList,
             'date_start' => $this->date_start,
             'date_end' => $this->date_end,
         ];

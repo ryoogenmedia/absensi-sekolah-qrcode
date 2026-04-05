@@ -355,9 +355,6 @@
 
         <div class="list-section izin">
             <h4>📋 IZIN ({{ $summary['izin'] }} Pertemuan)</h4>
-            @php
-                $izinList = $attendances->where('status_attendance', 'izin');
-            @endphp
             @forelse($izinList as $item)
                 <div class="list-item">
                     • {{ $item->class_attendance->created_at->format('d/m/Y') }} -
@@ -370,9 +367,6 @@
 
         <div class="list-section alpa">
             <h4>⚠️ ALPA ({{ $summary['alpa'] }} Pertemuan)</h4>
-            @php
-                $alpaList = $attendances->where('status_attendance', 'alpa');
-            @endphp
             @forelse($alpaList as $item)
                 <div class="list-item">
                     • {{ $item->class_attendance->created_at->format('d/m/Y') }} -
@@ -385,9 +379,6 @@
 
         <div class="list-section sakit">
             <h4>🏥 SAKIT ({{ $summary['sakit'] }} Pertemuan)</h4>
-            @php
-                $sakitList = $attendances->where('status_attendance', 'sakit');
-            @endphp
             @forelse($sakitList as $item)
                 <div class="list-item">
                     • {{ $item->class_attendance->created_at->format('d/m/Y') }} -

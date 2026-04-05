@@ -188,42 +188,59 @@ class PrintReportController extends Controller
         $startDate = $request->startDate;
         $endDate = $request->endDate;
 
+        // Minimal query - load only required data
         $query = StudentAttendance::query()
+            ->select([
+                'student_attendances.id',
+                'student_attendances.student_id',
+                'student_attendances.class_attendance_id',
+                'student_attendances.status_attendance',
+                'student_attendances.created_at',
+            ])
             ->with([
                 'student:id,full_name',
+                'class_attendance' => fn($q) => $q->select('id', 'class_room_id', 'class_schedule_id', 'created_at'),
                 'class_attendance.class_room:id,name_class',
+                'class_attendance.class_schedule' => fn($q) => $q->select('id', 'teacher_id', 'subject_study_id'),
                 'class_attendance.class_schedule.teacher:id,name',
-                'class_attendance.class_schedule.subject_study:id,name_subject'
+                'class_attendance.class_schedule.subject_study:id,name_subject',
             ])
             ->when($startDate, function (Builder $q) use ($startDate) {
-                $q->whereHas('class_attendance', fn($subQ) => $subQ->where('created_at', '>=', $startDate . ' 00:00:00'));
+                $q->whereDate('student_attendances.created_at', '>=', $startDate);
             })
             ->when($endDate, function (Builder $q) use ($endDate) {
-                $q->whereHas('class_attendance', fn($subQ) => $subQ->where('created_at', '<=', $endDate . ' 23:59:59'));
+                $q->whereDate('student_attendances.created_at', '<=', $endDate);
             })
             ->when($kelas, function (Builder $q) use ($kelas) {
                 $q->whereHas('class_attendance', fn($subQ) => $subQ->where('class_room_id', $kelas->id));
             })
             ->when($request->search, function (Builder $q) use ($request) {
                 $q->whereHas('student', fn($subQ) => $subQ->where('full_name', 'LIKE', "%{$request->search}%"));
-            });
+            })
+            ->orderBy('student_attendances.created_at', 'desc')
+            ->limit(1000);
 
         $data = $query->get();
         $kelasName = $kelas->name_class ?? 'SEMUA KELAS';
 
-        $pdf = \PDF::loadView('pdf.report.attendance.class-list', [
-            'data'       => $data,
-            'kelas'      => $kelasName,
-            'startDate'  => $startDate,
-            'endDate'    => $endDate,
-        ])->setPaper('a4', 'landscape');
+        try {
+            $pdf = \PDF::loadView('pdf.report.attendance.class-list', [
+                'data'       => $data,
+                'kelas'      => $kelasName,
+                'startDate'  => $startDate,
+                'endDate'    => $endDate,
+            ])->setPaper('a4', 'landscape');
 
-        $fileName = "laporan-presensi-list-{$kelasName}";
-        if ($startDate && $endDate) {
-            $fileName .= "-[{$startDate}_{$endDate}]";
+            $fileName = "laporan-presensi-list-{$kelasName}";
+            if ($startDate && $endDate) {
+                $fileName .= "-[{$startDate}_{$endDate}]";
+            }
+
+            return $pdf->stream($fileName . ".pdf");
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate PDF: ' . $e->getMessage()], 500);
         }
-
-        return $pdf->stream($fileName . ".pdf");
     }
 
     public function attendanceClassSummary(Request $request)
@@ -236,29 +253,34 @@ class PrintReportController extends Controller
             ->map(fn($s) => is_array($s) ? $s['value'] : $s);
 
         if ($kelas) {
+            // Optimize dengan single query menggunakan selectRaw CASE WHEN
             $data = Student::where('class_room_id', $kelas->id)
-                ->withCount([
-                    'student_attendances as total_hadir' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status_attendance', 'hadir')
-                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
-                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
-                    },
-                    'student_attendances as total_alpa' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status_attendance', 'alpa')
-                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
-                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
-                    },
-                    'student_attendances as total_izin' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status_attendance', 'izin')
-                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
-                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
-                    },
-                    'student_attendances as total_sakit' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status_attendance', 'sakit')
-                            ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
-                            ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
-                    }
+                ->select('students.*')
+                ->selectRaw("
+                    SUM(CASE WHEN student_attendances.status_attendance = 'hadir'
+                        AND DATE(student_attendances.created_at) >= ?
+                        AND DATE(student_attendances.created_at) <= ? THEN 1 ELSE 0 END) as total_hadir,
+                    SUM(CASE WHEN student_attendances.status_attendance = 'alpa'
+                        AND DATE(student_attendances.created_at) >= ?
+                        AND DATE(student_attendances.created_at) <= ? THEN 1 ELSE 0 END) as total_alpa,
+                    SUM(CASE WHEN student_attendances.status_attendance = 'izin'
+                        AND DATE(student_attendances.created_at) >= ?
+                        AND DATE(student_attendances.created_at) <= ? THEN 1 ELSE 0 END) as total_izin,
+                    SUM(CASE WHEN student_attendances.status_attendance = 'sakit'
+                        AND DATE(student_attendances.created_at) >= ?
+                        AND DATE(student_attendances.created_at) <= ? THEN 1 ELSE 0 END) as total_sakit
+                ", [
+                    $startDate ?? '1000-01-01',
+                    $endDate ?? '9999-12-31',
+                    $startDate ?? '1000-01-01',
+                    $endDate ?? '9999-12-31',
+                    $startDate ?? '1000-01-01',
+                    $endDate ?? '9999-12-31',
+                    $startDate ?? '1000-01-01',
+                    $endDate ?? '9999-12-31',
                 ])
+                ->leftJoin('student_attendances', 'student_attendances.student_id', '=', 'students.id')
+                ->groupBy('students.id')
                 ->get();
             $summaryType = 'siswa';
         } else {
@@ -292,7 +314,8 @@ class PrintReportController extends Controller
             'endDate'     => $endDate,
             'summaryType' => $summaryType,
             'statuses'    => $statuses,
-        ])->setPaper('a4', 'landscape');
+        ])
+            ->setPaper('a4', 'landscape');
 
         $fileName = "laporan-presensi-ringkasan-{$kelasName}";
         if ($startDate && $endDate) {
