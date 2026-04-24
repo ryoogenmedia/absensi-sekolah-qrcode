@@ -176,15 +176,15 @@ return [
         'roles' => ['superadmin', 'admin', 'developer', 'operator'],
     ],
 
-    // [
-    //     'title' => 'Whatsapp Broadcast',
-    //     'icon' => 'whatsapp',
-    //     'brand_icon' => true,
-    //     'route-name' => 'whatsapp-broadcast.index',
-    //     'is-active' => 'whatsapp-broadcast*',
-    //     'description' => 'Pengaturan whatsapp broadcast.',
-    //     'roles' => ['superadmin', 'admin'],
-    // ],
+    [
+        'title' => 'Whatsapp Broadcast',
+        'icon' => 'whatsapp',
+        'brand_icon' => true,
+        'route-name' => 'whatsapp-broadcast.index',
+        'is-active' => 'whatsapp-broadcast*',
+        'description' => 'Pengaturan whatsapp broadcast.',
+        'roles' => ['superadmin', 'admin'],
+    ],
 
     [
         'title' => 'Presensi',

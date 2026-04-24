@@ -20,6 +20,7 @@ class Index extends Component
     public $scanStatus;
 
     public $whatsappBaseUrl;
+    public $qrCodeImage;
 
     public function getWhatsappGetBaseUrl(){
         $whatsappBroadcast = new WhatsappBroadcast;
@@ -125,6 +126,16 @@ class Index extends Component
             $this->statusActive     = json_decode($whatsappBoradcast->getDeviceConnection(), true);
             $this->isActiveDevice   = json_decode($whatsappBoradcast->isDeviceConnected(), true);
             $this->scanStatus       = json_decode($whatsappBoradcast->getScanQrCodeStatus(), true);
+
+            // Fetch QR code if waiting for scan
+            if (isset($this->scanStatus['status']) && $this->scanStatus['status'] === 'WAITING_SCAN') {
+                $qrResponse = json_decode($whatsappBoradcast->getQrCode(), true);
+                if (isset($qrResponse['data']['qr'])) {
+                    $this->qrCodeImage = $qrResponse['data']['qr'];
+                }
+            } else {
+                $this->qrCodeImage = null;
+            }
         }catch(Exception $e){
             logger()->error(
                 '[get whatsapp status] ' .

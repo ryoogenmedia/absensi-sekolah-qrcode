@@ -112,8 +112,17 @@
 
                                             @case('WAITING_SCAN')
                                                 <span class="wa-status-value status-waiting">Menunggu Scan</span>
-                                            <p class="wa-status-desc text-muted small mt-2">QR code telah dibuat, menunggu untuk
-                                                discan...</spa>
+                                                <p class="wa-status-desc text-muted small mt-2">QR code telah dibuat, silakan scan menggunakan aplikasi WhatsApp Anda.</p>
+                                                @if ($qrCodeImage)
+                                                    <div class="mt-3 p-3 bg-white border rounded text-center shadow-sm" style="width: fit-content;">
+                                                        <img src="{{ $qrCodeImage }}" alt="WhatsApp QR Code" style="max-width: 250px;">
+                                                        <div class="mt-2">
+                                                            <button type="button" wire:click="getStatusDeviceWhatsapp" class="btn btn-sm btn-ghost-primary">
+                                                                <i class="las la-sync me-1"></i> Refresh QR
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             @break
 
                                             @case('NOT_READY')

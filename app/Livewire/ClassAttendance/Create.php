@@ -6,6 +6,7 @@ use App\Models\ClassAttendance;
 use App\Models\ClassSchedule;
 use App\Models\Student;
 use App\Models\StudentAttendance;
+use App\Helpers\WhatsappBroadcast;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
@@ -37,6 +38,7 @@ class Create extends Component
     }
 
     public $classAttendanceRecord = null;
+    public $notifiedStudents = []; // Track IDs of students already notified via WA
 
     #[On('scanned')]
     public function scanQr($code)
@@ -79,6 +81,12 @@ class Create extends Component
                 );
 
                 DB::commit();
+
+                // 3. Send WhatsApp Notification to Guardian
+                if (!in_array($studentIdFound, $this->notifiedStudents)) {
+                    $this->sendWhatsappNotification($studentIdFound, 'hadir');
+                    $this->notifiedStudents[] = $studentIdFound;
+                }
 
                 $this->dispatch('alert', [
                     'type' => 'success',
@@ -149,6 +157,12 @@ class Create extends Component
                         'status_attendance' => $presensi['status_kehadiran'],
                     ]
                 );
+
+                // Send WA for manual entries or those not yet notified
+                if ($presensi['status_kehadiran'] == 'hadir' && !in_array($studentId, $this->notifiedStudents)) {
+                    $this->sendWhatsappNotification($studentId, 'hadir');
+                    $this->notifiedStudents[] = $studentId;
+                }
             }
 
             DB::commit();
@@ -178,6 +192,37 @@ class Create extends Component
         ]);
 
         return redirect()->route('class-attendance.detail', $this->classScheduleId);
+    }
+
+    private function sendWhatsappNotification($studentId, $status)
+    {
+        try {
+            $student = Student::with(['class_room', 'student_guardian'])->find($studentId);
+            if (!$student || !$student->student_guardian || !$student->student_guardian->guardian_contact) {
+                return;
+            }
+
+            $schedule = ClassSchedule::with('subject_study')->find($this->classScheduleId);
+            $subject = $schedule->subject_study->name_subject ?? 'Mata Pelajaran';
+            $time = now()->format('H:i');
+            $date = now()->translatedFormat('d F Y');
+
+            $phoneNumber = format_number_indonesia($student->student_guardian->guardian_contact);
+            $message = "📢 *NOTIFIKASI KEHADIRAN SISWA*\n\n"
+                     . "Halo Bapak/Ibu Wali dari *{$student->full_name}*,\n\n"
+                     . "Menginfokan bahwa putra/putri Anda telah hadir di kelas:\n"
+                     . "📚 *Mapel:* {$subject}\n"
+                     . "⏰ *Waktu:* {$time} WIB\n"
+                     . "📅 *Tanggal:* {$date}\n"
+                     . "✅ *Status:* HADIR\n\n"
+                     . "Terima kasih.";
+
+            $whatsapp = new WhatsappBroadcast();
+            $whatsapp->sendText($phoneNumber, $message);
+
+        } catch (Exception $e) {
+            logger()->error("WhatsApp Notification Error: " . $e->getMessage());
+        }
     }
 
     public function mount($id){

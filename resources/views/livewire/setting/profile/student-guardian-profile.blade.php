@@ -41,8 +41,8 @@
                         @endforeach
                     </x-form.select>
 
-                    <x-form.input wire:model="kontakWali" name="kontakWali" label="Kontak Wali"
-                        placeholder="nomor ponsel / nomor whatsapp" type="text" required />
+                    <x-form.input wire:model="kontakWali" name="kontakWali" label="Nomor WhatsApp Wali"
+                        placeholder="Contoh: 08123456789 (untuk notifikasi)" type="text" required />
                 </div>
             </div>
         </div>
