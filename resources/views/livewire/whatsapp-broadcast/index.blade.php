@@ -189,8 +189,8 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
-                            <x-form.input wire:model="nomorWhatsapp" name="nomorWhatsapp" label="Nomor Whatsapp"
-                                placeholder="masukkan nomor whatsapp" type="text" required autofocus />
+                            <x-form.input wire:model="nomorWhatsapp" name="nomorWhatsapp" label="Nomor WhatsApp Pengirim (Opsional)"
+                                placeholder="Akan terisi otomatis setelah scan" type="text" autofocus />
 
                             <x-form.input wire:model="whatsappUrl" name="whatsappUrl" label="WhatsApp URL Konfigurasi"
                                 placeholder="Contoh: http://localhost" type="text" required />

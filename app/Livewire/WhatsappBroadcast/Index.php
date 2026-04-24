@@ -154,7 +154,7 @@ class Index extends Component
 
     public function save(){
         $this->validate([
-            'nomorWhatsapp' => ['required','string','min:2','max:255'],
+            'nomorWhatsapp' => ['nullable','string','min:2','max:255'],
             'whatsappUrl'   => ['required','string','min:2'],
             'whatsappPort'  => ['required','min:2','max:255'],
         ]);
@@ -208,14 +208,15 @@ class Index extends Component
     }
 
     public function mount(){
+        $whatsappConfig = WhatsappConfig::first();
+
+        $this->nomorWhatsapp = $whatsappConfig->phone_number ?? null;
+        $this->whatsappUrl = $whatsappConfig->url ?? 'http://127.0.0.1';
+        $this->whatsappPort = $whatsappConfig->port ?? '3000';
+        $this->whatsappConfigId = $whatsappConfig->id ?? null;
+
         $this->getStatusDeviceWhatsapp();
         $this->getWhatsappGetBaseUrl();
-
-        $whatsappConfig = WhatsappConfig::first();
-        $this->nomorWhatsapp = $whatsappConfig->phone_number ?? null;
-        $this->whatsappUrl = $whatsappConfig->url ?? null;
-        $this->whatsappPort = $whatsappConfig->port ?? null;
-        $this->whatsappConfigId = $whatsappConfig->id ?? null;
     }
 
     public function render()
