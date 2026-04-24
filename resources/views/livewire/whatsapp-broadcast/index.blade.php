@@ -59,7 +59,7 @@
     </style>
 @endpush
 
-<div>
+<div wire:poll.5s="getStatusDeviceWhatsapp">
     <x-slot name="title">Whatsapp Broadcast</x-slot>
 
     <x-slot name="pageTitle">Whatsapp Broadcast</x-slot>
@@ -192,11 +192,11 @@
                             <x-form.input wire:model="nomorWhatsapp" name="nomorWhatsapp" label="Nomor Whatsapp"
                                 placeholder="masukkan nomor whatsapp" type="text" required autofocus />
 
-                            <x-form.input wire:model="whatsappUrl" name="whatsappUrl" label="Whatsapp URL Konfigurasi"
-                                placeholder="masukkan link server / konfigurasi whatsapp" type="text" required />
+                            <x-form.input wire:model="whatsappUrl" name="whatsappUrl" label="WhatsApp URL Konfigurasi"
+                                placeholder="Contoh: http://localhost" type="text" required />
 
-                            <x-form.input wire:model="whatsappUrl" name="whatsappUrl" label="Whatsapp PORT Konfigurasi"
-                                placeholder="masukkan port link server" type="text" required />
+                            <x-form.input wire:model="whatsappPort" name="whatsappPort" label="WhatsApp PORT Konfigurasi"
+                                placeholder="Contoh: 3000" type="text" required />
                         </div>
                     </div>
                 </div>
