@@ -18,8 +18,13 @@ const client = new Client({
     authStrategy: new LocalAuth({
         dataPath: './sessions'
     }),
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+    },
     puppeteer: {
-        headless: true,
+        headless: true, // Use true for the new headless mode in latest Puppeteer
+        handleSIGINT: false,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -27,8 +32,17 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--log-level=3', // keep logs clean
+            '--no-default-browser-check',
+            '--disable-site-isolation-trials',
+            '--no-experiments',
+            '--ignore-gpu-blacklist',
+            '--ignore-certificate-errors',
+            '--ignore-certificate-errors-spki-list',
+            '--disable-extensions',
+            '--disable-default-apps',
+            '--enable-features=NetworkService'
         ],
     }
 });
