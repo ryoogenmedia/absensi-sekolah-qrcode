@@ -21,7 +21,7 @@ Route::redirect('/', '/login');
  * cetak pdf
  */
 Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name('print-pdf.')->group(function () {
-    Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:superadmin,admin,developer')->name('card');
+    Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:superadmin,admin,developer,guru')->name('card');
 });
 
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
@@ -29,7 +29,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * Print Report / Cetak Laporan
      */
-    Route::prefix('cetak-laporan')->middleware('roles:superadmin,admin,developer')->name('print-report.')->group(function () {
+    Route::prefix('cetak-laporan')->middleware('roles:superadmin,admin,developer,guru')->name('print-report.')->group(function () {
         Route::get('/siswa', [PrintReportController::class, 'student'])
             ->name('student');
 

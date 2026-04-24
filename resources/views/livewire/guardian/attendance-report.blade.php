@@ -6,6 +6,11 @@
             <div class="page-pretitle">Laporan Lengkap</div>
             <h2 class="page-title">Absensi: {{ $student->full_name }}</h2>
         </div>
+        <div class="col-auto ms-auto d-print-none">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="las la-print me-2"></i> Cetak Laporan
+            </button>
+        </div>
     </div>
 
     <div class="card mb-4">

@@ -4,6 +4,14 @@
     <x-slot name="pageTitle">Presensi Anak Anda</x-slot>
 
     <x-slot name="pagePretitle">Kelola Presensi Anak Anda</x-slot>
+
+    <div class="row align-items-center mb-4 d-print-none">
+        <div class="col-auto ms-auto">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="las la-print me-2"></i> Cetak Halaman
+            </button>
+        </div>
+    </div>
     <x-alert />
 
     <x-modal.delete-confirmation />

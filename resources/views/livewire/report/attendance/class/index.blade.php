@@ -11,7 +11,13 @@
             <div class="page-pretitle">Cetak Laporan Presensi Kelas</div>
             <h2 class="page-title">Laporan Presensi Kelas</h2>
         </div>
-
+        <div class="col-auto ms-auto d-print-none">
+            <div class="btn-list">
+                <a href="{{ route('print-report.attendance.class') }}" target="_blank" class="btn btn-primary">
+                    <i class="las la-print me-2"></i> Cetak PDF
+                </a>
+            </div>
+        </div>
     </div>
 
     <x-alert />

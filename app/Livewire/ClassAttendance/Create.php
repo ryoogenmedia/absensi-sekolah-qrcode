@@ -36,24 +36,63 @@ class Create extends Component
         ];
     }
 
+    public $classAttendanceRecord = null;
+
     #[On('scanned')]
     public function scanQr($code)
     {
         $studentFound = false;
+        $studentIdFound = null;
+
         foreach ($this->presensiSiswa as $studentId => $data) {
             if ($data['nis'] == $code) {
                 $this->presensiSiswa[$studentId]['status_kehadiran'] = 'hadir';
                 $studentFound = true;
+                $studentIdFound = $studentId;
                 break;
             }
         }
 
         if ($studentFound) {
-            $this->dispatch('alert', [
-                'type' => 'success',
-                'message' => 'Berhasil!',
-                'detail' => "Siswa dengan NIS $code berhasil di-scan.",
-            ]);
+            try {
+                DB::beginTransaction();
+
+                // 1. Ensure ClassAttendance record exists
+                if (!$this->classAttendanceRecord) {
+                    $this->classAttendanceRecord = ClassAttendance::create([
+                        'class_room_id' => $this->classRoomId,
+                        'class_schedule_id' => $this->classScheduleId,
+                        'name_material' => $this->namaMateri ?? 'Presensi QR (Materi Belum Diisi)',
+                        'explanation_material' => $this->penjelasanMateri,
+                    ]);
+                }
+
+                // 2. Auto-save this student as 'hadir' in the database
+                StudentAttendance::updateOrCreate(
+                    [
+                        'class_attendance_id' => $this->classAttendanceRecord->id,
+                        'student_id' => $studentIdFound,
+                    ],
+                    [
+                        'status_attendance' => 'hadir',
+                    ]
+                );
+
+                DB::commit();
+
+                $this->dispatch('alert', [
+                    'type' => 'success',
+                    'message' => 'Berhasil!',
+                    'detail' => "Siswa dengan NIS $code otomatis dicatat hadir di database.",
+                ]);
+            } catch (Exception $e) {
+                DB::rollBack();
+                $this->dispatch('alert', [
+                    'type' => 'danger',
+                    'message' => 'Gagal Simpan!',
+                    'detail' => "Gagal mencatat kehadiran ke database secara otomatis.",
+                ]);
+            }
         } else {
             $this->dispatch('alert', [
                 'type' => 'warning',
@@ -66,6 +105,11 @@ class Create extends Component
     public function toggleScanner()
     {
         $this->isScannerOpen = !$this->isScannerOpen;
+        if ($this->isScannerOpen) {
+            $this->dispatch('init-scanner');
+        } else {
+            $this->dispatch('close-scanner');
+        }
     }
 
     public function save(){
@@ -74,12 +118,20 @@ class Create extends Component
         try{
             DB::beginTransaction();
 
-            $classAttendance = ClassAttendance::create([
-                'class_room_id' => $this->classRoomId,
-                'class_schedule_id' => $this->classScheduleId,
-                'explanation_material' => $this->penjelasanMateri,
-                'name_material' => $this->namaMateri,
-            ]);
+            if ($this->classAttendanceRecord) {
+                $classAttendance = $this->classAttendanceRecord;
+                $classAttendance->update([
+                    'explanation_material' => $this->penjelasanMateri,
+                    'name_material' => $this->namaMateri,
+                ]);
+            } else {
+                $classAttendance = ClassAttendance::create([
+                    'class_room_id' => $this->classRoomId,
+                    'class_schedule_id' => $this->classScheduleId,
+                    'explanation_material' => $this->penjelasanMateri,
+                    'name_material' => $this->namaMateri,
+                ]);
+            }
 
             if($this->buktiPresensi){
                 $classAttendance->update([
@@ -122,7 +174,7 @@ class Create extends Component
         session()->flash('alert', [
             'type' => 'success',
             'message' => 'Berhasil!',
-            'detail' => "Berhasil menambahkan data presensi pertemuan.",
+            'detail' => "Berhasil menyimpan data presensi pertemuan.",
         ]);
 
         return redirect()->route('class-attendance.detail', $this->classScheduleId);
