@@ -279,7 +279,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * whatsapp broadcast
      */
-    Route::prefix('whatsapp-broadcast')->name('whatsapp-broadcast.')->middleware('roles:superadmin,admin,developer')->group(function () {
+    Route::prefix('whatsapp-broadcast')->name('whatsapp-broadcast.')->middleware('roles:superadmin,admin,developer,wali siswa')->group(function () {
         Route::get('/', WhatsappBroadcast\Index::class)->name('index');
     });
 

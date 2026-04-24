@@ -183,7 +183,7 @@ return [
         'route-name' => 'whatsapp-broadcast.index',
         'is-active' => 'whatsapp-broadcast*',
         'description' => 'Pengaturan whatsapp broadcast.',
-        'roles' => ['superadmin', 'admin'],
+        'roles' => ['superadmin', 'admin', 'developer', 'wali siswa'],
     ],
 
     [
