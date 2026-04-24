@@ -83,9 +83,9 @@
                                 <h2 class="my-1 text-black">Whasapp Broadcast</h2>
                                 <div class="d-flex justify-content-between gap-2">
                                     <button type="button"
-                                        onclick="openNewWindow('{{ $whatsappBaseUrl }}'); return false;"
-                                        class="btn btn-green">Scan <span
-                                            class="las la-qrcode ms-2 fs-2"></span></button>
+                                        wire:click="getStatusDeviceWhatsapp"
+                                        class="btn btn-green">Cek Status <span
+                                            class="las la-sync ms-2 fs-2"></span></button>
                                     <button wire:click="testSendText" class="btn btn-cyan">Kirim<span
                                             class="lab la-telegram-plane ms-2 fs-2"></span></button>
                                 </div>
