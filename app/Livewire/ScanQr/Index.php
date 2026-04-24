@@ -5,6 +5,7 @@ namespace App\Livewire\ScanQr;
 use App\Models\CheckInRecord;
 use App\Models\CheckOutRecord;
 use App\Models\Student;
+use App\Helpers\WhatsappBroadcast;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -67,6 +68,9 @@ class Index extends Component
             'attendance_date' => $today,
         ]);
 
+        // Send WhatsApp Notification
+        $this->sendWhatsappNotification($student, 'MASUK');
+
         session()->flash('alert', [
             'type' => 'success',
             'message' => 'Berhasil',
@@ -102,6 +106,9 @@ class Index extends Component
             'attendance_date' => $today,
         ]);
 
+        // Send WhatsApp Notification
+        $this->sendWhatsappNotification($student, 'KELUAR');
+
         session()->flash('alert', [
             'type' => 'success',
             'message' => 'Berhasil',
@@ -111,6 +118,33 @@ class Index extends Component
         $this->dispatch('reload-check-out');
 
         return redirect()->route('scan-qr.index');
+    }
+
+    private function sendWhatsappNotification($student, $type)
+    {
+        try {
+            $student->load('student_guardian');
+            $guardian = $student->student_guardian;
+            if (!$guardian || !$guardian->guardian_contact) {
+                return;
+            }
+
+            $time = now()->format('H:i');
+            $date = now()->translatedFormat('d F Y');
+            $phoneNumber = format_number_indonesia($guardian->guardian_contact);
+
+            $message = "📢 *NOTIFIKASI PRESENSI {$type}*\n\n"
+                     . "Halo Bapak/Ibu Wali dari *{$student->full_name}*,\n\n"
+                     . "Menginfokan bahwa putra/putri Anda telah melakukan presensi *{$type}*:\n"
+                     . "⏰ *Waktu:* {$time} WIB\n"
+                     . "📅 *Tanggal:* {$date}\n\n"
+                     . "Terima kasih.";
+
+            $whatsapp = new WhatsappBroadcast();
+            $whatsapp->sendText($phoneNumber, $message);
+        } catch (\Exception $e) {
+            logger()->error("Daily Attendance WA Error: " . $e->getMessage());
+        }
     }
 
     public function mount()

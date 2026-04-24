@@ -202,9 +202,13 @@ class Create extends Component
                 return;
             }
 
-            $schedule = ClassSchedule::with('subject_study')->find($this->classScheduleId);
+            $schedule = ClassSchedule::with(['subject_study', 'teacher'])->find($this->classScheduleId);
             $subject = $schedule->subject_study->name_subject ?? 'Mata Pelajaran';
-            $time = now()->format('H:i');
+            $teacherName = $schedule->teacher->name ?? 'Guru';
+            $startTime = $schedule->start_time;
+            $endTime = $schedule->end_time;
+            
+            $timeNow = now()->format('H:i');
             $date = now()->translatedFormat('d F Y');
 
             $phoneNumber = format_number_indonesia($student->student_guardian->guardian_contact);
@@ -212,7 +216,9 @@ class Create extends Component
                      . "Halo Bapak/Ibu Wali dari *{$student->full_name}*,\n\n"
                      . "Menginfokan bahwa putra/putri Anda telah hadir di kelas:\n"
                      . "📚 *Mapel:* {$subject}\n"
-                     . "⏰ *Waktu:* {$time} WIB\n"
+                     . "👨‍🏫 *Guru:* {$teacherName}\n"
+                     . "⏳ *Jam Pelajaran:* {$startTime} - {$endTime}\n"
+                     . "⏰ *Waktu Absen:* {$timeNow} WIB\n"
                      . "📅 *Tanggal:* {$date}\n"
                      . "✅ *Status:* HADIR\n\n"
                      . "Terima kasih.";
