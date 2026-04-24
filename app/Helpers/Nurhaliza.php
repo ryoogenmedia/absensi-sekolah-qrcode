@@ -83,8 +83,8 @@ if (!function_exists('base_whatsapp')) {
         $whatsappConfig = WhatsappConfig::select('url', 'port', 'phone_number')->first();
 
         return [
-            "url" => $whatsappConfig->whatsapp_url ?? null,
-            "port" => $whatsappConfig->whatsapp_port ?? null,
+            "url" => $whatsappConfig->url ?? null,
+            "port" => $whatsappConfig->port ?? null,
             "phone_number" => $whatsappConfig->phone_number ?? null,
         ];
     }

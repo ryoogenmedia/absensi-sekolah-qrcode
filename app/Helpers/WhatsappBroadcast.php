@@ -52,7 +52,7 @@ class WhatsappBroadcast
     protected function sendRequest($method, $endpoint, $payload = [], $isMultipart = false)
     {
         $config = $this->config();
-        $url = $config['url'] . $endpoint;
+        $url = $config['url'] . ($config['port'] ? ':' . $config['port'] : '') . $endpoint;
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
