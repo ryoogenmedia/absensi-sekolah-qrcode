@@ -21,7 +21,7 @@ Route::redirect('/', '/login');
  * cetak pdf
  */
 Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name('print-pdf.')->group(function () {
-    Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:admin,developer')->name('card');
+    Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:superadmin,admin,developer')->name('card');
 });
 
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
@@ -29,7 +29,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * Print Report / Cetak Laporan
      */
-    Route::prefix('cetak-laporan')->middleware('roles:admin,developer')->name('print-report.')->group(function () {
+    Route::prefix('cetak-laporan')->middleware('roles:superadmin,admin,developer')->name('print-report.')->group(function () {
         Route::get('/siswa', [PrintReportController::class, 'student'])
             ->name('student');
 
@@ -61,7 +61,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      *  report / laporan
      */
-    Route::prefix('laporan')->name('report.')->middleware('roles:admin,developer')->namespace('Report')->group(function () {
+    Route::prefix('laporan')->name('report.')->middleware('roles:superadmin,admin,developer')->namespace('Report')->group(function () {
         /**
          * student report / laporan siswa
          */
@@ -122,6 +122,13 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     });
 
     /**
+     * guardian attendance report / laporan presensi wali siswa
+     */
+    Route::prefix('laporan-presensi-anak')->name('guardian.report.')->middleware('roles:wali siswa')->group(function () {
+        Route::get('/', Guardian\AttendanceReport::class)->name('index');
+    });
+
+    /**
      *  persence student / presensi siswa
      */
     Route::prefix('presensi-siswa')->name('presence-student.')->middleware('roles:siswa')->group(function () {
@@ -138,7 +145,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * guardian stdudent / wali siswa
      */
-    Route::prefix('wali-siswa')->name('guardian-student.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('wali-siswa')->name('guardian-student.')->middleware('roles:superadmin,admin,developer')->group(function () {
         Route::get('/', StudentGuardian\Index::class)->name('index');
         Route::get('/tambah', StudentGuardian\Create::class)->name('create');
         Route::get('/sunting/{id}', StudentGuardian\Edit::class)->name('edit');
@@ -147,13 +154,13 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * master / data master
      */
-    Route::prefix('master')->name('master.')->middleware('roles:admin,developer')->namespace('Master')->group(function () {
+    Route::prefix('master')->name('master.')->middleware('roles:superadmin,admin,developer')->namespace('Master')->group(function () {
         Route::redirect('/', 'master/admin');
 
         /**
          * class schedule / jadwal kelas
          */
-        Route::prefix('jadwal-kelas')->name('class-schedule.')->middleware('roles:admin,developer')->group(function () {
+        Route::prefix('jadwal-kelas')->name('class-schedule.')->middleware('roles:superadmin,admin,developer')->group(function () {
             Route::get('/', ClassSchedule\Index::class)->name('index');
             Route::get('/tambah', ClassSchedule\Create::class)->name('create');
             Route::get('/sunting/{id}', ClassSchedule\Edit::class)->name('edit');
@@ -162,7 +169,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
         /**
          * admin
          */
-        Route::prefix('admin')->name('admin.')->middleware('roles:admin,developer')->group(function () {
+        Route::prefix('admin')->name('admin.')->middleware('roles:superadmin,admin,developer')->group(function () {
             Route::get('/', Admin\Index::class)->name('index');
             Route::get('/tambah', Admin\Create::class)->name('create');
             Route::get('/{id}/edit', Admin\Edit::class)->name('edit');
@@ -171,27 +178,27 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
         /**
          * class room / ruang kelas
          */
-        Route::prefix('ruang-kelas')->name('classroom.')->middleware('roles:admin,developer')->group(function () {
+        Route::prefix('ruang-kelas')->name('classroom.')->middleware('roles:superadmin,admin,developer')->group(function () {
             Route::get('/', ClassRoom\Index::class)->name('index');
         });
 
         /**
          * subject study / mata pelajaran
          */
-        Route::prefix('mata-pelajaran')->name('subject-study.')->middleware('roles:admin,developer')->group(function () {
+        Route::prefix('mata-pelajaran')->name('subject-study.')->middleware('roles:superadmin,admin,developer')->group(function () {
             Route::get('/', SubjectStudy\Index::class)->name('index');
         });
 
         /**
          *  class advisor / wali kelas
          */
-        Route::prefix('wali-kelas')->name('advisor-class.')->middleware('roles:admin,developer')->group(function () {
+        Route::prefix('wali-kelas')->name('advisor-class.')->middleware('roles:superadmin,admin,developer')->group(function () {
             Route::get('/', ClassAdvisor\Index::class)->name('index');
         });
     });
 
     // ATTENDANCE
-    Route::prefix('presensi')->name('attendance.')->middleware('roles:admin,developer')->namespace('Attendance')->group(function () {
+    Route::prefix('presensi')->name('attendance.')->middleware('roles:superadmin,admin,developer')->namespace('Attendance')->group(function () {
         /**
          * class / kelas
          */
@@ -212,7 +219,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * teacher / guru
      */
-    Route::prefix('guru')->name('teacher.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('guru')->name('teacher.')->middleware('roles:superadmin,admin,developer')->group(function () {
         Route::get('/', Teacher\Index::class)->name('index');
         Route::get('/tambah', Teacher\Create::class)->name('create');
         Route::get('/{id}/edit', Teacher\Edit::class)->name('edit');
@@ -222,14 +229,14 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * teacher subject / guru mata pelajaran
      */
-    Route::prefix('mata-pelajaran-guru')->name('subject-teacher.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('mata-pelajaran-guru')->name('subject-teacher.')->middleware('roles:superadmin,admin,developer')->group(function () {
         Route::get('/', TeacherSubject\Index::class)->name('index');
     });
 
     /**
      * student / student
      */
-    Route::prefix('siswa')->name('student.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('siswa')->name('student.')->middleware('roles:superadmin,admin,developer')->group(function () {
         Route::get('/', Student\Index::class)->name('index');
         Route::get('/tambah', Student\Create::class)->name('create');
         Route::get('/{id}/edit', Student\Edit::class)->name('edit');
@@ -239,7 +246,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * qrcode / qrcode
      */
-    Route::prefix('qr-code')->name('qrcode.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('qr-code')->name('qrcode.')->middleware('roles:superadmin,admin,developer')->group(function () {
         Route::get('/', Qrcode\Index::class)->name('index');
     });
 
@@ -257,7 +264,7 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
      * beranda / home
      */
     Route::get('beranda', Home\Index::class)->name('home')
-        ->middleware('roles:admin,siswa,guru,developer,wali siswa');
+        ->middleware('roles:superadmin,admin,siswa,guru,developer,wali siswa');
 
     /**
      * class attendance / presensi kelas
@@ -272,14 +279,14 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
     /**
      * whatsapp broadcast
      */
-    Route::prefix('whatsapp-broadcast')->name('whatsapp-broadcast.')->middleware('roles:admin,developer')->group(function () {
+    Route::prefix('whatsapp-broadcast')->name('whatsapp-broadcast.')->middleware('roles:superadmin,admin,developer')->group(function () {
         Route::get('/', WhatsappBroadcast\Index::class)->name('index');
     });
 
     /**
      * setting
      */
-    Route::prefix('pengaturan')->name('setting.')->middleware('roles:admin,siswa,guru,developer,wali siswa')->namespace('Setting')->group(function () {
+    Route::prefix('pengaturan')->name('setting.')->middleware('roles:superadmin,admin,siswa,guru,developer,wali siswa')->namespace('Setting')->group(function () {
         Route::redirect('/', 'pengaturan/aplikasi');
 
         /**

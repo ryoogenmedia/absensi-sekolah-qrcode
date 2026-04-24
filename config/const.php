@@ -2,6 +2,7 @@
 
 return [
     'roles' => [
+        'superadmin',
         'admin',
         'siswa',
         'guru',

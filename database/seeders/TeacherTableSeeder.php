@@ -20,8 +20,8 @@ class TeacherTableSeeder extends Seeder
 
         $dataTeachers = [
             [
-                'username'          => 'Nurhaliza Teacher',
-                'email'             => 'nurhalizateacher@gmail.com',
+                'username'          => 'Akun Teacher',
+                'email'             => 'akunteacher@gmail.com',
                 'email_verified_at' => now(),
                 'password'          => bcrypt('teacher123'),
                 'role'              => 'guru',

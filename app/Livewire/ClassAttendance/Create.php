@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\StudentAttendance;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -22,6 +23,7 @@ class Create extends Component
     public $buktiPresensi;
     public $penjelasanMateri;
     public $presensiSiswa = [];
+    public $isScannerOpen = false;
 
     public function rules(){
         return [
@@ -32,6 +34,38 @@ class Create extends Component
             'penjelasanMateri' => ['nullable','string','min:2','max:255'],
             'buktiPresensi' => ['nullable','image'],
         ];
+    }
+
+    #[On('scanned')]
+    public function scanQr($code)
+    {
+        $studentFound = false;
+        foreach ($this->presensiSiswa as $studentId => $data) {
+            if ($data['nis'] == $code) {
+                $this->presensiSiswa[$studentId]['status_kehadiran'] = 'hadir';
+                $studentFound = true;
+                break;
+            }
+        }
+
+        if ($studentFound) {
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'Berhasil!',
+                'detail' => "Siswa dengan NIS $code berhasil di-scan.",
+            ]);
+        } else {
+            $this->dispatch('alert', [
+                'type' => 'warning',
+                'message' => 'Tidak Ditemukan!',
+                'detail' => "Siswa dengan NIS $code tidak ada dalam daftar kelas ini.",
+            ]);
+        }
+    }
+
+    public function toggleScanner()
+    {
+        $this->isScannerOpen = !$this->isScannerOpen;
     }
 
     public function save(){
@@ -107,7 +141,7 @@ class Create extends Component
             $this->presensiSiswa[$student->id] = [
                 'nama' => $student->full_name,
                 'nis' => $student->nis,
-                'status_kehadiran' => 'hadir', // default
+                'status_kehadiran' => 'alpa', // default changed to alpa for scanning flow
             ];
         }
     }

@@ -15,10 +15,10 @@ class UserTableSeeder extends Seeder
     {
         $users = [
             [
-                'username'          => 'Nurhaliza Admin',
-                'email'             => 'nurhalizaadmin@gmail.com',
+                'username'          => 'Akun Admin',
+                'email'             => 'akunadmin@gmail.com',
                 'email_verified_at' => now(),
-                'password'          => Hash::make('nurhaliza123'),
+                'password'          => Hash::make('admin123'),
                 'role'              => 'admin',
             ],
         ];

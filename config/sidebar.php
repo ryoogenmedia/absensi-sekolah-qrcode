@@ -7,7 +7,7 @@ return [
         'route-name' => 'home',
         'is-active' => 'home',
         'description' => 'Untuk melihat ringkasan aplikasi.',
-        'roles' => ['admin', 'developer', 'operator', 'guru', 'siswa', 'wali siswa'],
+        'roles' => ['superadmin', 'admin', 'developer', 'operator', 'guru', 'siswa', 'wali siswa'],
     ],
 
     // SISWA
@@ -50,6 +50,15 @@ return [
         'roles' => ['wali siswa'],
     ],
 
+    [
+        'title' => 'Laporan Absensi',
+        'icon' => 'file-invoice',
+        'route-name' => 'guardian.report.index',
+        'is-active' => 'guardian.report.*',
+        'description' => 'Laporan absensi lengkap anak anda.',
+        'roles' => ['wali siswa'],
+    ],
+
     // GURU
 
     [
@@ -78,7 +87,7 @@ return [
         'icon' => 'database',
         'route-name' => 'master.admin.index',
         'is-active' => 'master*',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
         'sub-menus' => [
             [
                 'title' => 'Admin',
@@ -119,7 +128,7 @@ return [
         'route-name' => 'teacher.index',
         'is-active' => 'teacher*',
         'description' => 'Melihat daftar guru.',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
     ],
 
     [
@@ -128,7 +137,7 @@ return [
         'route-name' => 'subject-teacher.index',
         'is-active' => 'subject-teacher*',
         'description' => 'Melihat mata pelajaran guru.',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
     ],
 
     [
@@ -137,7 +146,7 @@ return [
         'route-name' => 'student.index',
         'is-active' => 'student*',
         'description' => 'Melihat daftar siswa.',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
     ],
 
     [
@@ -146,7 +155,7 @@ return [
         'route-name' => 'guardian-student.index',
         'is-active' => 'guardian-student*',
         'description' => 'Melihat daftar wali siswa.',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
     ],
 
     [
@@ -155,7 +164,7 @@ return [
         'route-name' => 'qrcode.index',
         'is-active' => 'qrcode*',
         'description' => 'Melihat daftar qr code.',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
     ],
 
     [
@@ -164,7 +173,7 @@ return [
         'route-name' => 'scan-qr.index',
         'is-active' => 'scan-qr*',
         'description' => 'Untuk Scan Qr Code',
-        'roles' => ['admin', 'developer', 'operator'],
+        'roles' => ['superadmin', 'admin', 'developer', 'operator'],
     ],
 
     // [
@@ -174,7 +183,7 @@ return [
     //     'route-name' => 'whatsapp-broadcast.index',
     //     'is-active' => 'whatsapp-broadcast*',
     //     'description' => 'Pengaturan whatsapp broadcast.',
-    //     'roles' => ['admin'],
+    //     'roles' => ['superadmin', 'admin'],
     // ],
 
     [
@@ -183,7 +192,7 @@ return [
         'icon' => 'calendar-check',
         'route-name' => 'attendance.class.index',
         'is-active' => 'attendance*',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
         'sub-menus' => [
             [
                 'title' => 'Presensi Kelas',
@@ -220,7 +229,7 @@ return [
         'icon' => 'print',
         'route-name' => 'report.attendance.class.index',
         'is-active' => 'report.attendance*',
-        'roles' => ['admin', 'developer'],
+        'roles' => ['superadmin', 'admin', 'developer'],
         'sub-menus' => [
             [
                 'title' => 'Siswa',
@@ -281,7 +290,7 @@ return [
         'icon' => 'cog',
         'route-name' => 'setting.profile.index',
         'is-active' => 'setting*',
-        'roles' => ['admin', 'developer', 'guru', 'operator', 'siswa', 'wali siswa'],
+        'roles' => ['superadmin', 'admin', 'developer', 'guru', 'operator', 'siswa', 'wali siswa'],
         'sub-menus' => [
             [
                 'title' => 'Profil',

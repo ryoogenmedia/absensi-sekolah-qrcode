@@ -25,8 +25,8 @@ class StudentGuardianTableSeeder extends Seeder
         $guardiansData  = [];
 
         $usersData[] = [
-            'username'          => 'WaliNurhaliza',
-            'email'             => 'nurhalizawali@gmail.com',
+            'username'          => 'Akun Wali',
+            'email'             => 'akunwali@gmail.com',
             'email_verified_at' => $now,
             'password'          => bcrypt('wali123'),
             'role'              => 'wali siswa',
