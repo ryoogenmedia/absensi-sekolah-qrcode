@@ -80,7 +80,7 @@
                             </div>
 
                             <div class="d-flex flex-column">
-                                <h2 class="my-1 text-black">Whasapp Broadcast</h2>
+                                <h2 class="my-1 text-black">WhatsApp Broadcast</h2>
                                 <div class="d-flex justify-content-between gap-2">
                                     <button type="button"
                                         wire:click="getStatusDeviceWhatsapp"
