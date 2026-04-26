@@ -13,7 +13,7 @@
     <link href="{{ asset('dist/css/tabler-vendors.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('icon/line-awesome/css/line-awesome.min.css') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('static/ryoogen/logo/ICON MA PADELO.png') }}" type="image/x-icon">
 
     <!-- Custom Styles -->
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />

@@ -30,7 +30,7 @@
                         </span>
                     </button>
                 @else
-                    <button wire:click="openModalCreate" class="btn btn-blue d-sm-inline-block">
+                    <button wire:click="openModalCreate" class="btn btn-green d-sm-inline-block">
                         <i class="las la-plus me-lg-1"></i>
                         <span class="d-none d-lg-inline">
                             Tambah Mata Pelajaran

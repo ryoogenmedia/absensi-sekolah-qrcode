@@ -12,7 +12,7 @@
                     <div class="container-tight">
                         <div class="text-center mb-3">
                             <a href="{{ route('login') }}" class="navbar-brand navbar-brand-autodark">
-                                <img style="width: 290px" src="{{ asset('static/ryoogen/logo/ICON MA PADELO.png') }}"
+                                <img style="width: 290px" src="{{ asset('static/ryoogen/logo/LIGHT LOGO MA PADELO.png') }}"
                                     alt="logo-aplikasi">
                             </a>
                         </div>

@@ -21,6 +21,13 @@ class UserTableSeeder extends Seeder
                 'password'          => Hash::make('admin123'),
                 'role'              => 'admin',
             ],
+            [
+                'username'          => 'Akun Superadmin',
+                'email'             => 'akunsuperadmin@gmail.com',
+                'email_verified_at' => now(),
+                'password'          => Hash::make('superadmin123'),
+                'role'              => 'superadmin',
+            ],
         ];
 
         foreach ($users as $user) {

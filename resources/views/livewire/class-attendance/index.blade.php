@@ -68,7 +68,7 @@
                             <td>{{ $row->end_time ?? '-' }}</td>
 
                             <td>
-                                <a href="{{ route('class-attendance.detail', $row->id) }}" class="btn btn-blue">Detail
+                                <a href="{{ route('class-attendance.detail', $row->id) }}" class="btn btn-green">Detail
                                     Presensi</a>
                             </td>
                         </tr>

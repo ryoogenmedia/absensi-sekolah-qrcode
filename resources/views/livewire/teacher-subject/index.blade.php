@@ -33,7 +33,7 @@
                 <div class="btn-list justify-content-end">
                     <button type="reset" class="btn">Reset</button>
 
-                    <x-datatable.button.save name="Ubah Mata Pelajaran Guru" class="btn btn-blue"
+                    <x-datatable.button.save name="Ubah Mata Pelajaran Guru" class="btn btn-green"
                         target="changeSubjectStudyTeacher" />
                 </div>
             </div>

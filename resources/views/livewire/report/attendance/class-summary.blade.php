@@ -58,7 +58,7 @@
         <div style="z-index: 9999; position: fixed; bottom: 20px; right: 20px;"
             class="d-flex flex-column align-items-end gap-2">
 
-            <div class="btn btn-blue shadow-lg" wire:loading.delay wire:target="filters">
+            <div class="btn btn-green shadow-lg" wire:loading.delay wire:target="filters">
                 <div class="d-flex align-items-center gap-2">
                     <div class="spinner-border spinner-border-sm" role="status"></div>
                     <span>Memproses Data...</span>

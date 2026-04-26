@@ -21,7 +21,7 @@
         <div class="col-auto ms-auto d-print-none">
             <div class="btn-list">
                 <a href="{{ route('print-pdf.card', ['kelas' => $filters['kelas'] ?? '']) }}" target="_blank"
-                    class="btn btn-blue">
+                    class="btn btn-green">
                     <span class="las la-id-card fs-1 me-lg-2 me-0"></span>
                     <span class="d-lg-inline d-none">Cetak Semua Kartu Siswa</span>
                 </a>
@@ -107,7 +107,7 @@
 
                             <td>
                                 <a href="{{ route('print-pdf.card', ['card_id' => $row->nis ?? '']) }}" target="_blank"
-                                    class="btn btn-blue btn-sm"><span class="las la-id-card fs-1"></span></a>
+                                    class="btn btn-green btn-sm"><span class="las la-id-card fs-1"></span></a>
                             </td>
                         </tr>
                     @empty

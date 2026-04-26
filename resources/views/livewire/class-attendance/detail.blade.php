@@ -28,7 +28,7 @@
 
         <div class="modal-footer">
             <div class="btn-list justify-content-end">
-                <button wire:click="closeModal" type="reset" class="btn btn-blue">Tutup</button>
+                <button wire:click="closeModal" type="reset" class="btn btn-green">Tutup</button>
             </div>
         </div>
     </x-modal>
@@ -93,7 +93,7 @@
                 <span class="d-lg-inline d-none">Print Rekap Kelas</span>
             </a>
 
-            <a href="{{ route('class-attendance.create', $this->classScheduleId) }}" class="btn btn-blue"><span
+            <a href="{{ route('class-attendance.create', $this->classScheduleId) }}" class="btn btn-green"><span
                     class="las la-plus me-lg-1 me-0"></span> <span class="d-lg-inline d-none">Tambah Presensi
                     Pertemuan</span></a>
         </div>

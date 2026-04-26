@@ -3,7 +3,7 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card bg-blue text-white mb-3">
+            <div class="card bg-green text-white mb-3">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-4 col-12 mt-lg-5 mt-2">
@@ -17,9 +17,9 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
-                                                <p class="text-blue" style="font-size: 18px; font-weight: 500">Presensi
+                                                <p class="text-green" style="font-size: 18px; font-weight: 500">Presensi
                                                     Masuk</p>
-                                                <h1 class="text-blue" style="font-size: 30px">{{ $checkInToday ?? 0 }}
+                                                <h1 class="text-green" style="font-size: 30px">{{ $checkInToday ?? 0 }}
                                                 </h1>
                                             </div>
                                         </div>
@@ -30,9 +30,9 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
-                                                <p class="text-blue" style="font-size: 18px; font-weight: 500">Presensi
+                                                <p class="text-green" style="font-size: 18px; font-weight: 500">Presensi
                                                     Keluar</p>
-                                                <h1 class="text-blue" style="font-size: 30px">{{ $checkOutToday ?? 0 }}
+                                                <h1 class="text-green" style="font-size: 30px">{{ $checkOutToday ?? 0 }}
                                                     </h2>
                                             </div>
                                         </div>
@@ -49,7 +49,7 @@
     <div class="row">
         <div class="col-12 col-md-4 col-lg-3">
             <x-card.count-data title="Siswa" :period="$this->period" :total="$this->totalStudent" icon="graduation-cap"
-                color="blue" />
+                color="green" />
             <x-card.count-data title="Guru" :period="$this->period" :total="$this->totalTeacher" icon="user-tie" color="red" />
             <x-card.count-data title="Admin" :period="$this->period" :total="$this->totalAdmin" icon="database" color="purple" />
             <x-card.count-data title="Jadwal Kelas" :period="$this->period" :total="$this->totalJadwalKelas" icon="calendar"

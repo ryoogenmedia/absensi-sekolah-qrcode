@@ -45,7 +45,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>Daftar siswa presensi</div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('print-pdf.card', ['kelas' => $this->classRoomId]) }}" target="_blank" class="btn btn-blue btn-sm d-print-none">
+                    <a href="{{ route('print-pdf.card', ['kelas' => $this->classRoomId]) }}" target="_blank" class="btn btn-green btn-sm d-print-none">
                         <i class="las la-id-card me-2"></i> Cetak Semua QR
                     </a>
                     <a href="{{ route('print-report.attendance.class.summary', ['kelas' => $this->classRoomId]) }}" target="_blank" class="btn btn-secondary btn-sm d-print-none">
