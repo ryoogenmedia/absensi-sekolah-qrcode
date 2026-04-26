@@ -4,28 +4,19 @@
     --tblr-font-sans-serif: "Inter Var", -apple-system, BlinkMacSystemFont,
         San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
 
-    --orange-clr: #fc9f13;
-    --orange-clr-lt: #faf2e8;
+    --green-clr: #4caf50;
+    --green-clr-dark: #3d8b40;
+    --green-clr-lt: #e6f7e6;
 
     --black-clr: oklch(0.141 0.005 285.823);
     --black-clr-lt: oklch(0.21 0.006 285.885);
 
-    --blue-clr: #135581;
-    --blue-clr2: #266fa3;
-    --blue-clr-lt: #e6f2f9;
+    --gray-clr: #f5f5f5;
+    --gray-clr-lt: #f9f9f9;
 
     --red-clr: #e62222;
     --red-clr2: #be0404;
     --red-clr-lt: #ffe6e6;
-
-    --green-clr: #4caf50;
-    --green-clr-lt: #e6f7e6;
-
-    --gray-clr: #f5f5f5;
-    --gray-clr-lt: #f9f9f9;
-
-    --purple-clr: #6a1b9a;
-    --purple-clr-lt: #f3e5f5;
 
     --yellow-clr: #ffeb3b;
     --yellow-clr-lt: #fff9c4;
@@ -35,22 +26,21 @@ body {
     font-feature-settings: "cv03", "cv04", "cv11";
 }
 
-/* BACGROUND */
-.bg-orange {
-    background-color: var(--orange-clr) !important;
+/* BACKGROUND */
+.bg-green {
+    background-color: var(--green-clr) !important;
 }
 
-.bg-orange-lt {
-    background-color: var(--orange-clr-lt) !important;
+.bg-green-lt {
+    background-color: var(--green-clr-lt) !important;
 }
-/* ALERT ELEMENT */
 
+/* ALERT */
 .alert {
     border-radius: 10px;
 }
 
-/* BUTTON ELEMENT */
-
+/* BUTTON */
 .btn {
     border-radius: 10px;
     padding: 10px 15px;
@@ -65,270 +55,128 @@ body {
     padding: 3px 4px !important;
 }
 
-.btn-warning {
-    color: white;
-    background-color: var(--orange-clr);
-}
-
-.btn-warning:hover,
-.btn-warning:disabled,
-.btn-warning:checked,
-.btn-warning:target,
-.btn-warning:focus,
-.btn-warning:active,
-.btn-warning:not(:disabled):active {
-    color: white;
-    background-color: var(--orange-clr);
-    border-color: var(--orange-clr);
-    opacity: 0.8;
-    outline: none;
-    box-shadow: none;
-}
-
+/* PRIMARY → jadi HIJAU */
 .btn-primary {
     color: white;
-    background-color: var(--black-clr);
+    background-color: var(--green-clr);
 }
 
 .btn-primary:hover,
-.btn-primary:disabled,
-.btn-primary:checked,
-.btn-primary:target,
 .btn-primary:focus,
-.btn-primary:active,
-.btn-primary:not(:disabled):active {
-    color: white;
-    background-color: var(--black-clr);
-    border-color: var(--black-clr);
-    opacity: 0.8;
-    outline: none;
+.btn-primary:active {
+    background-color: var(--green-clr-dark);
+    border-color: var(--green-clr);
+    opacity: 0.9;
     box-shadow: none;
 }
 
-.btn-blue {
+/* OPTIONAL BUTTON HIJAU */
+.btn-green {
     color: white;
-    background-color: var(--blue-clr);
+    background-color: var(--green-clr);
 }
 
-.btn-blue:hover,
-.btn-blue:disabled,
-.btn-blue:checked,
-.btn-blue:target,
-.btn-blue:focus,
-.btn-blue:active,
-.btn-blue:not(:disabled):active {
-    color: white;
-    background-color: var(--blue-clr2);
-    border-color: var(--blue-clr-lt);
-    opacity: 0.8;
-    outline: none;
-    box-shadow: none;
+.btn-green:hover {
+    background-color: var(--green-clr-dark);
 }
 
+/* BUTTON RED tetap */
 .btn-red {
     color: white;
     background-color: var(--red-clr);
 }
 
-.btn-red:hover,
-.btn-red:disabled,
-.btn-red:checked,
-.btn-red:target,
-.btn-red:focus,
-.btn-red:active,
-.btn-red:not(:disabled):active {
-    color: white;
+.btn-red:hover {
     background-color: var(--red-clr2);
-    border-color: var(--red-clr-lt);
-    opacity: 0.8;
-    outline: none;
-    box-shadow: none;
 }
 
 /* CARD */
-
-/* .card-count-data {
-    box-shadow: none !important;
-} */
-
-.card-filter {
-    box-shadow: none !important;
-}
-
 .card {
     border-radius: 10px;
     border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1),
+        0 2px 5px rgba(0, 0, 0, 0.06);
 
     transform: translateY(20px);
     animation: fadeInUp 0.5s ease-out forwards;
 }
 
 .card .card-footer {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    border-radius: 0 0 10px 10px;
     background-color: #f3f3f3;
 }
 
 /* TABLE */
-
 .table tbody tr td {
     vertical-align: middle;
 }
 
-.table thead tr th {
-    border-radius: 10px;
-}
-
-.table tbody tr td {
-    border-radius: 10px;
-}
-
-/* INPUT ELEMENT */
-
+/* INPUT */
 .form-label-description a {
-    color: var(--blue-clr);
+    color: var(--green-clr);
 }
 
 .form-control,
 .form-select {
-    border-radius: 8px;
+    border-radius: 10px;
     height: 40px;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    transition: 0.3s;
 }
+
 textarea {
     height: 310px;
 }
 
-.form-control:active,
-.form-select:active {
-    outline: var(--blue-clr-lt);
-    border: var(--blue-clr);
-}
-
-.form-control,
-.form-select {
-    border: 1px solid #ccc;
-    background-color: white;
-    color: black;
-    border-radius: 10px;
-    padding: 8px 12px;
-    transition: all 0.3s ease-in-out;
-}
-
 .form-control:focus,
-.form-control:active,
-.form-select:focus,
-.form-select:active {
-    outline: none;
-    border: 0.1px solid rgba(19, 85, 129, 0.3);
-    box-shadow: 0 0 3px rgba(19, 85, 129, 0.7);
+.form-select:focus {
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    box-shadow: 0 0 4px rgba(76, 175, 80, 0.6);
 }
 
-.form-control:disabled,
-.form-select:disabled {
-    background-color: #f5f5f5;
-    color: #a1a1a1;
-    border-color: #dcdcdc;
-    cursor: not-allowed;
-}
-
-.input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.form-control,
-.form-select {
-    padding-right: 40px;
-}
-
-.toggle-password {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    color: #777;
-    transition: color 0.3s ease;
-}
-
+/* TOGGLE PASSWORD */
 .toggle-password:hover {
-    color: var(--blue-clr);
+    color: var(--green-clr);
 }
 
-/* border */
+/* FILTER */
 .open-filter {
-    background-color: var(--blue-clr-lt) !important;
-    color: var(--blue-clr) !important;
+    background-color: var(--green-clr-lt) !important;
+    color: var(--green-clr) !important;
 }
 
-.navbar-nav li::after {
-    content: none !important;
-    display: none !important;
-}
-
-/* Item sidebar yang aktif tanpa submenu */
+/* NAVBAR ACTIVE */
 .navbar-nav > li.active:not(.dropdown) > a {
-    background-color: var(--blue-clr-lt) !important;
-    color: var(--blue-clr) !important;
-    border-left: none !important;
-    /* border-radius: 0px !important; */
+    background-color: var(--green-clr-lt) !important;
+    color: var(--green-clr) !important;
 }
 
-.navbar-nav > li.active:not(.dropdown) > a .nav-link-icon h2 {
-    color: var(--blue-clr) !important;
-}
-
-/* Mengubah warna ikon dalam submenu aktif */
-.dropdown-menu .dropdown-item.active h2 {
-    color: var(--blue-clr) !important;
-}
-
-/* Submenu yang aktif */
 .dropdown-menu .dropdown-item.active {
-    border-right: none !important;
-    background-color: var(--blue-clr-lt) !important;
-    color: var(--blue-clr) !important;
+    background-color: var(--green-clr-lt) !important;
+    color: var(--green-clr) !important;
 }
 
-.datatable-dropdown {
-    transform: translate(0px, 39px) !important;
-}
-
-@media (max-width: 991.98px) {
-    /* Ukuran tablet dan HP */
-
-    .dropdown-menu.show {
-        border-top-left-radius: 0.5rem !important;
-        border-bottom-left-radius: 0.5rem !important;
-    }
-}
-
-/* Menghapus background pada item utama yang memiliki submenu */
 .navbar-nav .active {
-    border-right: 3px solid var(--blue-clr) !important;
+    border-right: 3px solid var(--green-clr) !important;
 }
 
-/* TIMER TODAY  */
-
+/* TIMER */
 #elementTime {
-    background-color: var(--blue-clr-lt);
+    background-color: var(--green-clr-lt);
+    color: var(--green-clr);
     padding: 4px 10px;
     border-radius: 10px;
-    color: var(--blue-clr) !important;
 }
 
-/* AUTHENTICATION ELEMENT */
-
+/* LOGIN */
 .title-login {
-    padding: 20px 20px;
+    padding: 20px;
     border-radius: 10px;
     text-align: center;
-    display: inline;
 }
 
-/* ANIMATION FRAME */
-
+/* ANIMATION */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -340,8 +188,7 @@ textarea {
     }
 }
 
-/* RESPONSIVE MEDIA */
-
+/* RESPONSIVE */
 @media (min-width: 768px) {
     aside {
         overflow-y: auto !important;
