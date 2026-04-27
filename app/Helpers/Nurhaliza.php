@@ -1,10 +1,10 @@
 <?php
 
 /**
- *  Nurhaliza Helper
- *  This file contains helper functions for the Nurhaliza application.
+ *  Ryoogen Helper
+ *  This file contains helper functions for the Ryoogen application.
  *  It includes functions for generating URLs, handling errors, and formatting data.
- *  *  @package Nurhaliza
+ *  *  @package Ryoogen
  *  *  @version 1.0
  */
 

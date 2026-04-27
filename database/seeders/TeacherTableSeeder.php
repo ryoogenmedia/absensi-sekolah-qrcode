@@ -26,7 +26,7 @@ class TeacherTableSeeder extends Seeder
                 'password'          => bcrypt('teacher123'),
                 'role'              => 'guru',
 
-                'name'              => 'Nurhaliza Teacher',
+                'name'              => 'Akun Teacher',
                 'sex'               => 'laki-laki',
                 'nip'               => $faker->unique()->numerify('19###########'),
                 'nuptk'             => $faker->unique()->numerify('##########'),

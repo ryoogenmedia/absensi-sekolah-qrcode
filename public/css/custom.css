@@ -1,12 +1,13 @@
 @import url("https://rsms.me/inter/inter.css");
 
 :root {
-    --tblr-font-sans-serif: "Inter Var", -apple-system, BlinkMacSystemFont,
-        San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+    --tblr-font-sans-serif:
+        "Inter Var", -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI,
+        Roboto, Helvetica Neue, sans-serif;
 
     --green-clr: #009701;
     --green-clr-dark: #057a06;
-    --green-clr-lt: #e6f7e6;
+    --green-clr-lt: #ddf9dd;
 
     --black-clr: oklch(0.141 0.005 285.823);
     --black-clr-lt: oklch(0.21 0.006 285.885);
@@ -94,7 +95,8 @@ body {
 .card {
     border-radius: 10px;
     border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1),
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.1),
         0 2px 5px rgba(0, 0, 0, 0.06);
 
     transform: translateY(20px);

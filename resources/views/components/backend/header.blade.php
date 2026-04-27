@@ -7,7 +7,7 @@
             <x-backend._partials.profile-dropdown />
         </div>
         <div class="collapse navbar-collapse" id="navbar-menu">
-            <div id="elementTime" class="text-white">
+            <div id="elementTime" class="text-green">
                 Memuat...
             </div>
         </div>
