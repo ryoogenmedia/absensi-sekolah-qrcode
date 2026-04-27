@@ -26,8 +26,8 @@ class StudentTableSeeder extends Seeder
                 'password'          => bcrypt('student123'),
                 'role'              => 'siswa',
 
-                'full_name'         => 'Nurhaliza Student',
-                'call_name'         => 'Nurhaliza',
+                'full_name'         => 'Akun Student',
+                'call_name'         => 'Student',
                 'sex'               => 'perempuan',
                 'in_school'         => true,
 

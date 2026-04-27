@@ -47,7 +47,7 @@
     <script src="{{ asset('dist/libs/jsvectormap/dist/maps/world-merc.js') }}"></script>
 
     <script>
-        console.log('DEVELOPED BY NURHALIZA 👋');
+        console.log('DEVELOPED BY RYOOGEN 👋');
 
         var useServerTime = true;
         var serverTime = {{ time() * 1000 }};

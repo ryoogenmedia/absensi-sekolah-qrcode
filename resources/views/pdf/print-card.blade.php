@@ -101,7 +101,7 @@
 
                 {{-- CARD 1 (DEPAN) --}}
                 <div class="card-container">
-                    <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-1.png') }}" class="card-image">
+                    <img src="{{ public_path('static/ryoogen/illustration/card-presensi-1.png') }}" class="card-image">
 
                     {{-- Foto --}}
                     @if ($siswa->photo)
@@ -124,8 +124,7 @@
 
                 {{-- CARD 2 (BELAKANG) --}}
                 <div class="card-container" style="margin-top: 10px">
-                    <img src="{{ public_path('static/nurhaliza/illustration/card-presensi-2.png') }}"
-                        class="card-image">
+                    <img src="{{ public_path('static/ryoogen/illustration/card-presensi-2.png') }}" class="card-image">
                 </div>
 
             </div>

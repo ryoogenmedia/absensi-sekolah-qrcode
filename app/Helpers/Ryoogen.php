@@ -99,8 +99,8 @@ if (!function_exists('example_photo')) {
     function example_photo($sex, $loopIndex = null)
     {
         // Path ke file example
-        $exampleLatarMerahCewek = public_path('static/nurhaliza/example/latar-merah-cewek.jpg');
-        $exampleLatarMerahCowok = public_path('static/nurhaliza/example/latar-merah-cowok.jpeg');
+        $exampleLatarMerahCewek = public_path('static/ryoogen/example/latar-merah-cewek.jpg');
+        $exampleLatarMerahCowok = public_path('static/ryoogen/example/latar-merah-cowok.jpeg');
 
         // Pastikan direktori storage/student-photos ada
         $storagePath = storage_path('app/public/student-photos');

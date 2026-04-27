@@ -95,7 +95,7 @@
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <img class="logo" src="{{ public_path('static/nurhaliza/logo/DARK.png') }}" alt="logo">
+                <img class="logo" src="{{ public_path('static/ryoogen/logo/DARK.png') }}" alt="logo">
             </div>
 
             <h1>LAPORAN PRESENSI KELAS</h1>
