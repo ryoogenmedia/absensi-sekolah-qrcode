@@ -53,7 +53,7 @@
 
                     <div class="col-lg-7 col-12 align-self-center">
                         <div class="d-flex flex-lg-row flex-column gap-3 w-full">
-                            <div class="card bg-blue" style="width: 100%">
+                            <div class="card bg-green" style="width: 100%">
                                 <div class="card-body">
                                     <div class="w-full">
                                         <p class="text-white" style="font-size: 18px; font-weight: 520">Jumlah Pertemuan

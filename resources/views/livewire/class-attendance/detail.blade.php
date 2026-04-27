@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="col-lg-6 col-12 align-self-center">
-                    <div class="card bg-blue">
+                    <div class="card bg-green">
                         <div class="card-body">
                             <div class="d-flex flex-column">
                                 <p class="text-white" style="font-size: 18px; font-weight: 520">Jumlah Siswa</p>
@@ -310,7 +310,7 @@
                                 <span class="badge bg-cyan text-white">{{ $summary['sakit'] }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-blue text-white">{{ $summary['total'] }}</span>
+                                <span class="badge bg-green text-white">{{ $summary['total'] }}</span>
                             </td>
 
                             @foreach ($row->student_attendances as $attendance)

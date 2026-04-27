@@ -101,7 +101,7 @@
 <div>
     <x-alert />
 
-    <div class="card bg-blue text-white mb-4">
+    <div class="card bg-green text-white mb-4">
         <div class="card-body py-4 px-4 d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold mb-1">Dashboard Wali Siswa</h2>

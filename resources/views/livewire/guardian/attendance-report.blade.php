@@ -40,11 +40,14 @@
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-auto">
-                                    <span class="bg-primary text-white avatar"><i class="las la-user-check fs-2"></i></span>
+                                    <span class="bg-primary text-white avatar"><i
+                                            class="las la-user-check fs-2"></i></span>
                                 </div>
                                 <div class="col">
                                     <div class="font-weight-medium">Hadir (Kelas)</div>
-                                    <div class="text-muted">{{ collect($classAttendance)->flatten()->where('status_attendance', 'hadir')->count() }} Kali</div>
+                                    <div class="text-muted">
+                                        {{ collect($classAttendance)->flatten()->where('status_attendance', 'hadir')->count() }}
+                                        Kali</div>
                                 </div>
                             </div>
                         </div>
@@ -55,11 +58,13 @@
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-auto">
-                                    <span class="bg-green text-white avatar"><i class="las la-sign-in-alt fs-2"></i></span>
+                                    <span class="bg-green text-white avatar"><i
+                                            class="las la-sign-in-alt fs-2"></i></span>
                                 </div>
                                 <div class="col">
                                     <div class="font-weight-medium">Check-In Harian</div>
-                                    <div class="text-muted">{{ collect($dailyAttendance)->whereNotNull('check_in')->count() }} Hari</div>
+                                    <div class="text-muted">
+                                        {{ collect($dailyAttendance)->whereNotNull('check_in')->count() }} Hari</div>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +79,9 @@
                                 </div>
                                 <div class="col">
                                     <div class="font-weight-medium">Alpa (Kelas)</div>
-                                    <div class="text-muted">{{ collect($classAttendance)->flatten()->where('status_attendance', 'alpa')->count() }} Kali</div>
+                                    <div class="text-muted">
+                                        {{ collect($classAttendance)->flatten()->where('status_attendance', 'alpa')->count() }}
+                                        Kali</div>
                                 </div>
                             </div>
                         </div>
@@ -85,11 +92,14 @@
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-auto">
-                                    <span class="bg-yellow text-white avatar"><i class="las la-notes-medical fs-2"></i></span>
+                                    <span class="bg-yellow text-white avatar"><i
+                                            class="las la-notes-medical fs-2"></i></span>
                                 </div>
                                 <div class="col">
                                     <div class="font-weight-medium">Izin/Sakit</div>
-                                    <div class="text-muted">{{ collect($classAttendance)->flatten()->whereIn('status_attendance', ['izin', 'sakit'])->count() }} Kali</div>
+                                    <div class="text-muted">
+                                        {{ collect($classAttendance)->flatten()->whereIn('status_attendance', ['izin', 'sakit'])->count() }}
+                                        Kali</div>
                                 </div>
                             </div>
                         </div>
@@ -116,7 +126,7 @@
                         </thead>
                         <tbody>
                             @foreach ($dailyAttendance as $date => $daily)
-                                @php 
+                                @php
                                     $d = \Carbon\Carbon::parse($date);
                                     $isWeekend = $d->isWeekend();
                                 @endphp
@@ -127,37 +137,41 @@
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column gap-1">
-                                            @if($daily['check_in'])
+                                            @if ($daily['check_in'])
                                                 <span class="badge bg-green-lt">
-                                                    <i class="las la-clock me-1"></i> Masuk: {{ $daily['check_in']->check_in_time }}
+                                                    <i class="las la-clock me-1"></i> Masuk:
+                                                    {{ $daily['check_in']->check_in_time }}
                                                 </span>
                                             @else
                                                 <span class="badge bg-secondary-lt">-</span>
                                             @endif
 
-                                            @if($daily['check_out'])
-                                                <span class="badge bg-blue-lt">
-                                                    <i class="las la-clock me-1"></i> Pulang: {{ $daily['check_out']->check_out_time }}
+                                            @if ($daily['check_out'])
+                                                <span class="badge bg-green-lt">
+                                                    <i class="las la-clock me-1"></i> Pulang:
+                                                    {{ $daily['check_out']->check_out_time }}
                                                 </span>
                                             @endif
                                         </div>
                                     </td>
                                     <td>
-                                        @if(isset($classAttendance[$date]))
+                                        @if (isset($classAttendance[$date]))
                                             <div class="d-flex flex-wrap gap-2">
-                                                @foreach($classAttendance[$date] as $att)
-                                                    <div class="card card-sm border shadow-none" style="min-width: 150px;">
+                                                @foreach ($classAttendance[$date] as $att)
+                                                    <div class="card card-sm border shadow-none"
+                                                        style="min-width: 150px;">
                                                         <div class="card-body p-2">
-                                                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                                                <span class="badge bg-{{ 
-                                                                    $att->status_attendance == 'hadir' ? 'green' : 
-                                                                    ($att->status_attendance == 'alpa' ? 'red' : 'yellow') 
-                                                                }} text-white badge-sm">
+                                                            <div
+                                                                class="d-flex align-items-center justify-content-between mb-1">
+                                                                <span
+                                                                    class="badge bg-{{ $att->status_attendance == 'hadir' ? 'green' : ($att->status_attendance == 'alpa' ? 'red' : 'yellow') }} text-white badge-sm">
                                                                     {{ strtoupper($att->status_attendance) }}
                                                                 </span>
-                                                                <span class="text-muted small">{{ $att->class_attendance->class_schedule->start_time }}</span>
+                                                                <span
+                                                                    class="text-muted small">{{ $att->class_attendance->class_schedule->start_time }}</span>
                                                             </div>
-                                                            <div class="font-weight-bold text-truncate" title="{{ $att->class_attendance->class_schedule->subject_study->name_subject }}">
+                                                            <div class="font-weight-bold text-truncate"
+                                                                title="{{ $att->class_attendance->class_schedule->subject_study->name_subject }}">
                                                                 {{ $att->class_attendance->class_schedule->subject_study->name_subject }}
                                                             </div>
                                                         </div>
@@ -165,7 +179,8 @@
                                                 @endforeach
                                             </div>
                                         @else
-                                            <span class="text-muted small italic">Tidak ada jadwal / Data belum diisi</span>
+                                            <span class="text-muted small italic">Tidak ada jadwal / Data belum
+                                                diisi</span>
                                         @endif
                                     </td>
                                 </tr>
