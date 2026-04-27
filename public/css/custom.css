@@ -7,7 +7,7 @@
 
     --green-clr: #009701;
     --green-clr-dark: #057a06;
-    --green-clr-lt: #ddf9dd;
+    --green-clr-lt: #e6f7e6;
 
     --black-clr: oklch(0.141 0.005 285.823);
     --black-clr-lt: oklch(0.21 0.006 285.885);
@@ -153,8 +153,14 @@ textarea {
     background-color: var(--green-clr-lt) !important;
     color: var(--green-clr) !important;
 }
-
+/* HAPUS SEMUA GARIS KIRI DI SIDEBAR */
+.navbar .nav-link,
+.navbar .dropdown-item {
+    border-left: none !important;
+    box-shadow: none !important;
+}
 .dropdown-menu .dropdown-item.active {
+    border-left: 3px solid var(--green-clr) !important;
     background-color: var(--green-clr-lt) !important;
     color: var(--green-clr) !important;
 }
