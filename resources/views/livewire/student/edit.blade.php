@@ -162,7 +162,7 @@
                             <div class="col-lg-4 col-12 mb-lg-0 mb-2 text-center">
                                 <label class="form-label" for="">Foto Profil</label>
                                 <span class="avatar avatar-md"
-                                    style="width: 120px;height:120px; object-fit:cover;background-image: url({{ asset('static/nurhaliza/default/NO-IMAGE.png') }})"></span>
+                                    style="width: 120px;height:120px; object-fit:cover;background-image: url({{ asset('static/ryoogen/default/NO-IMAGE.png') }})"></span>
                             </div>
                         @endif
 

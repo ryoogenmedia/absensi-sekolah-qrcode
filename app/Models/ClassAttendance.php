@@ -46,6 +46,6 @@ class ClassAttendance extends Model
     {
         return $this->picture_evidence
             ? asset('storage/' . $this->picture_evidence)
-            : asset('static/nurhaliza/default/NO-IMAGE.png');
+            : asset('static/ryoogen/default/NO-IMAGE.png');
     }
 }

@@ -30,7 +30,7 @@
     },
     "autoload": {
         "files": [
-            "app/Helpers/Nurhaliza.php"
+            "app/Helpers/Ryoogen.php"
         ],
         "psr-4": {
             "App\\": "app/",

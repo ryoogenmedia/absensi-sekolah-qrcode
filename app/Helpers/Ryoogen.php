@@ -1,10 +1,10 @@
 <?php
 
 /**
- *  Nurhaliza Helper
- *  This file contains helper functions for the Nurhaliza application.
+ *  Ryoogen Helper
+ *  This file contains helper functions for the Ryoogen application.
  *  It includes functions for generating URLs, handling errors, and formatting data.
- *  *  @package Nurhaliza
+ *  *  @package Ryoogen
  *  *  @version 1.0
  */
 
@@ -99,8 +99,8 @@ if (!function_exists('example_photo')) {
     function example_photo($sex, $loopIndex = null)
     {
         // Path ke file example
-        $exampleLatarMerahCewek = public_path('static/nurhaliza/example/latar-merah-cewek.jpg');
-        $exampleLatarMerahCowok = public_path('static/nurhaliza/example/latar-merah-cowok.jpeg');
+        $exampleLatarMerahCewek = public_path('static/ryoogen/example/latar-merah-cewek.jpg');
+        $exampleLatarMerahCowok = public_path('static/ryoogen/example/latar-merah-cowok.jpeg');
 
         // Pastikan direktori storage/student-photos ada
         $storagePath = storage_path('app/public/student-photos');

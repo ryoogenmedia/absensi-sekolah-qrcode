@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Student;
-use App\Models\StudentGuardian;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -19,14 +17,14 @@ class StudentGuardianTableSeeder extends Seeder
         $students   = Student::select('id', 'call_name')->get();
         $studentIds = $students->pluck('id')->toArray();
 
-        $studentNur = $students->firstWhere('call_name', 'Nurhaliza');
+        $studentNur = $students->firstWhere('call_name', 'Ryoogen');
 
         $usersData      = [];
         $guardiansData  = [];
 
         $usersData[] = [
-            'username'          => 'WaliNurhaliza',
-            'email'             => 'nurhalizawali@gmail.com',
+            'username'          => 'Akun Wali',
+            'email'             => 'akuwali@gmail.com',
             'email_verified_at' => $now,
             'password'          => bcrypt('wali123'),
             'role'              => 'wali siswa',
@@ -36,7 +34,7 @@ class StudentGuardianTableSeeder extends Seeder
 
         $guardiansData[] = [
             'student_id'            => $studentNur->id,
-            'guardian_name'         => 'Wali Nurhaliza',
+            'guardian_name'         => 'Wali Akun',
             'guardian_relationship' => 'ayah',
             'guardian_contact'      => '081234567890',
             'created_at'            => $now,

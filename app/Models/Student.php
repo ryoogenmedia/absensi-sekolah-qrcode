@@ -84,6 +84,6 @@ class Student extends Model
     {
         return $this->photo
             ? asset('storage/' . $this->photo)
-            : asset('static/nurhaliza/default/NO-IMAGE.png');
+            : asset('static/ryoogen/default/NO-IMAGE.png');
     }
 }

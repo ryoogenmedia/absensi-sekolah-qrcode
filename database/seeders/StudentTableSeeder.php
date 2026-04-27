@@ -21,13 +21,13 @@ class StudentTableSeeder extends Seeder
 
         $dataStudent = [
             [
-                'username'          => 'Nurhaliza Student',
-                'email'             => 'nurhalizastudent@gmail.com',
+                'username'          => 'Akun Student',
+                'email'             => 'akunstudent@gmail.com',
                 'password'          => bcrypt('student123'),
                 'role'              => 'siswa',
 
-                'full_name'         => 'Nurhaliza Student',
-                'call_name'         => 'Nurhaliza',
+                'full_name'         => 'Akun Student',
+                'call_name'         => 'akun',
                 'sex'               => 'perempuan',
                 'in_school'         => true,
 
