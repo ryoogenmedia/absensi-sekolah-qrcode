@@ -27,21 +27,22 @@ body {
     font-feature-settings: "cv03", "cv04", "cv11";
 }
 
-/* BACKGROUND */
-.bg-green {
-    background-color: var(--green-clr) !important;
+/* BACGROUND */
+.bg-orange {
+    background-color: var(--orange-clr) !important;
 }
 
-.bg-green-lt {
-    background-color: var(--green-clr-lt) !important;
+.bg-orange-lt {
+    background-color: var(--orange-clr-lt) !important;
 }
+/* ALERT ELEMENT */
 
-/* ALERT */
 .alert {
     border-radius: 10px;
 }
 
-/* BUTTON */
+/* BUTTON ELEMENT */
+
 .btn {
     border-radius: 10px;
     padding: 10px 15px;
@@ -56,42 +57,96 @@ body {
     padding: 3px 4px !important;
 }
 
-/* PRIMARY → jadi HIJAU */
-.btn-primary {
+.btn-warning {
     color: white;
-    background-color: var(--green-clr);
+    background-color: var(--orange-clr);
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-    background-color: var(--green-clr-dark);
-    border-color: var(--green-clr);
-    opacity: 0.9;
+.btn-warning:hover,
+.btn-warning:disabled,
+.btn-warning:checked,
+.btn-warning:target,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning:not(:disabled):active {
+    color: white;
+    background-color: var(--orange-clr);
+    border-color: var(--orange-clr);
+    opacity: 0.8;
+    outline: none;
     box-shadow: none;
 }
 
-/* OPTIONAL BUTTON HIJAU */
-.btn-green {
+.btn-primary {
+    color: white;
+    background-color: var(--black-clr);
+}
+
+.btn-primary:hover,
+.btn-primary:disabled,
+.btn-primary:checked,
+.btn-primary:target,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:not(:disabled):active {
+    color: white;
+    background-color: var(--black-clr);
+    border-color: var(--black-clr);
+    opacity: 0.8;
+    outline: none;
+    box-shadow: none;
+}
+
+.btn-blue {
     color: white;
     background-color: var(--green-clr);
 }
 
-.btn-green:hover {
-    background-color: var(--green-clr-dark);
+.btn-blue:hover,
+.btn-blue:disabled,
+.btn-blue:checked,
+.btn-blue:target,
+.btn-blue:focus,
+.btn-blue:active,
+.btn-blue:not(:disabled):active {
+    color: white;
+    background-color: var(--green-clr2);
+    border-color: var(--green-clr-lt);
+    opacity: 0.8;
+    outline: none;
+    box-shadow: none;
 }
 
-/* BUTTON RED tetap */
 .btn-red {
     color: white;
     background-color: var(--red-clr);
 }
 
-.btn-red:hover {
+.btn-red:hover,
+.btn-red:disabled,
+.btn-red:checked,
+.btn-red:target,
+.btn-red:focus,
+.btn-red:active,
+.btn-red:not(:disabled):active {
+    color: white;
     background-color: var(--red-clr2);
+    border-color: var(--red-clr-lt);
+    opacity: 0.8;
+    outline: none;
+    box-shadow: none;
 }
 
 /* CARD */
+
+/* .card-count-data {
+    box-shadow: none !important;
+} */
+
+.card-filter {
+    box-shadow: none !important;
+}
+
 .card {
     border-radius: 10px;
     border: none;
@@ -104,87 +159,170 @@ body {
 }
 
 .card .card-footer {
-    border-radius: 0 0 10px 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     background-color: #f3f3f3;
 }
 
 /* TABLE */
+
 .table tbody tr td {
     vertical-align: middle;
 }
 
-/* INPUT */
+.table thead tr th {
+    border-radius: 10px;
+}
+
+.table tbody tr td {
+    border-radius: 10px;
+}
+
+/* INPUT ELEMENT */
+
 .form-label-description a {
     color: var(--green-clr);
 }
 
 .form-control,
 .form-select {
-    border-radius: 10px;
+    border-radius: 8px;
     height: 40px;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    transition: 0.3s;
 }
-
 textarea {
     height: 310px;
 }
 
-.form-control:focus,
-.form-select:focus {
-    border: 1px solid rgba(76, 175, 80, 0.4);
-    box-shadow: 0 0 4px rgba(76, 175, 80, 0.6);
+.form-control:active,
+.form-select:active {
+    outline: var(--green-clr-lt);
+    border: var(--green-clr);
 }
 
-/* TOGGLE PASSWORD */
+.form-control,
+.form-select {
+    border: 1px solid #ccc;
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    padding: 8px 12px;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus,
+.form-control:active,
+.form-select:focus,
+.form-select:active {
+    outline: none;
+    border: 0.1px solid rgba(19, 85, 129, 0.3);
+    box-shadow: 0 0 3px rgba(19, 85, 129, 0.7);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: #f5f5f5;
+    color: #a1a1a1;
+    border-color: #dcdcdc;
+    cursor: not-allowed;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-control,
+.form-select {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #777;
+    transition: color 0.3s ease;
+}
+
 .toggle-password:hover {
     color: var(--green-clr);
 }
 
-/* FILTER */
+/* border */
 .open-filter {
     background-color: var(--green-clr-lt) !important;
     color: var(--green-clr) !important;
 }
 
-/* NAVBAR ACTIVE */
+.navbar-nav li::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Item sidebar yang aktif tanpa submenu */
 .navbar-nav > li.active:not(.dropdown) > a {
     background-color: var(--green-clr-lt) !important;
     color: var(--green-clr) !important;
-}
-/* HAPUS SEMUA GARIS KIRI DI SIDEBAR */
-.navbar .nav-link,
-.navbar .dropdown-item {
     border-left: none !important;
-    box-shadow: none !important;
+    /* border-radius: 0px !important; */
 }
+
+.navbar-nav > li.active:not(.dropdown) > a .nav-link-icon h2 {
+    color: var(--green-clr) !important;
+}
+
+/* Mengubah warna ikon dalam submenu aktif */
+.dropdown-menu .dropdown-item.active h2 {
+    color: var(--green-clr) !important;
+}
+
+/* Submenu yang aktif */
 .dropdown-menu .dropdown-item.active {
-    border-left: 3px solid var(--green-clr) !important;
+    border-right: none !important;
     background-color: var(--green-clr-lt) !important;
     color: var(--green-clr) !important;
 }
 
+.datatable-dropdown {
+    transform: translate(0px, 39px) !important;
+}
+
+@media (max-width: 991.98px) {
+    /* Ukuran tablet dan HP */
+
+    .dropdown-menu.show {
+        border-top-left-radius: 0.5rem !important;
+        border-bottom-left-radius: 0.5rem !important;
+    }
+}
+
+/* Menghapus background pada item utama yang memiliki submenu */
 .navbar-nav .active {
     border-right: 3px solid var(--green-clr) !important;
 }
 
-/* TIMER */
+/* TIMER TODAY  */
+
 #elementTime {
     background-color: var(--green-clr-lt);
-    color: var(--green-clr);
     padding: 4px 10px;
     border-radius: 10px;
+    color: var(--green-clr) !important;
 }
 
-/* LOGIN */
+/* AUTHENTICATION ELEMENT */
+
 .title-login {
-    padding: 20px;
+    padding: 20px 20px;
     border-radius: 10px;
     text-align: center;
+    display: inline;
 }
 
-/* ANIMATION */
+/* ANIMATION FRAME */
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -196,7 +334,8 @@ textarea {
     }
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE MEDIA */
+
 @media (min-width: 768px) {
     aside {
         overflow-y: auto !important;
