@@ -6,7 +6,7 @@
                     <li class="list-inline-item">
                         <a href="#" target="_blank" class="link-secondary" rel="noopener">
                             @include('partials.svg.love')
-                            SMPN 19 Makassar
+                            MADRASAH ALIYAH PADELO KAB BARRU
                         </a>
                     </li>
                 </ul>
