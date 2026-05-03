@@ -158,9 +158,9 @@ class Create extends Component
                     ]
                 );
 
-                // Send WA for manual entries or those not yet notified
-                if ($presensi['status_kehadiran'] == 'hadir' && !in_array($studentId, $this->notifiedStudents)) {
-                    $this->sendWhatsappNotification($studentId, 'hadir');
+                // Send WA for all entries (hadir, sakit, izin, alpa) if not yet notified
+                if (!in_array($studentId, $this->notifiedStudents)) {
+                    $this->sendWhatsappNotification($studentId, $presensi['status_kehadiran']);
                     $this->notifiedStudents[] = $studentId;
                 }
             }
@@ -212,15 +212,17 @@ class Create extends Component
             $date = now()->translatedFormat('d F Y');
 
             $phoneNumber = format_number_indonesia($student->guardian->whatsapp_number);
+            
+            $statusText = strtoupper($status);
             $message = "📢 *NOTIFIKASI KEHADIRAN SISWA*\n\n"
                      . "Halo Bapak/Ibu Wali dari *{$student->full_name}*,\n\n"
-                     . "Menginfokan bahwa putra/putri Anda telah hadir di kelas:\n"
+                     . "Menginfokan status kehadiran putra/putri Anda di kelas:\n"
                      . "📚 *Mapel:* {$subject}\n"
                      . "👨‍🏫 *Guru:* {$teacherName}\n"
                      . "⏳ *Jam Pelajaran:* {$startTime} - {$endTime}\n"
-                     . "⏰ *Waktu Absen:* {$timeNow} WIB\n"
+                     . "⏰ *Waktu:* {$timeNow} WIB\n"
                      . "📅 *Tanggal:* {$date}\n"
-                     . "✅ *Status:* HADIR\n\n"
+                     . "✅ *Status:* {$statusText}\n\n"
                      . "Terima kasih.";
 
             $whatsapp = new WhatsappBroadcast();
