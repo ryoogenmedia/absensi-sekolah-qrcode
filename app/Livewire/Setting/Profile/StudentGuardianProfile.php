@@ -14,7 +14,7 @@ class StudentGuardianProfile extends Component
 {
     public $namaWali;
     public $hubunganWali;
-    public $kontakWali;
+    public $whatsappNumber;
     public $siswa;
 
     public $studentGuardianId;
@@ -24,7 +24,7 @@ class StudentGuardianProfile extends Component
         return [
             'namaWali' => ['required', 'string', 'max:255'],
             'hubunganWali' => ['required', 'string', 'max:100'],
-            'kontakWali' => ['required', 'string', 'max:50'],
+            'whatsappNumber' => ['required', 'string', 'max:50'],
             'siswa' => ['required', 'exists:students,id'],
         ];
     }
@@ -52,7 +52,7 @@ class StudentGuardianProfile extends Component
                     'user_id' => $user->id,
                     'guardian_name' => $this->namaWali,
                     'guardian_relationship' => $this->hubunganWali,
-                    'guardian_contact' => $this->kontakWali,
+                    'whatsapp_number' => $this->whatsappNumber,
                 ]
             );
 
@@ -94,7 +94,7 @@ class StudentGuardianProfile extends Component
             $this->studentGuardianId = $guardian->id;
             $this->namaWali = $guardian->guardian_name;
             $this->hubunganWali = $guardian->guardian_relationship;
-            $this->kontakWali = $guardian->guardian_contact;
+            $this->whatsappNumber = $guardian->whatsapp_number;
             $this->siswa = $student->id;
         }
     }
