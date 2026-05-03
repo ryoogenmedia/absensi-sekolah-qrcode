@@ -125,13 +125,13 @@ class Index extends Component
         try {
             $student->load('student_guardian');
             $guardian = $student->student_guardian;
-            if (!$guardian || !$guardian->guardian_contact) {
+            if (!$guardian || !$guardian->whatsapp_number || !$guardian->is_wa_active) {
                 return;
             }
 
             $time = now()->format('H:i');
             $date = now()->translatedFormat('d F Y');
-            $phoneNumber = format_number_indonesia($guardian->guardian_contact);
+            $phoneNumber = format_number_indonesia($guardian->whatsapp_number);
 
             $message = "📢 *NOTIFIKASI PRESENSI {$type}*\n\n"
                      . "Halo Bapak/Ibu Wali dari *{$student->full_name}*,\n\n"

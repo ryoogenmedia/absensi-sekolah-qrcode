@@ -39,6 +39,8 @@ class StudentGuardianTableSeeder extends Seeder
             'guardian_name'         => 'Wali Student',
             'guardian_relationship' => 'ayah',
             'guardian_contact'      => '081234567890',
+            'whatsapp_number'       => '6281234567890',
+            'is_wa_active'          => true,
             'created_at'            => $now,
             'updated_at'            => $now,
         ];
@@ -63,6 +65,8 @@ class StudentGuardianTableSeeder extends Seeder
                 'guardian_name'         => $faker->name(),
                 'guardian_relationship' => $faker->randomElement($relationships),
                 'guardian_contact'      => $faker->phoneNumber(),
+                'whatsapp_number'       => '62' . $faker->numerify('8##########'),
+                'is_wa_active'          => true,
                 'created_at'            => $now,
                 'updated_at'            => $now,
             ];

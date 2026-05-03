@@ -56,7 +56,20 @@
                     </x-form.select>
 
                     <x-form.input wire:model="kontakWali" name="kontakWali" label="Kontak Wali"
-                        placeholder="nomor ponsel / nomor whatsapp" type="text" required />
+                        placeholder="nomor ponsel" type="text" required />
+
+                    <div class="row">
+                        <div class="col-8">
+                            <x-form.input wire:model="whatsappNumber" name="whatsappNumber" label="Nomor WhatsApp"
+                                placeholder="628..." type="text" required />
+                        </div>
+                        <div class="col-4">
+                            <x-form.select wire:model="isWaActive" name="isWaActive" label="WA Aktif">
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </x-form.select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
