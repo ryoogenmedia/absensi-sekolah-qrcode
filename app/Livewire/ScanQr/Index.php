@@ -123,8 +123,8 @@ class Index extends Component
     private function sendWhatsappNotification($student, $type)
     {
         try {
-            $student->load('student_guardian');
-            $guardian = $student->student_guardian;
+            $student->load('guardian');
+            $guardian = $student->guardian;
             if (!$guardian || !$guardian->whatsapp_number || !$guardian->is_wa_active) {
                 return;
             }

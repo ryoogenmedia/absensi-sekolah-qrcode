@@ -197,8 +197,8 @@ class Create extends Component
     private function sendWhatsappNotification($studentId, $status)
     {
         try {
-            $student = Student::with(['class_room', 'student_guardian'])->find($studentId);
-            if (!$student || !$student->student_guardian || !$student->student_guardian->guardian_contact) {
+            $student = Student::with(['class_room', 'guardian'])->find($studentId);
+            if (!$student || !$student->guardian || !$student->guardian->whatsapp_number || !$student->guardian->is_wa_active) {
                 return;
             }
 
@@ -211,7 +211,7 @@ class Create extends Component
             $timeNow = now()->format('H:i');
             $date = now()->translatedFormat('d F Y');
 
-            $phoneNumber = format_number_indonesia($student->student_guardian->guardian_contact);
+            $phoneNumber = format_number_indonesia($student->guardian->whatsapp_number);
             $message = "📢 *NOTIFIKASI KEHADIRAN SISWA*\n\n"
                      . "Halo Bapak/Ibu Wali dari *{$student->full_name}*,\n\n"
                      . "Menginfokan bahwa putra/putri Anda telah hadir di kelas:\n"
