@@ -17,6 +17,8 @@ class StudentGuardian extends Model
         'guardian_name',
         'guardian_relationship',
         'guardian_contact',
+        'whatsapp_number',
+        'is_wa_active',
     ];
 
     public function student()

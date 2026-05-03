@@ -47,7 +47,7 @@ async function connectToWhatsApp() {
         const { connection, lastDisconnect, qr } = update;
         
         if (qr) {
-            console.log('QR RECEIVED', qr);
+            console.log('New QR Code generated');
             qrcodeTerminal.generate(qr, { small: true });
             qrcode.toDataURL(qr, (err, url) => {
                 qrCodeData = url;
@@ -56,16 +56,33 @@ async function connectToWhatsApp() {
         }
 
         if (connection === 'close') {
-            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
+            const statusCode = lastDisconnect?.error?.output?.statusCode;
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+            
+            console.log(`Connection closed: ${lastDisconnect?.error?.message || 'Unknown error'}. Status code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
+            
             clientStatus = 'NOT_READY';
             qrCodeData = null;
             
-            if (shouldReconnect) {
-                connectToWhatsApp();
+            if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
+                console.log('Session is invalid or logged out. Clearing sessions...');
+                const sessionPath = path.join(__dirname, 'sessions');
+                if (fs.existsSync(sessionPath)) {
+                    try {
+                        fs.rmSync(sessionPath, { recursive: true, force: true });
+                        console.log('Sessions cleared successfully.');
+                    } catch (err) {
+                        console.error('Failed to clear sessions:', err);
+                    }
+                }
+                // Always try to reconnect to get a new QR code if logged out
+                setTimeout(() => connectToWhatsApp(), 3000);
+            } else if (shouldReconnect) {
+                // Exponential backoff or simple delay
+                setTimeout(() => connectToWhatsApp(), 5000);
             }
         } else if (connection === 'open') {
-            console.log('opened connection');
+            console.log('WhatsApp connection opened successfully');
             clientStatus = 'CONNECTED';
             qrCodeData = null;
         }

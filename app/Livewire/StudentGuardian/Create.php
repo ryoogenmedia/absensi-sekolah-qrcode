@@ -18,6 +18,8 @@ class Create extends Component
     public $siswa;
     public $hubunganWali;
     public $kontakWali;
+    public $whatsappNumber;
+    public $isWaActive = true;
 
     public $email;
     public $avatar;
@@ -39,6 +41,8 @@ class Create extends Component
             'siswa' => ['required', 'exists:students,id'],
             'hubunganWali' => ['required', 'string', 'min:2', 'max:255'],
             'kontakWali' => ['required', 'string', 'min:2', 'max:20'],
+            'whatsappNumber' => ['required', 'string', 'min:2', 'max:20'],
+            'isWaActive' => ['required', 'boolean'],
             'email' => ['required', 'string', 'min:2', 'unique:users,email'],
             'kataSandi' => ['required', 'string', 'same:konfirmasiKataSandi'],
             'avatar' => ['nullable', 'image', 'max:2048'],
@@ -72,6 +76,8 @@ class Create extends Component
                 'guardian_name' => $this->namaWali,
                 'guardian_relationship' => $this->hubunganWali,
                 'guardian_contact' => $this->kontakWali,
+                'whatsapp_number' => $this->whatsappNumber,
+                'is_wa_active' => $this->isWaActive,
             ]);
 
             DB::commit();
