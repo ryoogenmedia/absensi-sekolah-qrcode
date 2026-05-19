@@ -29,10 +29,12 @@ class DatabaseSeeder extends Seeder
         if (env('APP_ENV') == 'production') {
             $this->call([
                 UserTableSeeder::class,
+                SchoolSessionTableSeeder::class,
             ]);
         } else {
             $this->call([
                 UserTableSeeder::class,
+                SchoolSessionTableSeeder::class,
                 ClassRoomTableSeeder::class,
                 SubjectStudyTableSeeder::class,
                 TeacherTableSeeder::class,

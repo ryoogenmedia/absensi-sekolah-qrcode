@@ -124,6 +124,8 @@
 
                         <th>Hari</th>
 
+                        <th class="text-center" style="width: 100px">Sesi</th>
+
                         <th>Jam Mulai</th>
 
                         <th>Jam Selesai</th>
@@ -137,7 +139,7 @@
                 <tbody>
                     @if ($selectPage)
                         <tr>
-                            <td colspan="10" class="bg-orange-lt rounded-0">
+                            <td colspan="11" class="bg-orange-lt rounded-0">
                                 @if (!$selectAll)
                                     <div class="text-orange">
                                         <span>Anda telah memilih <strong>{{ $this->rows->total() }}</strong> jadwal
@@ -170,6 +172,12 @@
                             <td>{{ $row->teacher->name ?? '-' }}</td>
 
                             <td>{{ strtoupper($row->day_name ?? '-') }}</td>
+
+                            <td class="text-center">
+                                <span class="badge bg-purple-lt fw-bold">
+                                    {{ $row->session_label }}
+                                </span>
+                            </td>
 
                             <td>{{ $row->start_time ?? '-' }}</td>
 

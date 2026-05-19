@@ -35,7 +35,7 @@ class DataClassRoomScheduleExampleGenerate extends Command
         $this->info("Memulai generate jadwal untuk " . $classRooms->count() . " kelas...");
         $bar = $this->output->createProgressBar($classRooms->count());
 
-        $classSessions = config('const.class_sessions');
+        $classSessions = \App\Models\SchoolSession::getActiveSessions();
         $timeSlots = [];
         foreach ($classSessions as $key => $session) {
             $timeSlots[] = [$session['start'] . ':00', $session['end'] . ':00'];

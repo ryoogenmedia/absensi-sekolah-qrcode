@@ -43,8 +43,9 @@ class Create extends Component
 
     public function updatedSesi($value)
     {
-        if ($value && array_key_exists($value, config('const.class_sessions'))) {
-            $session = config('const.class_sessions')[$value];
+        $activeSessions = \App\Models\SchoolSession::getActiveSessions();
+        if ($value && array_key_exists($value, $activeSessions)) {
+            $session = $activeSessions[$value];
             $this->waktuMasuk = $session['start'];
             $this->waktuKeluar = $session['end'];
         } else {

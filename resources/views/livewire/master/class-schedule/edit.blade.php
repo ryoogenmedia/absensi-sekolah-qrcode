@@ -87,7 +87,7 @@
                 <div class="col-12 col-lg-6">
                     <x-form.select wire:model.live="sesi" name="sesi" label="Sesi Jadwal">
                         <option value="">- pilih sesi -</option>
-                        @foreach (config('const.class_sessions') as $key => $session)
+                        @foreach (\App\Models\SchoolSession::getActiveSessions() as $key => $session)
                             <option wire:key="session-{{ $key }}" value="{{ $key }}">
                                 {{ $session['label'] }}
                             </option>
@@ -171,7 +171,7 @@
                                                     <select wire:model.live="editingSchedule.sesi"
                                                         class="form-control form-control-sm">
                                                         <option value="">- sesi -</option>
-                                                        @foreach (config('const.class_sessions') as $key => $session)
+                                                        @foreach (\App\Models\SchoolSession::getActiveSessions() as $key => $session)
                                                             <option value="{{ $key }}">{{ strtoupper(str_replace('_', ' ', $key)) }}</option>
                                                         @endforeach
                                                     </select>

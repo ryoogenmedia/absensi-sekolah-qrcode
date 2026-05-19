@@ -177,6 +177,13 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
         });
 
         /**
+         * school session / sesi sekolah
+         */
+        Route::prefix('sesi-sekolah')->name('school-session.')->middleware('roles:admin,developer')->group(function () {
+            Route::get('/', SchoolSession\Index::class)->name('index');
+        });
+
+        /**
          * subject study / mata pelajaran
          */
         Route::prefix('mata-pelajaran')->name('subject-study.')->middleware('roles:admin,developer')->group(function () {

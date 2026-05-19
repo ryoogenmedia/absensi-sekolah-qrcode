@@ -25,7 +25,7 @@ class ClassScheduleGenerate extends Command
         $teachers         = Teacher::whereNotNull('subject_study_id')->get();
         $days             = config('const.name_days_secound'); // Senin - Sabtu
 
-        $classSessions = config('const.class_sessions');
+        $classSessions = \App\Models\SchoolSession::getActiveSessions();
         $timeSlots = [];
         foreach ($classSessions as $key => $session) {
             $timeSlots[] = [$session['start'] . ':00', $session['end'] . ':00'];

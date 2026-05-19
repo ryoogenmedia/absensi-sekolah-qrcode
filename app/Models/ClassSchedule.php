@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\SchoolSession;
 
 class ClassSchedule extends Model
 {
@@ -51,5 +52,24 @@ class ClassSchedule extends Model
 
     public function getEndTimeAttribute($value){
         return Carbon::parse($value)->format('H:i');
+    }
+
+    protected static $sessionMap = null;
+
+    public function getSessionLabelAttribute()
+    {
+        if (self::$sessionMap === null) {
+            self::$sessionMap = SchoolSession::all()->mapWithKeys(function ($session) {
+                $start = date('H:i', strtotime($session->start_time));
+                $end = date('H:i', strtotime($session->end_time));
+                return ["{$start}-{$end}" => $session->session_name];
+            })->toArray();
+        }
+
+        $start = $this->start_time;
+        $end = $this->end_time;
+        $key = "{$start}-{$end}";
+
+        return self::$sessionMap[$key] ?? '-';
     }
 }

@@ -93,6 +93,12 @@ return [
                 'is-active' => 'master.classroom*',
             ],
             [
+                'title' => 'Sesi Sekolah',
+                'description' => 'Melihat daftar sesi sekolah.',
+                'route-name' => 'master.school-session.index',
+                'is-active' => 'master.school-session*',
+            ],
+            [
                 'title' => 'Jadwal Kelas',
                 'description' => 'Melihat jadwal kelas.',
                 'route-name' => 'master.class-schedule.index',

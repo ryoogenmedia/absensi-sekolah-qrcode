@@ -50,7 +50,8 @@ class Edit extends Component
         // Prepopulate $sesi if matching
         $start = date('H:i', strtotime($schedule->start_time));
         $end = date('H:i', strtotime($schedule->end_time));
-        foreach (config('const.class_sessions') as $key => $session) {
+        $activeSessions = \App\Models\SchoolSession::getActiveSessions();
+        foreach ($activeSessions as $key => $session) {
             if (date('H:i', strtotime($session['start'])) == $start && date('H:i', strtotime($session['end'])) == $end) {
                 $this->sesi = $key;
                 break;
@@ -81,8 +82,9 @@ class Edit extends Component
 
     public function updatedSesi($value)
     {
-        if ($value && array_key_exists($value, config('const.class_sessions'))) {
-            $session = config('const.class_sessions')[$value];
+        $activeSessions = \App\Models\SchoolSession::getActiveSessions();
+        if ($value && array_key_exists($value, $activeSessions)) {
+            $session = $activeSessions[$value];
             $this->waktuMasuk = $session['start'];
             $this->waktuKeluar = $session['end'];
         } else {
@@ -94,8 +96,9 @@ class Edit extends Component
     public function updatedEditingSchedule($value, $key)
     {
         if ($key === 'sesi') {
-            if ($value && array_key_exists($value, config('const.class_sessions'))) {
-                $session = config('const.class_sessions')[$value];
+            $activeSessions = \App\Models\SchoolSession::getActiveSessions();
+            if ($value && array_key_exists($value, $activeSessions)) {
+                $session = $activeSessions[$value];
                 $this->editingSchedule['waktuMasuk'] = $session['start'];
                 $this->editingSchedule['waktuKeluar'] = $session['end'];
             } else {
@@ -270,7 +273,8 @@ class Edit extends Component
         $sesiVal = '';
         $start = date('H:i', strtotime($schedule->start_time));
         $end = date('H:i', strtotime($schedule->end_time));
-        foreach (config('const.class_sessions') as $key => $session) {
+        $activeSessions = \App\Models\SchoolSession::getActiveSessions();
+        foreach ($activeSessions as $key => $session) {
             if (date('H:i', strtotime($session['start'])) == $start && date('H:i', strtotime($session['end'])) == $end) {
                 $sesiVal = $key;
                 break;
