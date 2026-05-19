@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class CetakPdfController extends Controller
@@ -45,6 +46,34 @@ class CetakPdfController extends Controller
         } else {
             $fileName = "cetak-semua-kartu-siswa";
         }
+
+        return $pdf->stream($fileName . '.pdf');
+    }
+
+    public function teacherCard(Request $request)
+    {
+        $teacherId = $request->teacher_id;
+
+        if ($teacherId) {
+            $teacher = Teacher::with(['subject_study', 'user'])->find($teacherId);
+
+            if (!$teacher) {
+                abort(404, 'Data guru tidak ditemukan.');
+            }
+
+            $teachers = collect([$teacher]);
+        } else {
+            $teachers = Teacher::with(['subject_study', 'user'])->get();
+        }
+
+        // Generate PDF
+        $pdf = \PDF::loadView('pdf.print-teacher-card', [
+            'teachers' => $teachers,
+        ])->setPaper('a3', 'portrait');
+
+        $fileName = $teacherId && isset($teacher)
+            ? "cetak-akun-guru-" . preg_replace('/[^A-Za-z0-9\-]/', '_', $teacher->name)
+            : "cetak-semua-akun-guru";
 
         return $pdf->stream($fileName . '.pdf');
     }

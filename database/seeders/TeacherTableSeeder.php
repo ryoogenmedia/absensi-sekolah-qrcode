@@ -17,6 +17,7 @@ class TeacherTableSeeder extends Seeder
         $faker = \Faker\Factory::create('id_ID');
         $religions = config('const.religions');
         $sex = config('const.sex');
+        $subjects = \App\Models\SubjectStudy::pluck('id')->toArray();
 
         $dataTeachers = [
             [
@@ -37,6 +38,7 @@ class TeacherTableSeeder extends Seeder
                 'address'           => $faker->address,
                 'postal_code'       => $faker->postcode,
                 'date_joined'       => $faker->date('Y-m-d', '-5 years'),
+                'subject_study_id'  => !empty($subjects) ? $subjects[0] : null,
             ]
         ];
 
@@ -62,6 +64,7 @@ class TeacherTableSeeder extends Seeder
                 'address'           => $teacher['address'],
                 'postal_code'       => $teacher['postal_code'],
                 'date_joined'       => $teacher['date_joined'],
+                'subject_study_id'  => $teacher['subject_study_id'],
             ]);
         }
 
@@ -94,6 +97,7 @@ class TeacherTableSeeder extends Seeder
                 'address'           => $faker->address,
                 'postal_code'       => $faker->postcode,
                 'date_joined'       => $faker->date('Y-m-d', '-5 years'),
+                'subject_study_id'  => !empty($subjects) ? $faker->randomElement($subjects) : null,
             ];
 
             $i++;

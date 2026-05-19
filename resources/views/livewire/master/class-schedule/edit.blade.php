@@ -77,7 +77,7 @@
 
                     <x-form.select wire:model="hari" name="hari" label="Nama Hari">
                         <option value="">- pilih hari -</option>
-                        @foreach (config('const.name_days') as $name_day)
+                        @foreach (config('const.name_days_secound') as $name_day)
                             <option wire:key="{{ $name_day }}" value="{{ $name_day }}">
                                 {{ strtoupper($name_day) }}</option>
                         @endforeach
@@ -85,19 +85,28 @@
                 </div>
 
                 <div class="col-12 col-lg-6">
+                    <x-form.select wire:model.live="sesi" name="sesi" label="Sesi Jadwal">
+                        <option value="">- pilih sesi -</option>
+                        @foreach (config('const.class_sessions') as $key => $session)
+                            <option wire:key="session-{{ $key }}" value="{{ $key }}">
+                                {{ $session['label'] }}
+                            </option>
+                        @endforeach
+                    </x-form.select>
+
                     <div class="row">
                         <div class="col-lg-6 col-12">
                             <x-form.input wire:model="waktuMasuk" name="waktuMasuk" label="Waktu Masuk / Mulai"
-                                type="time" />
+                                type="time" readonly />
                         </div>
 
                         <div class="col-lg-6 col-12">
                             <x-form.input wire:model="waktuKeluar" name="waktuKeluar" label="Waktu Keluar / Selesai"
-                                type="time" />
+                                type="time" readonly />
                         </div>
                     </div>
 
-                    <x-form.textarea wire:model="keterangan" name="keterangan" label="Keterangan" style="height: 210px;"
+                    <x-form.textarea wire:model="keterangan" name="keterangan" label="Keterangan" style="height: 140px;"
                         placeholder="Masukkan keterangan seperti informasi / terkait materi dll..." />
                 </div>
             </div>
@@ -130,7 +139,7 @@
                                         {{-- Mode Edit --}}
                                         <tr wire:key="edit-{{ $schedule->id }}">
                                             <td>
-                                                <select wire:model="editingSchedule.mataPelajaran"
+                                                <select wire:model.live="editingSchedule.mataPelajaran"
                                                     class="form-control form-control-sm">
                                                     @foreach ($this->subject_studies as $subject)
                                                         <option value="{{ $subject->id }}">
@@ -141,7 +150,8 @@
                                             <td>
                                                 <select wire:model="editingSchedule.guru"
                                                     class="form-control form-control-sm">
-                                                    @foreach ($this->teachers as $teacher)
+                                                    <option value="">- pilih guru -</option>
+                                                    @foreach ($this->getTeachersForSubject($editingSchedule['mataPelajaran']) as $teacher)
                                                         <option value="{{ $teacher->id }}">{{ $teacher->name }}
                                                         </option>
                                                     @endforeach
@@ -150,18 +160,27 @@
                                             <td>
                                                 <select wire:model="editingSchedule.hari"
                                                     class="form-control form-control-sm">
-                                                    @foreach (config('const.name_days') as $day)
+                                                    @foreach (config('const.name_days_secound') as $day)
                                                         <option value="{{ $day }}">{{ strtoupper($day) }}
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </td>
                                             <td>
-                                                <div class="d-flex gap-1">
-                                                    <input type="time" wire:model="editingSchedule.waktuMasuk"
+                                                <div class="d-flex flex-column gap-1">
+                                                    <select wire:model.live="editingSchedule.sesi"
                                                         class="form-control form-control-sm">
-                                                    <input type="time" wire:model="editingSchedule.waktuKeluar"
-                                                        class="form-control form-control-sm">
+                                                        <option value="">- sesi -</option>
+                                                        @foreach (config('const.class_sessions') as $key => $session)
+                                                            <option value="{{ $key }}">{{ strtoupper(str_replace('_', ' ', $key)) }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <div class="d-flex gap-1">
+                                                        <input type="time" wire:model="editingSchedule.waktuMasuk"
+                                                            class="form-control form-control-sm" readonly>
+                                                        <input type="time" wire:model="editingSchedule.waktuKeluar"
+                                                            class="form-control form-control-sm" readonly>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>

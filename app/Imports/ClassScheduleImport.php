@@ -51,6 +51,12 @@ class ClassScheduleImport implements
             return null;
         }
 
+        // Validate teacher teaches the imported subject
+        $teacher = Teacher::find($teacherId);
+        if (!$teacher || $teacher->subject_study_id != $subjectStudyId) {
+            return null;
+        }
+
         return ClassSchedule::updateOrCreate(
             [
                 'class_room_id'     => $classRoomId,

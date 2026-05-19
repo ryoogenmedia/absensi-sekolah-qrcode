@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 class ClassScheduleGenerate extends Command
 {
     protected $signature   = 'generate:class-schedule';
-    protected $description = 'Generate random class schedule dengan aturan khusus';
+    protected $description = 'Generate random class schedule dengan aturan sesi dan subject guru';
 
     public function handle()
     {
@@ -22,56 +22,67 @@ class ClassScheduleGenerate extends Command
         $faker = Factory::create('id_ID');
 
         $classRooms       = ClassRoom::all();
-        $teachers         = Teacher::all();
-        $subjects         = SubjectStudy::pluck('id')->toArray();
-        $days             = config('const.name_days_secound');
+        $teachers         = Teacher::whereNotNull('subject_study_id')->get();
+        $days             = config('const.name_days_secound'); // Senin - Sabtu
 
-        $timeSlots = [
-            ['08:00:00', '09:30:00'],
-            ['09:45:00', '11:15:00'],
-            ['12:30:00', '14:00:00'],
-            ['14:15:00', '15:45:00'],
-        ];
+        $classSessions = config('const.class_sessions');
+        $timeSlots = [];
+        foreach ($classSessions as $key => $session) {
+            $timeSlots[] = [$session['start'] . ':00', $session['end'] . ':00'];
+        }
 
-        $usedSlots = [];
+        $usedClassSlots = [];
+        $usedTeacherSlots = [];
 
         $teacherLimit = [];
-
         $teacherHasSchedule = [];
 
         $this->info("Mulai generate jadwal tiap kelas...");
 
         foreach ($classRooms as $room) {
-
-            $this->info("\n=== Kelas {$room->class_name} ===");
+            $className = $room->name_class ?? $room->class_name ?? 'Kelas';
+            $this->info("\n=== Kelas {$className} ===");
 
             $scheduleCount = 0;
-            $maxSchedules  = 10;
+            $maxSchedules  = 5; // keep it balanced to prevent lockups
 
-            while ($scheduleCount < $maxSchedules) {
+            // Let's gather all possible options for this classroom to randomly draw from
+            $possibleSlots = [];
+            foreach ($days as $day) {
+                foreach ($timeSlots as [$start, $end]) {
+                    $possibleSlots[] = [$day, $start, $end];
+                }
+            }
+            $faker->shuffle($possibleSlots);
 
-                $day           = $faker->randomElement($days);
-                [$start, $end] = $faker->randomElement($timeSlots);
-
-                $eligibleTeachers = $teachers->filter(function ($t) use ($teacherLimit, $room) {
-                    return ($teacherLimit[$room->id][$t->id] ?? 0) < 2;
-                });
-
-                if ($eligibleTeachers->isEmpty()) {
-                    $this->warn("Guru habis untuk kelas {$room->class_name}");
+            foreach ($possibleSlots as [$day, $start, $end]) {
+                if ($scheduleCount >= $maxSchedules) {
                     break;
                 }
 
-                $teacher = $eligibleTeachers->random();
-                $subject = $faker->randomElement($subjects);
-
-                $slotKey = "{$room->id}_{$day}_{$start}_{$end}";
-
-                if (isset($usedSlots[$slotKey])) {
+                $classKey = "{$room->id}_{$day}_{$start}_{$end}";
+                if (isset($usedClassSlots[$classKey])) {
                     continue;
                 }
 
-                $usedSlots[$slotKey] = true;
+                // Filter teachers who are not busy at this day & time and have not exceeded limits
+                $eligibleTeachers = $teachers->filter(function ($t) use ($teacherLimit, $room, $day, $start, $end, $usedTeacherSlots) {
+                    $teacherKey = "{$t->id}_{$day}_{$start}_{$end}";
+                    $limitOk = ($teacherLimit[$room->id][$t->id] ?? 0) < 2;
+                    return $limitOk && !isset($usedTeacherSlots[$teacherKey]);
+                });
+
+                if ($eligibleTeachers->isEmpty()) {
+                    continue;
+                }
+
+                $teacher = $eligibleTeachers->random();
+                $subject = $teacher->subject_study_id;
+
+                $teacherKey = "{$teacher->id}_{$day}_{$start}_{$end}";
+
+                $usedClassSlots[$classKey] = true;
+                $usedTeacherSlots[$teacherKey] = true;
 
                 ClassSchedule::create([
                     'class_room_id'    => $room->id,
@@ -90,34 +101,50 @@ class ClassScheduleGenerate extends Command
 
                 $scheduleCount++;
 
-                $this->info("✔ {$room->class_name}: Guru {$teacher->name} → {$day} {$start} - {$end}");
+                $this->info("✔ {$className}: Guru {$teacher->name} → {$day} {$start} - {$end}");
             }
         }
 
         $this->info("\nMengecek guru tanpa jadwal...");
 
-        $room = ClassRoom::inRandomOrder()->first();
-
         foreach ($teachers as $teacher) {
             if (!isset($teacherHasSchedule[$teacher->id])) {
-
                 $this->warn("Guru {$teacher->name} belum punya jadwal → menambahkan...");
 
-                $day           = $faker->randomElement($days);
-                [$start, $end] = $faker->randomElement($timeSlots);
-                $subject       = $faker->randomElement($subjects);
+                // Find a free slot for this teacher in any classroom
+                $found = false;
+                foreach ($classRooms as $room) {
+                    $className = $room->name_class ?? $room->class_name ?? 'Kelas';
+                    foreach ($days as $day) {
+                        foreach ($timeSlots as [$start, $end]) {
+                            $classKey = "{$room->id}_{$day}_{$start}_{$end}";
+                            $teacherKey = "{$teacher->id}_{$day}_{$start}_{$end}";
 
-                ClassSchedule::create([
-                    'class_room_id'    => $room->id,
-                    'teacher_id'       => $teacher->id,
-                    'subject_study_id' => $subject,
-                    'day_name'         => $day,
-                    'start_time'       => $start,
-                    'end_time'         => $end,
-                    'description'      => "Tambahan supaya guru punya jadwal",
-                ]);
+                            if (!isset($usedClassSlots[$classKey]) && !isset($usedTeacherSlots[$teacherKey])) {
+                                $usedClassSlots[$classKey] = true;
+                                $usedTeacherSlots[$teacherKey] = true;
 
-                $this->info("✔ Tambahan jadwal untuk guru {$teacher->name}");
+                                ClassSchedule::create([
+                                    'class_room_id'    => $room->id,
+                                    'teacher_id'       => $teacher->id,
+                                    'subject_study_id' => $teacher->subject_study_id,
+                                    'day_name'         => $day,
+                                    'start_time'       => $start,
+                                    'end_time'         => $end,
+                                    'description'      => "Tambahan supaya guru punya jadwal",
+                                ]);
+
+                                $this->info("✔ Tambahan jadwal untuk guru {$teacher->name} di {$className}");
+                                $found = true;
+                                break 3;
+                            }
+                        }
+                    }
+                }
+
+                if (!$found) {
+                    $this->warn("× Gagal mencari jadwal kosong untuk guru {$teacher->name} (semua slot bentrok)");
+                }
             }
         }
 

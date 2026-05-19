@@ -42,6 +42,34 @@ return [
         'sabtu',
     ],
 
+    'class_sessions' => [
+        'sesi_1' => [
+            'label' => 'Sesi 1 (07:30 - 09:00)',
+            'start' => '07:30',
+            'end' => '09:00',
+        ],
+        'sesi_2' => [
+            'label' => 'Sesi 2 (09:15 - 10:45)',
+            'start' => '09:15',
+            'end' => '10:45',
+        ],
+        'sesi_3' => [
+            'label' => 'Sesi 3 (11:00 - 12:30)',
+            'start' => '11:00',
+            'end' => '12:30',
+        ],
+        'sesi_4' => [
+            'label' => 'Sesi 4 (13:00 - 14:30)',
+            'start' => '13:00',
+            'end' => '14:30',
+        ],
+        'sesi_5' => [
+            'label' => 'Sesi 5 (14:45 - 16:15)',
+            'start' => '14:45',
+            'end' => '16:15',
+        ],
+    ],
+
     'sex' => [
         'laki-laki',
         'perempuan',

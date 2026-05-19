@@ -21,6 +21,7 @@ class Edit extends Component
     public $waktuMasuk;
     public $waktuKeluar;
     public $keterangan;
+    public $sesi;
 
     // IDENTITY
     public $classScheduleId;
@@ -46,6 +47,16 @@ class Edit extends Component
         $this->waktuKeluar = $schedule->end_time;
         $this->keterangan = $schedule->description;
 
+        // Prepopulate $sesi if matching
+        $start = date('H:i', strtotime($schedule->start_time));
+        $end = date('H:i', strtotime($schedule->end_time));
+        foreach (config('const.class_sessions') as $key => $session) {
+            if (date('H:i', strtotime($session['start'])) == $start && date('H:i', strtotime($session['end'])) == $end) {
+                $this->sesi = $key;
+                break;
+            }
+        }
+
         // Load daftar jadwal untuk kelas ini saat pertama load
         if ($this->kelas) {
             $this->prevClassRoomSchedule = ClassSchedule::where('class_room_id', $this->kelas)
@@ -60,20 +71,58 @@ class Edit extends Component
             'guru' => ['required'],
             'kelas' => ['required'],
             'mataPelajaran' => ['required'],
-
-            'hari' => ['required', 'string', 'min:2', 'max:255', Rule::in(config('const.name_days'))],
-            'waktuMasuk' => ['required', 'min:2', 'max:255'],
-            'waktuKeluar' => ['required', 'string', 'min:2', 'max:255'],
+            'hari' => ['required', 'string', Rule::in(config('const.name_days_secound'))],
+            'sesi' => ['required', 'string'],
+            'waktuMasuk' => ['required'],
+            'waktuKeluar' => ['required', 'after:waktuMasuk'],
             'keterangan' => ['nullable', 'string'],
         ];
+    }
+
+    public function updatedSesi($value)
+    {
+        if ($value && array_key_exists($value, config('const.class_sessions'))) {
+            $session = config('const.class_sessions')[$value];
+            $this->waktuMasuk = $session['start'];
+            $this->waktuKeluar = $session['end'];
+        } else {
+            $this->waktuMasuk = null;
+            $this->waktuKeluar = null;
+        }
+    }
+
+    public function updatedEditingSchedule($value, $key)
+    {
+        if ($key === 'sesi') {
+            if ($value && array_key_exists($value, config('const.class_sessions'))) {
+                $session = config('const.class_sessions')[$value];
+                $this->editingSchedule['waktuMasuk'] = $session['start'];
+                $this->editingSchedule['waktuKeluar'] = $session['end'];
+            } else {
+                $this->editingSchedule['waktuMasuk'] = null;
+                $this->editingSchedule['waktuKeluar'] = null;
+            }
+        }
     }
 
     public function edit()
     {
         $this->validate();
 
-        // Cek Bentrok (exclude jadwal yang sedang diedit)
-        $conflict = ClassSchedule::where('class_room_id', $this->kelas)
+        // 0. Pastikan Mapel Guru Sesuai
+        $teacherObj = Teacher::find($this->guru);
+        if (!$teacherObj || $teacherObj->subject_study_id != $this->mataPelajaran) {
+            $this->addError('guru', 'Guru ini tidak mengajar mata pelajaran yang dipilih.');
+            session()->flash('alert', [
+                'type' => 'warning',
+                'message' => 'Peringatan!',
+                'detail' => 'Guru ini tidak mengajar mata pelajaran yang dipilih.',
+            ]);
+            return;
+        }
+
+        // 1. Cek Bentrok Kelas
+        $classConflict = ClassSchedule::where('class_room_id', $this->kelas)
             ->where('day_name', $this->hari)
             ->where('id', '!=', $this->classScheduleId)
             ->where(function ($query) {
@@ -81,12 +130,36 @@ class Edit extends Component
                     ->whereRaw("TIME(end_time) > TIME(?)", [$this->waktuMasuk]);
             })->get();
 
-        if ($conflict->count() > 0) {
-            $this->previousSchedule = $conflict;
+        if ($classConflict->count() > 0) {
+            $this->previousSchedule = $classConflict;
 
-            $message = "Jadwal bentrok dengan mata pelajaran yang sudah ada!";
+            $message = "Jadwal bentrok dengan mata pelajaran lain di kelas yang sama!";
+            $this->addError('sesi', $message);
             $this->addError('waktuMasuk', $message);
             $this->addError('waktuKeluar', $message);
+
+            session()->flash('alert', [
+                'type' => 'warning',
+                'message' => 'Peringatan!',
+                'detail' => $message,
+            ]);
+            return;
+        }
+
+        // 2. Cek Bentrok Guru
+        $teacherConflict = ClassSchedule::where('teacher_id', $this->guru)
+            ->where('day_name', $this->hari)
+            ->where('id', '!=', $this->classScheduleId)
+            ->where(function ($query) {
+                $query->whereRaw("TIME(start_time) < TIME(?)", [$this->waktuKeluar])
+                    ->whereRaw("TIME(end_time) > TIME(?)", [$this->waktuMasuk]);
+            })->get();
+
+        if ($teacherConflict->count() > 0) {
+            $this->previousSchedule = $teacherConflict;
+
+            $message = "Jadwal bentrok! Guru tersebut sudah mengajar di kelas lain pada hari dan jam/sesi ini.";
+            $this->addError('guru', $message);
 
             session()->flash('alert', [
                 'type' => 'warning',
@@ -149,6 +222,14 @@ class Edit extends Component
         return Teacher::where('subject_study_id', $this->mataPelajaran)->get(['id', 'name', 'nip']);
     }
 
+    public function getTeachersForSubject($subjectId)
+    {
+        if (!$subjectId) {
+            return [];
+        }
+        return Teacher::where('subject_study_id', $subjectId)->get(['id', 'name', 'nip']);
+    }
+
     #[Computed()]
     public function class_rooms()
     {
@@ -184,11 +265,24 @@ class Edit extends Component
     {
         $schedule = ClassSchedule::findOrFail($scheduleId);
         $this->editingScheduleId = $scheduleId;
+
+        // Determine session
+        $sesiVal = '';
+        $start = date('H:i', strtotime($schedule->start_time));
+        $end = date('H:i', strtotime($schedule->end_time));
+        foreach (config('const.class_sessions') as $key => $session) {
+            if (date('H:i', strtotime($session['start'])) == $start && date('H:i', strtotime($session['end'])) == $end) {
+                $sesiVal = $key;
+                break;
+            }
+        }
+
         $this->editingSchedule = [
             'id' => $schedule->id,
             'guru' => $schedule->teacher_id,
             'mataPelajaran' => $schedule->subject_study_id,
             'hari' => $schedule->day_name,
+            'sesi' => $sesiVal,
             'waktuMasuk' => $schedule->start_time,
             'waktuKeluar' => $schedule->end_time,
             'keterangan' => $schedule->description,
@@ -205,13 +299,24 @@ class Edit extends Component
     // Save inline edit
     public function updateSchedule()
     {
+        // 0. Pastikan Mapel Guru Sesuai
+        $teacherObj = Teacher::find($this->editingSchedule['guru']);
+        if (!$teacherObj || $teacherObj->subject_study_id != $this->editingSchedule['mataPelajaran']) {
+            session()->flash('alert', [
+                'type' => 'warning',
+                'message' => 'Peringatan!',
+                'detail' => 'Guru ini tidak mengajar mata pelajaran yang dipilih.',
+            ]);
+            return;
+        }
+
         try {
             DB::beginTransaction();
 
             $schedule = ClassSchedule::findOrFail($this->editingSchedule['id']);
 
-            // Cek conflict
-            $conflict = ClassSchedule::where('class_room_id', $schedule->class_room_id)
+            // 1. Cek Bentrok Kelas
+            $classConflict = ClassSchedule::where('class_room_id', $schedule->class_room_id)
                 ->where('day_name', $this->editingSchedule['hari'])
                 ->where('id', '!=', $schedule->id)
                 ->where(function ($query) {
@@ -219,11 +324,29 @@ class Edit extends Component
                         ->whereRaw("TIME(end_time) > TIME(?)", [$this->editingSchedule['waktuMasuk']]);
                 })->count();
 
-            if ($conflict > 0) {
+            if ($classConflict > 0) {
                 session()->flash('alert', [
                     'type' => 'warning',
                     'message' => 'Peringatan!',
-                    'detail' => 'Jadwal bentrok dengan mata pelajaran yang sudah ada!',
+                    'detail' => 'Jadwal bentrok dengan mata pelajaran lain di kelas yang sama!',
+                ]);
+                return;
+            }
+
+            // 2. Cek Bentrok Guru
+            $teacherConflict = ClassSchedule::where('teacher_id', $this->editingSchedule['guru'])
+                ->where('day_name', $this->editingSchedule['hari'])
+                ->where('id', '!=', $schedule->id)
+                ->where(function ($query) {
+                    $query->whereRaw("TIME(start_time) < TIME(?)", [$this->editingSchedule['waktuKeluar']])
+                        ->whereRaw("TIME(end_time) > TIME(?)", [$this->editingSchedule['waktuMasuk']]);
+                })->count();
+
+            if ($teacherConflict > 0) {
+                session()->flash('alert', [
+                    'type' => 'warning',
+                    'message' => 'Peringatan!',
+                    'detail' => 'Jadwal bentrok! Guru tersebut sudah mengajar di kelas lain pada hari dan jam/sesi ini.',
                 ]);
                 return;
             }

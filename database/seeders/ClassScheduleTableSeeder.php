@@ -16,43 +16,40 @@ class ClassScheduleTableSeeder extends Seeder
         $faker = Factory::create('id_ID');
 
         $classRoomIds     = ClassRoom::pluck('id')->toArray();
-        $subjectStudyIds  = SubjectStudy::pluck('id')->toArray();
-        $days             = config('const.name_days_secound');
-        $teachers         = Teacher::all();
+        $days             = config('const.name_days_secound'); // Senin - Sabtu
+        $teachers         = Teacher::whereNotNull('subject_study_id')->get();
 
-        $timeSlots = [
-            ['08:00:00', '09:30:00'],
-            ['09:45:00', '11:15:00'],
-            ['12:30:00', '14:00:00'],
-            ['14:15:00', '15:45:00'],
-        ];
+        $classSessions = config('const.class_sessions');
+        $timeSlots = [];
+        foreach ($classSessions as $key => $session) {
+            $timeSlots[] = [$session['start'] . ':00', $session['end'] . ':00'];
+        }
 
-        $usedSlots = [];
+        $usedClassSlots = [];
+        $usedTeacherSlots = [];
 
         foreach ($teachers as $teacher) {
+            $subjectId = $teacher->subject_study_id;
 
-            $subjectId = $faker->randomElement($subjectStudyIds);
-            $teacher->update(['subject_study_id' => $subjectId]);
-
-            $teachCount = $faker->numberBetween(1, 20);
+            $teachCount = $faker->numberBetween(1, 4);
 
             for ($i = 0; $i < $teachCount; $i++) {
-
                 $availableSlots = [];
 
                 foreach ($days as $day) {
                     foreach ($timeSlots as [$start, $end]) {
                         foreach ($classRoomIds as $roomId) {
+                            $classKey   = "{$roomId}_{$day}_{$start}_{$end}";
+                            $teacherKey = "{$teacher->id}_{$day}_{$start}_{$end}";
 
-                            $key = "{$roomId}_{$day}_{$start}_{$end}";
-
-                            if (!isset($usedSlots[$key])) {
+                            if (!isset($usedClassSlots[$classKey]) && !isset($usedTeacherSlots[$teacherKey])) {
                                 $availableSlots[] = [
-                                    'day'          => $day,
-                                    'start'        => $start,
-                                    'end'          => $end,
+                                    'day'           => $day,
+                                    'start'         => $start,
+                                    'end'           => $end,
                                     'class_room_id' => $roomId,
-                                    'key'          => $key
+                                    'class_key'     => $classKey,
+                                    'teacher_key'   => $teacherKey,
                                 ];
                             }
                         }
@@ -65,7 +62,8 @@ class ClassScheduleTableSeeder extends Seeder
 
                 $slot = $faker->randomElement($availableSlots);
 
-                $usedSlots[$slot['key']] = true;
+                $usedClassSlots[$slot['class_key']]   = true;
+                $usedTeacherSlots[$slot['teacher_key']] = true;
 
                 ClassSchedule::create([
                     'class_room_id'    => $slot['class_room_id'],

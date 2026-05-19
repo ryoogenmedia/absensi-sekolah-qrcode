@@ -76,7 +76,7 @@
 
                     <x-form.select wire:model="hari" name="hari" label="Nama Hari">
                         <option value="">- pilih hari -</option>
-                        @foreach (config('const.name_days') as $name_day)
+                        @foreach (config('const.name_days_secound') as $name_day)
                             <option wire:key="day-{{ $name_day }}" value="{{ $name_day }}">
                                 {{ strtoupper($name_day) }}
                             </option>
@@ -85,18 +85,27 @@
                 </div>
 
                 <div class="col-12 col-lg-6">
+                    <x-form.select wire:model.live="sesi" name="sesi" label="Sesi Jadwal">
+                        <option value="">- pilih sesi -</option>
+                        @foreach (config('const.class_sessions') as $key => $session)
+                            <option wire:key="session-{{ $key }}" value="{{ $key }}">
+                                {{ $session['label'] }}
+                            </option>
+                        @endforeach
+                    </x-form.select>
+
                     <div class="row">
                         <div class="col-lg-6 col-12">
                             <x-form.input wire:model="waktuMasuk" name="waktuMasuk" label="Waktu Masuk"
-                                type="time" />
+                                type="time" readonly />
                         </div>
                         <div class="col-lg-6 col-12">
                             <x-form.input wire:model="waktuKeluar" name="waktuKeluar" label="Waktu Keluar"
-                                type="time" />
+                                type="time" readonly />
                         </div>
                     </div>
                     <x-form.textarea wire:model="keterangan" name="keterangan" label="Keterangan"
-                        style="height: 210px;" />
+                        style="height: 140px;" />
                 </div>
             </div>
         </div>

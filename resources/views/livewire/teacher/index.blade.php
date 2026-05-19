@@ -71,6 +71,12 @@
 
                         <span>Export Excel</span>
                     </button>
+
+                    <a href="{{ route('print-pdf.teacher-card') }}" target="_blank" class="dropdown-item">
+                        <i class="las la-print me-3"></i>
+
+                        <span>Cetak Semua Akun</span>
+                    </a>
                 </div>
             </x-datatable.bulk.dropdown>
 
@@ -199,6 +205,10 @@
 
                                         <a class="btn btn-sm" href="{{ route('teacher.detail', $row->id) }}">
                                             Detail
+                                        </a>
+
+                                        <a class="btn btn-sm btn-danger text-white" href="{{ route('print-pdf.teacher-card', ['teacher_id' => $row->id]) }}" target="_blank">
+                                            <i class="las la-print"></i> Cetak Akun
                                         </a>
                                     </div>
                                 </div>

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class DataClassRoomScheduleExampleGenerate extends Command
 {
     protected $signature = 'generate:data-class-room-schedule-example';
-    protected $description = 'Generate data class room schedule example for all classes';
+    protected $description = 'Generate data class room schedule example for all classes under session rules';
 
     public function handle()
     {
@@ -24,55 +24,63 @@ class DataClassRoomScheduleExampleGenerate extends Command
         }
 
         $classRooms = ClassRoom::all();
-        $teachers = Teacher::all();
-        $subjects = SubjectStudy::all();
-        $days = config('const.name_days'); // Ambil dari config Anda
+        $teachers = Teacher::whereNotNull('subject_study_id')->get();
+        $days = config('const.name_days_secound'); // Senin - Sabtu
 
-        if ($classRooms->isEmpty() || $teachers->isEmpty() || $subjects->isEmpty()) {
-            $this->error("Pastikan data Kelas, Guru, dan Mata Pelajaran sudah terisi!");
+        if ($classRooms->isEmpty() || $teachers->isEmpty()) {
+            $this->error("Pastikan data Kelas dan Guru (dengan Subject) sudah terisi!");
             return;
         }
 
         $this->info("Memulai generate jadwal untuk " . $classRooms->count() . " kelas...");
         $bar = $this->output->createProgressBar($classRooms->count());
 
+        $classSessions = config('const.class_sessions');
+        $timeSlots = [];
+        foreach ($classSessions as $key => $session) {
+            $timeSlots[] = [$session['start'] . ':00', $session['end'] . ':00'];
+        }
+
         try {
             DB::beginTransaction();
 
             foreach ($classRooms as $class) {
                 foreach ($days as $day) {
-                    // Skip hari sabtu/minggu jika tidak ada di config
-                    if (in_array(strtolower($day), ['sabtu', 'minggu', 'saturday', 'sunday'])) continue;
-
-                    // Tentukan slot waktu (Contoh: 3 sesi per hari)
-                    $timeSlots = [
-                        ['07:30', '09:00'],
-                        ['09:15', '10:45'], // Jeda istirahat 15 menit
-                        ['11:00', '12:30'],
-                    ];
-
                     foreach ($timeSlots as $slot) {
-                        // Ambil Guru & Mapel Acak
-                        $teacher = $teachers->random();
-                        $subject = $subjects->random();
+                        // Gather teachers who aren't busy at this slot
+                        $availableTeachers = $teachers->filter(function ($t) use ($day, $slot) {
+                            return !ClassSchedule::where('teacher_id', $t->id)
+                                ->where('day_name', $day)
+                                ->where('start_time', $slot[0])
+                                ->exists();
+                        });
 
-                        // Cek apakah guru tersebut sudah mengajar di kelas lain pada jam yang sama
-                        $isTeacherBusy = ClassSchedule::where('teacher_id', $teacher->id)
+                        if ($availableTeachers->isEmpty()) {
+                            continue;
+                        }
+
+                        // Check if classroom is already occupied
+                        $isClassOccupied = ClassSchedule::where('class_room_id', $class->id)
                             ->where('day_name', $day)
                             ->where('start_time', $slot[0])
                             ->exists();
 
-                        if (!$isTeacherBusy) {
-                            ClassSchedule::create([
-                                'class_room_id'    => $class->id,
-                                'teacher_id'       => $teacher->id,
-                                'subject_study_id' => $subject->id,
-                                'day_name'         => $day,
-                                'start_time'       => $slot[0],
-                                'end_time'         => $slot[1],
-                                'description'      => 'Jadwal otomatis hasil generate sistem.',
-                            ]);
+                        if ($isClassOccupied) {
+                            continue;
                         }
+
+                        $teacher = $availableTeachers->random();
+                        $subjectId = $teacher->subject_study_id;
+
+                        ClassSchedule::create([
+                            'class_room_id'    => $class->id,
+                            'teacher_id'       => $teacher->id,
+                            'subject_study_id' => $subjectId,
+                            'day_name'         => $day,
+                            'start_time'       => $slot[0],
+                            'end_time'         => $slot[1],
+                            'description'      => 'Jadwal otomatis hasil generate sistem.',
+                        ]);
                     }
                 }
                 $bar->advance();

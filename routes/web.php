@@ -22,6 +22,7 @@ Route::redirect('/', '/login');
  */
 Route::middleware('auth', 'verified', 'force.logout')->prefix('cetak-pdf')->name('print-pdf.')->group(function () {
     Route::get('/kartu', [CetakPdfController::class, 'card'])->middleware('roles:admin,developer')->name('card');
+    Route::get('/guru', [CetakPdfController::class, 'teacherCard'])->middleware('roles:admin,developer')->name('teacher-card');
 });
 
 Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')->group(function () {
