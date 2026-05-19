@@ -33,6 +33,7 @@ class Index extends Component
         'subject_study' => '',
         'start_time' => '',
         'end_time' => '',
+        'sesi' => '',
     ];
 
     public $showModalExcel = false;
@@ -189,6 +190,14 @@ class Index extends Component
             })
             ->when($this->filters['end_time'], function ($query, $endTime) {
                 $query->whereTime('end_time', '<=', $endTime);
+            })
+            ->when($this->filters['sesi'], function ($query, $sessionKey) {
+                $sessions = \App\Models\SchoolSession::getActiveSessions();
+                if (isset($sessions[$sessionKey])) {
+                    $session = $sessions[$sessionKey];
+                    $query->whereTime('start_time', $session['start'])
+                          ->whereTime('end_time', $session['end']);
+                }
             });
 
         return $this->applyPagination($query);

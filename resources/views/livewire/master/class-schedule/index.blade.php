@@ -79,7 +79,7 @@
     <div class="open-filter mb-3 card px-2">
         <div class="card-body">
             <div class="row">
-                <div class="col-12 col-lg-6">
+                <div class="col-12 col-lg-4">
                     <x-form.select wire:model.live="filters.class_room" name="filters.class_room" label="Ruang Kelas">
                         <option value="">SEMUA KELAS</option>
                         @foreach ($this->class_rooms as $class_room)
@@ -88,11 +88,17 @@
                         @endforeach
                     </x-form.select>
 
-                    <x-form.input wire:model.live="filters.start_time" name="filters.start_time" type="time"
-                        label="Jam Awal" />
+                    <x-form.select wire:model.live="filters.sesi" name="filters.sesi" label="Sesi Jadwal">
+                        <option value="">SEMUA SESI</option>
+                        @foreach (\App\Models\SchoolSession::getActiveSessions() as $key => $session)
+                            <option wire:key="filter-session-{{ $key }}" value="{{ $key }}">
+                                {{ $session['label'] }}
+                            </option>
+                        @endforeach
+                    </x-form.select>
                 </div>
 
-                <div class="col-12 col-lg-6">
+                <div class="col-12 col-lg-4">
                     <x-form.select wire:model.live="filters.subject_study" name="filters.subject_study"
                         label="Mata Pelajaran">
                         <option value="">SEMUA MAPEL</option>
@@ -102,6 +108,11 @@
                         @endforeach
                     </x-form.select>
 
+                    <x-form.input wire:model.live="filters.start_time" name="filters.start_time" type="time"
+                        label="Jam Awal" />
+                </div>
+
+                <div class="col-12 col-lg-4">
                     <x-form.input wire:model.live="filters.end_time" name="filters.end_time" type="time"
                         label="Jam Akhir" />
                 </div>
