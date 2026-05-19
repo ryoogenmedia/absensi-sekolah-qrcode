@@ -39,7 +39,6 @@ return [
         'rabu',
         'kamis',
         'jumat',
-        'sabtu',
     ],
 
     'class_sessions' => [

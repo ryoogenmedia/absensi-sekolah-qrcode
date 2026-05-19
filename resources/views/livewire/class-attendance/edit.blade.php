@@ -62,7 +62,7 @@
                                     <td>{{ $siswa['nis'] }}</td>
                                     <td>
                                         <x-form.select
-                                            wire:model.lazy="presensiSiswa.{{ $id }}.status_kehadiran"
+                                            wire:model="presensiSiswa.{{ $id }}.status_kehadiran"
                                             name="presensiSiswa.{{ $id }}.status_kehadiran" form-group-class>
                                             @foreach (config('const.attendance_status') as $status)
                                                 <option wire:key="{{ $status }}" value="{{ $status }}">
