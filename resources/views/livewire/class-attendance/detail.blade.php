@@ -206,12 +206,6 @@
                 Detail Kehadiran Siswa
             </h2>
         </div>
-        <div class="col-auto">
-            <a href="{{ route('print-report.attendance.class.summary', ['kelas' => $this->classSchedule->class_room_id, 'startDate' => $this->date_start, 'endDate' => $this->date_end]) }}"
-                class="btn btn-warning text-dark" title="Print Rekap Kelas Lengkap" target="_blank">
-                <span class="las la-print me-1"></span> Print Rekap Kelas
-            </a>
-        </div>
     </div>
 
     <div class="row mb-3 align-items-center justify-content-between">

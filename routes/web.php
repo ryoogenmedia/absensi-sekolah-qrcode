@@ -43,6 +43,14 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
         Route::get('/mata-pelajaran', [PrintReportController::class, 'subjectStudy'])
             ->name('subject-study');
 
+        Route::get('/presensi/qrcode/masuk', [PrintReportController::class, 'attendanceQrcodeCheckIn'])
+            ->name('attendance.qrcode.check-in');
+
+        Route::get('/presensi/qrcode/keluar', [PrintReportController::class, 'attendanceQrcodeCheckOut'])
+            ->name('attendance.qrcode.check-out');
+    });
+
+    Route::prefix('cetak-laporan')->middleware('roles:admin,developer,guru')->name('print-report.')->group(function () {
         Route::get('/presensi/kelas', [PrintReportController::class, 'attendanceClass'])
             ->name('attendance.class');
 
@@ -51,12 +59,6 @@ Route::middleware('auth', 'verified', 'force.logout')->namespace('App\Livewire')
 
         Route::get('/presensi/kelas/ringkasan', [PrintReportController::class, 'attendanceClassSummary'])
             ->name('attendance.class.summary');
-
-        Route::get('/presensi/qrcode/masuk', [PrintReportController::class, 'attendanceQrcodeCheckIn'])
-            ->name('attendance.qrcode.check-in');
-
-        Route::get('/presensi/qrcode/keluar', [PrintReportController::class, 'attendanceQrcodeCheckOut'])
-            ->name('attendance.qrcode.check-out');
     });
 
     /**
